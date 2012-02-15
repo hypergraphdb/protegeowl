@@ -38,7 +38,7 @@ Import-Package: javax.swing,
  org.hypergraphdb.query,
  org.hypergraphdb.query.cond2qry,
  org.hypergraphdb.query.impl,
- org.hypergraphdb.storage,
+ org.hypergraphdb.storage.bdb,
  org.hypergraphdb.transaction,
  org.hypergraphdb.type,
  org.hypergraphdb.type.javaprimitive,
@@ -151,6 +151,6 @@ Export-Package: gov.miamidade.hgowl.plugin,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: 
  org.protege.editor.owl,
- org.hypergraph.app.owl,
  org.protege.editor.core.application,
- org.semanticweb.owl.owlapi
+ org.semanticweb.owl.owlapi,
+ org.hypergraph.app.owl
