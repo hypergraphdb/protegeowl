@@ -14,13 +14,13 @@ public class HGOwlProperties {
 
 	    public static final String PREFERENCES_KEY = "HypergraphDB";
 
-	    public static final String HYPERGRAPH_LOCATION_KEY = "HypergraphLocationFolder52";
+	    public static final String HYPERGRAPH_LOCATION_KEY = "HypergraphLocationFolder53";
 
 	    public static final String SHOW_LEGACY_KEY = "ShowLegacyEditorKit";
 
 	    private static HGOwlProperties instance;
 
-	    public static final String DEFAULT_HYPERGRAPH_LOCATION_FOLDER_PATH = System.getProperty("user.home") + System.getProperty("file.separator") + ".protegedb52";
+	    public static final String DEFAULT_HYPERGRAPH_LOCATION_FOLDER_PATH = System.getProperty("user.home") + System.getProperty("file.separator") + ".protegedb53";
 
 	    private static final boolean DEFAULT_SHOW_LEGACY_EDITOR_KIT = false;
 	   
