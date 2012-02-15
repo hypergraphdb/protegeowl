@@ -6,5 +6,6 @@
 	<classpathentry kind="src" path="src/main/resources"/>
 	<classpathentry kind="lib" path="/41org.protege.editor.owl/lib/protege-owlapi-extensions.jar" sourcepath="C:/_CiRM/workspaceecI/Protege4Libraries/owlapi-extensions/trunk/src/main/java"/>
 	<classpathentry kind="lib" path="/41org.protege.editor.owl/lib/xmlcatalog.jar"/>
+	<classpathentry kind="lib" path="/org.hypergraph.app.owl/lib/hgdb.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
