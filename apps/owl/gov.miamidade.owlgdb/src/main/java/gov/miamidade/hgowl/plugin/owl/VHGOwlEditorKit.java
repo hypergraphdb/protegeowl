@@ -7,6 +7,8 @@ import gov.miamidade.hgowl.plugin.ui.render.VHGOwlIconProviderImpl;
 import gov.miamidade.hgowl.plugin.ui.repository.VOntologyViewPanel;
 import gov.miamidade.hgowl.plugin.ui.repository.VRepositoryViewPanel;
 import gov.miamidade.hgowl.plugin.ui.versioning.VHGCommitDialog;
+
+import org.hypergraphdb.app.owl.HGDBOntology;
 import org.hypergraphdb.app.owl.versioning.Revision;
 import org.hypergraphdb.app.owl.versioning.VHGDBOntologyRepository;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
@@ -50,7 +52,7 @@ public class VHGOwlEditorKit extends HGOwlEditorKit {
         	// User wants to add ontology to version control.
         	// ?Ontology not versioned
         	// ?Ontolgy in repository
-        	OWLOntology onto = ontologyEntry.getOntology();
+        	HGDBOntology onto = ontologyEntry.getOntology();
         	if (this.getVersionedRepository().isVersionControlled(onto)) {
         		success = false;
                 JOptionPane.showMessageDialog(getWorkspace(),
