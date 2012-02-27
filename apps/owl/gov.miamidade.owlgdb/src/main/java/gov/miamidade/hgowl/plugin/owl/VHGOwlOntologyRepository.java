@@ -132,8 +132,8 @@ public class VHGOwlOntologyRepository implements OntologyRepository {
             if (dbRepository.isVersionControlled(o)) {
             	VersionedOntology vo = dbRepository.getVersionControlledOntology(o);
             	headRevision = "" + vo.getHeadRevision().getRevision();
-            	lastCommitTime = DateFormat.getDateTimeInstance().format(vo.getHeadChangeSet().getCreatedDate());
-            	uncommittedChanges = "" + vo.getHeadChangeSet().size(); 
+            	lastCommitTime = DateFormat.getDateTimeInstance().format(vo.getWorkingSetChanges().getCreatedDate());
+            	uncommittedChanges = "" + vo.getWorkingSetChanges().size(); 
             } else {
             	headRevision = "Not Versioned";
             	lastCommitTime = "";

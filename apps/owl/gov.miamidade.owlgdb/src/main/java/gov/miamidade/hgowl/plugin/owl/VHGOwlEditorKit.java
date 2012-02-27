@@ -134,7 +134,7 @@ public class VHGOwlEditorKit extends HGOwlEditorKit {
 		VHGDBOntologyRepository vor = getVersionedRepository();
 		if (vor.isVersionControlled(activeOnto)) {
 			VersionedOntology vo = vor.getVersionControlledOntology(activeOnto);
-			int pendingChanges = vo.getHeadChangeSet().size();
+			int pendingChanges = vo.getWorkingSetChanges().size();
 			if (pendingChanges == 0) {
 				// NO PENDING CHANGES OK
 				System.out.println("No pending changes.");
@@ -199,7 +199,7 @@ public class VHGOwlEditorKit extends HGOwlEditorKit {
         	// User wants to commit ontology.
         	VersionedOntology vo = getVersionControlledOntologyBy(ontologyEntry);
         	if (vo != null) {
-        		VHGCommitDialog dlg = showUserCommitDialog(vo, vo.getHeadRevisionData());
+        		VHGCommitDialog dlg = showUserCommitDialog(vo, vo.getWorkingSetData());
         		if (dlg.isCommitOK()) {
         			//Clear undo/redo history on revert
         			getModelManager().getHistoryManager().clear();
@@ -232,7 +232,7 @@ public class VHGOwlEditorKit extends HGOwlEditorKit {
         	VersionedOntology vo = getVersionControlledOntologyBy(ontologyEntry);
         	if (vo != null) {
         		//? Head Changes.size() == 0, nothing to do
-        		if (vo.getHeadChangeSet().size() > 0) { 
+        		if (vo.getWorkingSetChanges().size() > 0) { 
         			vo.rollback();
         			//Update Protege
         			causeViewUpdate();
@@ -274,7 +274,7 @@ public class VHGOwlEditorKit extends HGOwlEditorKit {
         	if (vo != null) {
         		// ?Head == Base?, cannot do it
         		//not on pending changes!
-        		if (vo.getHeadChangeSet().size() == 0) {
+        		if (vo.getWorkingSetChanges().size() == 0) {
         			if (vo.getNrOfRevisions() > 1) {
         				//Confirm
                 		int userConfirm = JOptionPane.showConfirmDialog(getWorkspace(),
@@ -311,7 +311,7 @@ public class VHGOwlEditorKit extends HGOwlEditorKit {
         		} else {
                     JOptionPane.showMessageDialog(getWorkspace(),
                             "This ontology cannot be reverted, because " 
-                    		+ vo.getHeadChangeSet().size() + " pending changes exist: \r\n" 
+                    		+ vo.getWorkingSetChanges().size() + " pending changes exist: \r\n" 
                     		+ ontologyEntry.getOntologyURI() + " \r\n"
                     		+ " Rollback or Commit those changes first.",
                             "Hypergraph Versioning - Revert One Revision",

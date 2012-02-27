@@ -50,7 +50,7 @@ public class VHGCommitDialog extends JDialog implements ActionListener {
 		//Create Message:
 		int nrOfRevisions = vo.getNrOfRevisions();
 		Revision headRevision = vo.getHeadRevision();
-		int pendingChanges = vo.getHeadChangeSet().size();
+		int pendingChanges = vo.getWorkingSetChanges().size();
 		String message = "Do you want to commit " + pendingChanges + " change" 
 			+ ((pendingChanges > 1)? "s" : "") + ":\n" 
 	      	+ "    Last Revision    : " + headRevision.getRevision() + "\n"

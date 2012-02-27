@@ -65,7 +65,7 @@ public class VOntologyViewPanel extends JPanel {
         VOntologyViewPanel panel = new VOntologyViewPanel(vo);
         String title;
         title = "Versioned Ontology History " 
-    		+ vo.getHeadRevisionData().getOntologyID().getOntologyIRI()
+    		+ vo.getWorkingSetData().getOntologyID().getOntologyIRI()
     		+ " ID: " + vo.getHeadRevision().getOntologyID();
         JOptionPane.showMessageDialog(parent, panel, title, JOptionPane.PLAIN_MESSAGE);
 //        if(ret == JOptionPane.OK_OPTION) {
