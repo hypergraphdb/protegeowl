@@ -57,7 +57,7 @@ public class VHGCommitDialog extends JDialog implements ActionListener {
 	      	+ "    Created          : " + DateFormat.getDateTimeInstance().format(headRevision.getTimeStamp()) + "\n"
 	      	+ "    By               : " + headRevision.getUser() + "\n" 
 			+ "    Total Revisions  : " + nrOfRevisions + "\n" 
-			+ "    Ontology ID : " + headRevision.getOntologyID() + "\n \n"; 
+			+ "    Ontology ID : " + headRevision.getOntologyUUID() + "\n \n"; 
 		JPanel centerPanel = new JPanel(new BorderLayout(5, 5));
 		message = "<html><pre><b>" + message + "</b></pre></html>";
 		centerPanel.add(new JLabel(message), BorderLayout.NORTH);
