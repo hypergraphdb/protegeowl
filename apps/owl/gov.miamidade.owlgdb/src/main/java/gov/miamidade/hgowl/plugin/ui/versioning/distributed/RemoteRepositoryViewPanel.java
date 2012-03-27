@@ -39,12 +39,12 @@ public class RemoteRepositoryViewPanel extends JPanel {
     }
 
     public Dimension getPreferredSize() {
-        return new Dimension(800, 400);
+        return new Dimension(1000, 400);
     }
 
     public static BrowseEntry showBrowseEntrySelectionDialog(Workspace ws, HGPeerIdentity remotePeer, java.util.List<BrowseEntry> entries) {
         RemoteRepositoryViewPanel panel = new RemoteRepositoryViewPanel(entries);
-        int ret = JOptionPaneEx.showConfirmDialog(ws, "Please Select an ontology from remote Peer " + remotePeer.toString(), panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, panel.table);
+        int ret = JOptionPaneEx.showConfirmDialog(ws, "Ontology Selection From Remote Peer " + remotePeer.toString(), panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, panel.table);
         if(ret == JOptionPane.OK_OPTION) {
             return panel.table.getSelectedEntry();
         }
