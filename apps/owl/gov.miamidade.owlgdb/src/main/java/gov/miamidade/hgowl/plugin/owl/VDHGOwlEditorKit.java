@@ -7,12 +7,15 @@ import gov.miamidade.hgowl.plugin.HGOwlProperties;
 import gov.miamidade.hgowl.plugin.owl.model.HGOwlModelManagerImpl;
 import gov.miamidade.hgowl.plugin.owlapi.apibinding.PHGDBOntologyManagerImpl;
 import gov.miamidade.hgowl.plugin.ui.versioning.distributed.PeerViewPanel;
+import gov.miamidade.hgowl.plugin.ui.versioning.distributed.RemoteRepositoryViewPanel;
 
 import org.hypergraphdb.app.owl.versioning.VHGDBOntologyRepository;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
+import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowserRepositoryActivity;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.PullActivity;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.PushActivity;
+import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowserRepositoryActivity.BrowseEntry;
 import org.hypergraphdb.peer.HGPeerIdentity;
 import org.hypergraphdb.peer.workflow.ActivityResult;
 import org.protege.editor.owl.OWLEditorKitFactory;
@@ -101,10 +104,41 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 
 	public void handlePullAnyRequest() {
 		if (!ensureRemotePeerAccessible()) return;
-        JOptionPane.showMessageDialog(getWorkspace(),
-                "Pull any ontology from remote is not yet implemented.",
-                "P2P NOT YET IMPLEMENTED",
-                JOptionPane.ERROR_MESSAGE);
+		BrowserRepositoryActivity bra = repository.browseRemote(selectedRemotePeer);
+		try {
+			ActivityResult braa = bra.getFuture().get();
+			BrowseEntry remoteEntry = RemoteRepositoryViewPanel.showBrowseEntrySelectionDialog(getWorkspace(), selectedRemotePeer, bra.getRepositoryBrowseEntries());
+			if (remoteEntry != null) {
+				PullActivity pa = repository.pull(remoteEntry.getUuid(), selectedRemotePeer);
+				ActivityResult paa = pa.getFuture().get();
+				if (paa.getException() == null) {
+					JOptionPane.showMessageDialog(getWorkspace(),
+							"Pull completed with the following message: " + pa.getCompletedMessage(),
+							"P2P Pull Complete",
+							JOptionPane.INFORMATION_MESSAGE);
+					//TODO if active was pulled:
+					//refresh all.
+					try {
+						this.getOWLModelManager().reload(repository.getVersionControlledOntology(remoteEntry.getUuid()).getWorkingSetData());
+					} catch (OWLOntologyCreationException e) {
+						e.printStackTrace();
+					}
+				} else {
+					throw paa.getException();
+				}
+
+			} else {
+				JOptionPane.showMessageDialog(getWorkspace(),
+						"No remote ontology selected ",
+						"P2P Pull Aborted",
+						JOptionPane.INFORMATION_MESSAGE);
+			}
+		} catch (Throwable e) {
+	        JOptionPane.showMessageDialog(getWorkspace(),
+	                e.toString() +  " - "+ e.getMessage(),
+	                "P2P Pull Error",
+	                JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	public void handleStartNetworkingRequest() {
