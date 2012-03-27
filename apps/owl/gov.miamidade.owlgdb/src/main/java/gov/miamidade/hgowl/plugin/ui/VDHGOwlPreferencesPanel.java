@@ -244,7 +244,7 @@ public class VDHGOwlPreferencesPanel extends OWLPreferencesPanel {
 	        	HGOwlProperties.getInstance().setP2pUser(userField.getText());
 	        	HGOwlProperties.getInstance().setP2pPass(new String(passField.getPassword()));
 	        	HGOwlProperties.getInstance().setP2pServer(serverField.getText());
-	        	JOptionPane.showMessageDialog(this, "All values saved without validation.");
+	        	//JOptionPane.showMessageDialog(this, "All values saved without validation.");
             }
         }
 }
