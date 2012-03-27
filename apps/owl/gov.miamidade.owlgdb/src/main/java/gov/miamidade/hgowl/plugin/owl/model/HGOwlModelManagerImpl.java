@@ -460,6 +460,11 @@ public class HGOwlModelManagerImpl extends AbstractModelManager
     	if (ont instanceof HGDBOntology) {
     		//2011.12.08 A reload of a database backed ontology shall be transparently skipped.
     		//GUI dialogs should not allow this to the user.
+    		//2012.03.26 We want to refresh everything here as this is the only public method to allow us to do it
+    		//after a pull from remote for example.
+            rebuildActiveOntologiesCache();
+            refreshRenderer();
+            fireEvent(EventType.ONTOLOGY_RELOADED);
     		return ont;
     	}
         IRI ontologyDocumentIRI = IRI.create(getOntologyPhysicalURI(ont));
