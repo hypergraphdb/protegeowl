@@ -23,10 +23,20 @@ public class HGOwlProperties {
 	    public static final String DEFAULT_HYPERGRAPH_LOCATION_FOLDER_PATH = System.getProperty("user.home") + System.getProperty("file.separator") + ".protegedb53";
 
 	    private static final boolean DEFAULT_SHOW_LEGACY_EDITOR_KIT = false;
-	   
+	    
+	    // DISTRIBUTED START
+	    public static final String P2P_USER = "P2PUserName";
+	    public static final String P2P_PASSWORD = "P2PPassword";
+	    public static final String P2P_SERVER= "P2PServer";
+	    // DISTRIBUTED END
+	    
 	    private String hgLocationFolderPath;
 	    private boolean showLegacyEditorKit;
-
+	    // DISTRIBUTED START
+	    private String p2pUser;
+	    private String p2pPass;
+	    private String p2pServer;
+	    // DISTRIBUTED END
 
 	    protected HGOwlProperties() {
 	        loadFromPrefs();
@@ -47,11 +57,19 @@ public class HGOwlProperties {
 	    private void loadFromPrefs() {
 	        hgLocationFolderPath = getPreferences().getString(HYPERGRAPH_LOCATION_KEY, DEFAULT_HYPERGRAPH_LOCATION_FOLDER_PATH);
 	        showLegacyEditorKit= getPreferences().getBoolean(SHOW_LEGACY_KEY, DEFAULT_SHOW_LEGACY_EDITOR_KIT);
+	        //DISTRIBUTED
+	        p2pUser = getPreferences().getString(P2P_USER, "");
+	        p2pPass = getPreferences().getString(P2P_PASSWORD, "");
+	        p2pServer = getPreferences().getString(P2P_SERVER, "");
 	    }
 
 	    private void savePrefs() {
 	        getPreferences().putString(HYPERGRAPH_LOCATION_KEY, hgLocationFolderPath);
 	        getPreferences().putBoolean(SHOW_LEGACY_KEY, showLegacyEditorKit);
+	        //DISTRIBUTED
+	        getPreferences().putString(P2P_USER, p2pUser);
+	        getPreferences().putString(P2P_PASSWORD, p2pPass);
+	        getPreferences().putString(P2P_SERVER, p2pServer);
 	    }
 
 		/**
@@ -84,4 +102,48 @@ public class HGOwlProperties {
 			savePrefs();
 		}
 
+		/**
+		 * @return the p2pUser
+		 */
+		public String getP2pUser() {
+			return p2pUser;
+		}
+
+		/**
+		 * @param p2pUser the p2pUser to set
+		 */
+		public void setP2pUser(String p2pUser) {
+			this.p2pUser = p2pUser;
+			savePrefs();
+		}
+
+		/**
+		 * @return the p2pPass
+		 */
+		public String getP2pPass() {
+			return p2pPass;
+		}
+
+		/**
+		 * @param p2pPass the p2pPass to set
+		 */
+		public void setP2pPass(String p2pPass) {
+			this.p2pPass = p2pPass;
+			savePrefs();
+		}
+
+		/**
+		 * @return the p2pServer HostName
+		 */
+		public String getP2pServer() {
+			return p2pServer;
+		}
+
+		/**
+		 * @param p2pHostName the setP2pServer hostname to set
+		 */
+		public void setP2pServer(String p2pHostName) {
+			this.p2pServer = p2pHostName;
+			savePrefs();
+		}
 }
