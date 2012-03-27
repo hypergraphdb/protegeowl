@@ -108,7 +108,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 		try {
 			ActivityResult braa = bra.getFuture().get();
 			BrowseEntry remoteEntry = RemoteRepositoryViewPanel.showBrowseEntrySelectionDialog(getWorkspace(), selectedRemotePeer, bra.getRepositoryBrowseEntries());
-			if (remoteEntry != null) {
+			if (remoteEntry != null && braa.getException() == null) {
 				PullActivity pa = repository.pull(remoteEntry.getUuid(), selectedRemotePeer);
 				ActivityResult paa = pa.getFuture().get();
 				if (paa.getException() == null) {
@@ -126,7 +126,6 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 				} else {
 					throw paa.getException();
 				}
-
 			} else {
 				JOptionPane.showMessageDialog(getWorkspace(),
 						"No remote ontology selected ",
