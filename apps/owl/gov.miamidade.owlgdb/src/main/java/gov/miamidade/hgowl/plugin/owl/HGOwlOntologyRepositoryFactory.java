@@ -7,6 +7,7 @@ import gov.miamidade.hgowl.plugin.HGOwlProperties;
 import org.hypergraphdb.app.owl.HGDBApplication;
 import org.hypergraphdb.app.owl.HGDBOntologyRepository;
 import org.hypergraphdb.app.owl.versioning.VHGDBOntologyRepository;
+import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
 import org.protege.editor.core.OntologyRepository;
 import org.protege.editor.core.OntologyRepositoryFactory;
 
@@ -32,7 +33,9 @@ public class HGOwlOntologyRepositoryFactory extends OntologyRepositoryFactory {
 			System.err.println("EXCEPTION setting preferred Hypergraph location:" + e);
 			System.err.println("Default will be used:" + HGDBOntologyRepository.getHypergraphDBLocation());
 		}
-		if (HGDBApplication.VERSIONING) {
+		if (HGDBApplication.DISTRIBUTED) {
+			dbRepository = VDHGDBOntologyRepository.getInstance();
+		} else if (HGDBApplication.VERSIONING) {
 			dbRepository = VHGDBOntologyRepository.getInstance();
 		} else {
 			dbRepository = HGDBOntologyRepository.getInstance();
