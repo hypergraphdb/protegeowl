@@ -1,6 +1,7 @@
 package gov.miamidade.hgowl.plugin.ui.versioning.distributed;
 
 import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowserRepositoryActivity.BrowseEntry;
+import org.hypergraphdb.peer.HGPeerIdentity;
 import org.hypergraphdb.peer.HyperGraphPeer;
 import org.protege.editor.core.ui.util.JOptionPaneEx;
 import org.protege.editor.core.ui.workspace.Workspace;
@@ -41,9 +42,9 @@ public class RemoteRepositoryViewPanel extends JPanel {
         return new Dimension(800, 400);
     }
 
-    public static BrowseEntry showBrowseEntrySelectionDialog(Workspace ws, HyperGraphPeer peer, java.util.List<BrowseEntry> entries) {
+    public static BrowseEntry showBrowseEntrySelectionDialog(Workspace ws, HGPeerIdentity remotePeer, java.util.List<BrowseEntry> entries) {
         RemoteRepositoryViewPanel panel = new RemoteRepositoryViewPanel(entries);
-        int ret = JOptionPaneEx.showConfirmDialog(ws, "Please Select an ontology from remote Peer " + peer.getIdentity().getHostname(), panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, panel.table);
+        int ret = JOptionPaneEx.showConfirmDialog(ws, "Please Select an ontology from remote Peer " + remotePeer.toString(), panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, panel.table);
         if(ret == JOptionPane.OK_OPTION) {
             return panel.table.getSelectedEntry();
         }
