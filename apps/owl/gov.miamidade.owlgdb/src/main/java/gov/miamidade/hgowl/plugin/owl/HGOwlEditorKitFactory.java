@@ -25,7 +25,11 @@ public class HGOwlEditorKitFactory extends OWLEditorKitFactory  {
 
 
 	public EditorKit createEditorKit() throws Exception {
-		if (HGDBApplication.VERSIONING) {
+		if (HGDBApplication.DISTRIBUTED) {
+			if (!HGDBApplication.VERSIONING) throw new IllegalStateException("Use Versioning with Distributed.");
+			System.out.println("VDHG createEditorKit");
+			return new VDHGOwlEditorKit(this);
+		} else if (HGDBApplication.VERSIONING) {
 			System.out.println("VHG createEditorKit");
 			return new VHGOwlEditorKit(this);
 		} else {
