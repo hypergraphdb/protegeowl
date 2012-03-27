@@ -161,7 +161,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 		}
 		repository.startNetworking(userName, password, hostname);
         JOptionPane.showMessageDialog(getWorkspace(),
-                "Networking started as host: " + hostname + "and user: " + userName,
+                "Networking started as user " + userName + " at server " + hostname + "." ,
                 "P2P Signed in.",
                 JOptionPane.INFORMATION_MESSAGE);
 	}
