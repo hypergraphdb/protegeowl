@@ -18,7 +18,7 @@
     <extension id="HGOwlPreferences"
                point="org.protege.editor.core.application.preferencespanel">
         <label value="Hypergraph"/>
-        <class value="gov.miamidade.hgowl.plugin.ui.HGOwlPreferencesPanel"/>
+        <class value="gov.miamidade.hgowl.plugin.ui.VDHGOwlPreferencesPanel"/>
     </extension>
 
     <!-- THE REMAINING FILE IS BASED ON editor.owl plugin.xml with modifications, such as 
@@ -205,6 +205,67 @@
 
 <!-- HYPERGRAPH VERSIONING END -->
 <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<!-- HYPERGRAPH P2P -->
+    <extension id="ui.view.menu4"
+    		   point="org.protege.editor.core.application.EditorKitMenuAction">
+        <name value="P2P"/>
+        <toolTip value="P2P specific actions"/>
+        <path value="/SlotCR-E"/>
+	    <editorKitId value="HGOwlEditorKit"/>
+    </extension>
+
+    <extension id="ui.view.menu.hypergraphP2PPushActiveToSelectedPeer"
+               point="org.protege.editor.core.application.EditorKitMenuAction">
+        <name value="Push Active"/>
+        <path value="gov.miamidade.owlgdb.ui.view.menu4/SlotAA-B"/>
+        <class value="gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDHGPushActiveAction"/>
+        <editorKitId value="HGOwlEditorKit"/>
+    </extension>
+
+    <extension id="ui.view.menu.hypergraphP2PPullActiveFromSelectedPeer"
+               point="org.protege.editor.core.application.EditorKitMenuAction">
+        <name value="Pull Active"/>
+        <path value="gov.miamidade.owlgdb.ui.view.menu4/SlotAA-C"/>
+        <class value="gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDHGPullActiveAction"/>
+        <editorKitId value="HGOwlEditorKit"/>
+    </extension>
+
+    <extension id="ui.view.menu.hypergraphP2PPullAnyFromSelectedPeer"
+               point="org.protege.editor.core.application.EditorKitMenuAction">
+        <name value="Pull Any"/>
+        <path value="gov.miamidade.owlgdb.ui.view.menu4/SlotAA-D"/>
+        <class value="gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDHGPullAnyAction"/>
+        <editorKitId value="HGOwlEditorKit"/>
+    </extension>
+
+    <extension id="ui.view.menu.hypergraphP2PSelectedRemotePeer"
+               point="org.protege.editor.core.application.EditorKitMenuAction">
+        <name value="Select Remote Peer"/>
+        <path value="gov.miamidade.owlgdb.ui.view.menu4/SlotAA-E"/>
+        <class value="gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDHGSelectRemotePeerAction"/>
+        <editorKitId value="HGOwlEditorKit"/>
+    </extension>
+
+    <extension id="ui.view.menu.hypergraphP2PNetworkSignIn"
+               point="org.protege.editor.core.application.EditorKitMenuAction">
+        <name value="Sign In"/>
+        <path value="gov.miamidade.owlgdb.ui.view.menu4/SlotAA-F"/>
+        <class value="gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDHGStartNetworkingAction"/>
+        <editorKitId value="HGOwlEditorKit"/>
+    </extension>
+
+    <extension id="ui.view.menu.hypergraphP2PNetworkSignOff"
+               point="org.protege.editor.core.application.EditorKitMenuAction">
+        <name value="Sign Off"/>
+        <path value="gov.miamidade.owlgdb.ui.view.menu4/SlotAA-G"/>
+        <class value="gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDHGStopNetworkingAction"/>
+        <editorKitId value="HGOwlEditorKit"/>
+    </extension>
+
+<!-- HYPERGRAPH P2P END -->
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
 
     <extension id="ui.view.menu"
     		   point="org.protege.editor.core.application.EditorKitMenuAction">
