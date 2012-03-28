@@ -47,8 +47,10 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 		VersionedOntology vo = getActiveAsVersionedOntology();
 		if (vo == null) return;
 		JOptionPane.showMessageDialog(getWorkspace(),
-				"Press OK to start Push. Please wait for the completed message and follow progess on console. ",
-				"P2P Push in Progress",
+				"Pushing " + vo.toString() + 
+				"\n to " + selectedRemotePeer + 
+				"\n Press OK to start Push. Please wait for the completed message and follow progess on console. ",
+				"P2P Push In Progress",
 				JOptionPane.INFORMATION_MESSAGE);
 		PushActivity pa = repository.push(vo, selectedRemotePeer);
 		try {
@@ -64,7 +66,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 		} catch (Throwable e) {
 	        JOptionPane.showMessageDialog(getWorkspace(),
 	                e.toString() +  " - "+ e.getMessage(),
-	                "P2P PUSH Error",
+	                "P2P Push Error",
 	                JOptionPane.ERROR_MESSAGE);
 		}
 	}
@@ -74,7 +76,9 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 		VersionedOntology vo = getActiveAsVersionedOntology();
 		if (vo == null) return;
 		JOptionPane.showMessageDialog(getWorkspace(),
-				"Press OK to start Pull. Please wait for the completed message and follow progess on console. ",
+				"Pulling for " + vo.toString() + 
+				"\n from " + selectedRemotePeer + 
+				"\n Press OK to start Pull. Please wait for the completed message and follow progess on console. ",
 				"P2P Pull in Progress",
 				JOptionPane.INFORMATION_MESSAGE);
 		PullActivity pa = repository.pull(vo, selectedRemotePeer);
@@ -82,7 +86,9 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 			ActivityResult paa = pa.getFuture().get();
 			if (paa.getException() == null) {
 				JOptionPane.showMessageDialog(getWorkspace(),
-						"Pull completed with the following message: " + pa.getCompletedMessage(),
+						"Pulling " + vo.toString() + 
+						"\n from " + selectedRemotePeer + 
+						"\n completed with the following message: \n" + pa.getCompletedMessage(),
 						"P2P Pull Complete",
 						JOptionPane.INFORMATION_MESSAGE);
 			} else {
@@ -113,7 +119,9 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 				ActivityResult paa = pa.getFuture().get();
 				if (paa.getException() == null) {
 					JOptionPane.showMessageDialog(getWorkspace(),
-							"Pull completed with the following message: " + pa.getCompletedMessage(),
+							"Pulling " + remoteEntry.toString() + 
+							"\n from " + selectedRemotePeer + 
+							"\n completed with the following message: " + pa.getCompletedMessage(),
 							"P2P Pull Complete",
 							JOptionPane.INFORMATION_MESSAGE);
 					//TODO if active was pulled:
@@ -145,7 +153,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 		if (isNetworking()) {
 	        JOptionPane.showMessageDialog(getWorkspace(),
 	                "You are currently connected and need to sign off before you can sign in again.",
-	                "P2P Sign in Error",
+	                "P2P Sign In Error",
 	                JOptionPane.INFORMATION_MESSAGE);
 	        return;
 		}
@@ -155,22 +163,30 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 		if (hostname == null || hostname.length() < 5 || userName.length() < 2) {
 	        JOptionPane.showMessageDialog(getWorkspace(),
 	                "Please configure P2P server, userName and password in Preferences.",
-	                "P2P Sign in Error",
+	                "P2P Sign In Error",
 	                JOptionPane.ERROR_MESSAGE);
 	        return;
 		}
-		repository.startNetworking(userName, password, hostname);
-        JOptionPane.showMessageDialog(getWorkspace(),
-                "Networking started as user " + userName + " at server " + hostname + "." ,
-                "P2P Signed in.",
-                JOptionPane.INFORMATION_MESSAGE);
+		boolean startOK = repository.startNetworking(userName, password, hostname);
+		if (startOK) {
+	        JOptionPane.showMessageDialog(getWorkspace(),
+	                "Networking started as user " + userName + " at server " + hostname + "." ,
+	                "P2P Signed In.",
+	                JOptionPane.INFORMATION_MESSAGE);
+		} else {
+	        JOptionPane.showMessageDialog(getWorkspace(),
+	                "Could not start networking as user " + userName + " at server " + hostname + "." 
+	                + "\n Check the console output for exceptions.",
+	                "P2P Sign In Error.",
+	                JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	public void handleStopNetworkingRequest() {
 		if (!isNetworking()) {
 	        JOptionPane.showMessageDialog(getWorkspace(),
 	                "You are not currently connected.",
-	                "P2P Sign off",
+	                "P2P Sign Off",
 	                JOptionPane.INFORMATION_MESSAGE);
 	        return;
 		}
@@ -178,7 +194,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 		selectedRemotePeer = null;
         JOptionPane.showMessageDialog(getWorkspace(),
                 "You were signed off.",
-                "P2P Sign off",
+                "P2P Sign Off",
                 JOptionPane.INFORMATION_MESSAGE);
 	}
 
@@ -188,7 +204,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 		} else {
 			JOptionPane.showMessageDialog(getWorkspace(),
 					"You need to be signed in to select a remote peer.",
-					"P2P Not Signed in",
+					"P2P Not Signed In",
 					JOptionPane.WARNING_MESSAGE);
 		}
 		if (selectedRemotePeer == null) {
