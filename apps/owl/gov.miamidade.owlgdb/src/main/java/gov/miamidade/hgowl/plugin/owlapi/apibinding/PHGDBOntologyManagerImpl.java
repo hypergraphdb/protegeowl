@@ -6,6 +6,7 @@ import org.hypergraphdb.app.owl.HGDBOntologyManager;
 import org.hypergraphdb.app.owl.HGDBOntologyRepository;
 import org.hypergraphdb.app.owl.core.OWLDataFactoryHGDB;
 import org.hypergraphdb.app.owl.versioning.VHGDBOntologyRepository;
+import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
 import org.protege.owlapi.model.ProtegeOWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 
@@ -24,7 +25,12 @@ public class PHGDBOntologyManagerImpl extends ProtegeOWLOntologyManager implemen
 	public PHGDBOntologyManagerImpl(OWLDataFactoryHGDB dataFactory) {
 		super(dataFactory);						
 		//Make sure there is an application, a graph, et.c.
-		if (HGDBApplication.VERSIONING) {
+		if (HGDBApplication.DISTRIBUTED) {
+			ontologyRepository = VDHGDBOntologyRepository.getInstance();
+			((VDHGDBOntologyRepository)ontologyRepository).setOntologyManager(this);
+			this.addOntologyChangeListener(((VHGDBOntologyRepository)ontologyRepository));
+			
+		} else if (HGDBApplication.VERSIONING) {
 			ontologyRepository = VHGDBOntologyRepository.getInstance();
 			this.addOntologyChangeListener(((VHGDBOntologyRepository)ontologyRepository));
 		} else {
