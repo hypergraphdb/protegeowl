@@ -35,6 +35,7 @@ public class HGOwlOntologyRepositoryFactory extends OntologyRepositoryFactory {
 		}
 		if (HGDBApplication.DISTRIBUTED) {
 			dbRepository = VDHGDBOntologyRepository.getInstance();
+			//TODO NEED TO SET manager
 		} else if (HGDBApplication.VERSIONING) {
 			dbRepository = VHGDBOntologyRepository.getInstance();
 		} else {
