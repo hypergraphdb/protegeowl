@@ -243,7 +243,7 @@
     <extension id="ui.view.menu.hypergraphP2PPullActiveFromSelectedPeer"
                point="org.protege.editor.core.application.EditorKitMenuAction">
         <name value="Pull Active"/>
-        <toolTip value="Pulls all missing changesets and revisions of the active ontology from a remote peer."/>
+        <toolTip value="Pulls all missing changesets and revisions of the active ontology from a remote peer. Merges uncommitted if necessary."/>
         <path value="gov.miamidade.owlgdb.ui.view.menu4/SlotAA-C"/>
         <class value="gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDHGPullActiveAction"/>
         <editorKitId value="HGOwlEditorKit"/>
@@ -252,7 +252,7 @@
     <extension id="ui.view.menu.hypergraphP2PPullAnyFromSelectedPeer"
                point="org.protege.editor.core.application.EditorKitMenuAction">
         <name value="Pull Any"/>
-        <toolTip value="Pulls all missing changesets and revisions of a user selected ontology from a remote peer."/>
+        <toolTip value="Pulls all missing changesets and revisions of a user selected ontology from a remote peer. Merges uncommitted if necessary."/>
         <path value="gov.miamidade.owlgdb.ui.view.menu4/SlotAA-D"/>
         <class value="gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDHGPullAnyAction"/>
         <editorKitId value="HGOwlEditorKit"/>
