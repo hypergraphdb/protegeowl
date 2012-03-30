@@ -46,12 +46,16 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 		if (!ensureRemotePeerAccessible()) return;
 		VersionedOntology vo = getActiveAsVersionedOntology();
 		if (vo == null) return;
-		JOptionPane.showMessageDialog(getWorkspace(),
+		int confirm = JOptionPane.showConfirmDialog(getWorkspace(),
 				"Pushing " + vo.toString() + 
 				"\n to " + selectedRemotePeer + 
 				"\n Press OK to start Push. Please wait for the completed message and follow progess on console. ",
 				"P2P Push In Progress",
-				JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+		if (confirm != JOptionPane.OK_OPTION) {
+			// user cancelled.
+			return;
+		}
 		PushActivity pa = repository.push(vo, selectedRemotePeer);
 		try {
 			ActivityResult paa = pa.getFuture().get();
@@ -75,12 +79,16 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 		if (!ensureRemotePeerAccessible()) return;
 		VersionedOntology vo = getActiveAsVersionedOntology();
 		if (vo == null) return;
-		JOptionPane.showMessageDialog(getWorkspace(),
+		int confirm = JOptionPane.showConfirmDialog(getWorkspace(),
 				"Pulling for " + vo.toString() + 
 				"\n from " + selectedRemotePeer + 
 				"\n Press OK to start Pull. Please wait for the completed message and follow progess on console. ",
 				"P2P Pull in Progress",
-				JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+		if (confirm != JOptionPane.OK_OPTION) {
+			// user cancelled.
+			return;
+		}
 		PullActivity pa = repository.pull(vo, selectedRemotePeer);
 		try {
 			ActivityResult paa = pa.getFuture().get();
@@ -115,6 +123,18 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 			ActivityResult braa = bra.getFuture().get();
 			BrowseEntry remoteEntry = RemoteRepositoryViewPanel.showBrowseEntrySelectionDialog(getWorkspace(), selectedRemotePeer, bra.getRepositoryBrowseEntries());
 			if (remoteEntry != null && braa.getException() == null) {
+				//USER CONFIRM
+				int confirm = JOptionPane.showConfirmDialog(getWorkspace(),
+						"Pulling " + remoteEntry.toString() + 
+						"\n from " + selectedRemotePeer + 
+						"\n Press ok to start.",
+						"P2P Pull Any",
+						JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+				if (confirm != JOptionPane.OK_OPTION) {
+					// 	user cancelled.
+					return;
+				}
+				// START PULL
 				PullActivity pa = repository.pull(remoteEntry.getUuid(), selectedRemotePeer);
 				ActivityResult paa = pa.getFuture().get();
 				if (paa.getException() == null) {
@@ -122,7 +142,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 							"Pulling " + remoteEntry.toString() + 
 							"\n from " + selectedRemotePeer + 
 							"\n completed with the following message: " + pa.getCompletedMessage(),
-							"P2P Pull Complete",
+							"P2P Pull Any Complete",
 							JOptionPane.INFORMATION_MESSAGE);
 					//TODO if active was pulled:
 					//refresh all.
@@ -200,17 +220,17 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 
 	public void handleSelectRemotePeerRequest() {
 		if (isNetworking()) {
+			if (HGOwlProperties.getInstance().isP2pAskForRemote()) {
+		        JOptionPane.showMessageDialog(getWorkspace(),
+		                "Your selection will be ignored, because AskForRemote is set to true in File/Preferences/Hypergraph/P2P.",
+		                "P2P Selection Ignored",
+		                JOptionPane.WARNING_MESSAGE);
+			}
 			selectedRemotePeer = PeerViewPanel.showPeerSelectionDialog(getWorkspace(), repository.getPeer());
 		} else {
 			JOptionPane.showMessageDialog(getWorkspace(),
 					"You need to be signed in to select a remote peer.",
 					"P2P Not Signed In",
-					JOptionPane.WARNING_MESSAGE);
-		}
-		if (selectedRemotePeer == null) {
-			JOptionPane.showMessageDialog(getWorkspace(),
-					"You need to select a remote peer later before you can use push or pull.",
-					"P2P No Remote Peer selected",
 					JOptionPane.WARNING_MESSAGE);
 		}
 	}
@@ -229,7 +249,8 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 	 */
 	public boolean ensureRemotePeerAccessible() {
 		if (isNetworking()) {
-			if (repository.getPeer().getConnectedPeers().contains(selectedRemotePeer)) {
+			if (repository.getPeer().getConnectedPeers().contains(selectedRemotePeer)
+					&& !HGOwlProperties.getInstance().isP2pAskForRemote()) {
 				return true;
 			} else {
 				selectedRemotePeer = PeerViewPanel.showPeerSelectionDialog(getWorkspace(), repository.getPeer());
