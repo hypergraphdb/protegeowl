@@ -450,6 +450,13 @@ public class HGOwlEditorKit extends OWLEditorKit {
         }
     }
 
+    /**
+     * Saves an ontology using HGDBOntologyFormat into the repository.
+     * @param ont
+     */
+	public boolean handleImportRequest(OWLOntology ont) throws Exception {
+		return handleSaveAs(ont, new HGDBOntologyFormat());
+	}      
 
     /**
      * This should only save the specified ontology
@@ -468,7 +475,15 @@ public class HGOwlEditorKit extends OWLEditorKit {
             logger.warn("Please select a valid format");
             return false;
         }
-        if (oldFormat instanceof PrefixOWLOntologyFormat && format instanceof PrefixOWLOntologyFormat) {
+        return handleSaveAs(ont, format);
+    }
+    
+    protected boolean handleSaveAs(OWLOntology ont, OWLOntologyFormat format) throws Exception {
+       PHGDBOntologyManagerImpl man = (PHGDBOntologyManagerImpl)getModelManager().getOWLOntologyManager();
+       OWLOntologyFormat oldFormat = man.getOntologyFormat(ont);
+       IRI oldDocumentIRI = man.getOntologyDocumentIRI(ont);
+       HGDBOntologyRepository repo = man.getOntologyRepository();
+       if (oldFormat instanceof PrefixOWLOntologyFormat && format instanceof PrefixOWLOntologyFormat) {
         	PrefixOWLOntologyFormat oldPrefixes  = (PrefixOWLOntologyFormat) oldFormat;
         	for (String name : oldPrefixes.getPrefixNames()) {
         		((PrefixOWLOntologyFormat) format).setPrefix(name, oldPrefixes.getPrefix(name));
@@ -653,5 +668,9 @@ public class HGOwlEditorKit extends OWLEditorKit {
         super.dispose();
         //HGOwlModelManagerImpl m = (HGOwlModelManagerImpl)getOWLModelManager();
         //m.get        
-    }      
+    }
+
+	/**
+	 * 
+	 */
 }
