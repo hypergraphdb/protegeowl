@@ -203,6 +203,7 @@ public class VDHGOwlPreferencesPanel extends OWLPreferencesPanel {
 		private JTextField userField;
 		private JPasswordField passField;
 		private JTextField serverField;
+		private JCheckBox askForRemote;
 
             public void initialise() throws Exception {
                 setLayout(new BorderLayout(12, 12));
@@ -220,6 +221,7 @@ public class VDHGOwlPreferencesPanel extends OWLPreferencesPanel {
                 Box panel1 = new Box(BoxLayout.LINE_AXIS);
                 Box panel2 = new Box(BoxLayout.LINE_AXIS);
                 Box panel3 = new Box(BoxLayout.LINE_AXIS);
+                Box panel4 = new Box(BoxLayout.LINE_AXIS);
                 userField = new JTextField(15);
                 userField.setText(HGOwlProperties.getInstance().getP2pUser());
                 panel1.add(new JLabel("P2P User:"));
@@ -232,10 +234,13 @@ public class VDHGOwlPreferencesPanel extends OWLPreferencesPanel {
                 serverField.setText(HGOwlProperties.getInstance().getP2pServer());
                 panel3.add(new JLabel("P2P Server:"));
                 panel3.add(serverField);
+                askForRemote = new JCheckBox("Ask for Remote Target before each operation", HGOwlProperties.getInstance().isP2pAskForRemote());
+                panel4.add(askForRemote);
                 // toplevel
                 panel.add(panel1);
                 panel.add(panel2);
                 panel.add(panel3);
+                panel.add(panel4);
                 return panel;
             }
 
@@ -244,6 +249,7 @@ public class VDHGOwlPreferencesPanel extends OWLPreferencesPanel {
 	        	HGOwlProperties.getInstance().setP2pUser(userField.getText());
 	        	HGOwlProperties.getInstance().setP2pPass(new String(passField.getPassword()));
 	        	HGOwlProperties.getInstance().setP2pServer(serverField.getText());
+	        	HGOwlProperties.getInstance().setP2pAskForRemote(askForRemote.isSelected());
 	        	//JOptionPane.showMessageDialog(this, "All values saved without validation.");
             }
         }
