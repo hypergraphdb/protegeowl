@@ -65,7 +65,7 @@ public class HGOwlProperties {
 	        p2pUser = getPreferences().getString(P2P_USER, "");
 	        p2pPass = getPreferences().getString(P2P_PASSWORD, "");
 	        p2pServer = getPreferences().getString(P2P_SERVER, "");
-	        p2pAskForRemote = getPreferences().getBoolean(P2P_SERVER, DEFAULT_P2P_ASK_FOR_REMOTE);
+	        p2pAskForRemote = getPreferences().getBoolean(P2P_ASK_FOR_REMOTE, DEFAULT_P2P_ASK_FOR_REMOTE);
 	    }
 
 	    private void savePrefs() {
