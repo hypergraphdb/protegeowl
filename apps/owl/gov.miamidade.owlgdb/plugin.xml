@@ -125,11 +125,20 @@
         <editorKitId value="HGOwlEditorKit"/>
     </extension>
 
+    <extension id="ui.view.menu.hypergraphImportOntology"
+               point="org.protege.editor.core.application.EditorKitMenuAction">
+        <name value="Import Active Ontology"/>
+        <toolTip value="Imports the Active Ontology into the Hypergraph Repository"/>
+        <path value="gov.miamidade.owlgdb.ui.view.menu2/SlotAA-D"/>
+        <class value="gov.miamidade.hgowl.plugin.ui.ImportOntologyAction"/>
+        <editorKitId value="HGOwlEditorKit"/>
+    </extension>
+
     <extension id="ui.view.menu.hypergraphDeleteOntology"
                point="org.protege.editor.core.application.EditorKitMenuAction">
         <name value="Delete Ontology from Hypergraph Repository"/>
         <toolTip value="Delete Ontology from Hypergraph Repository"/>
-        <path value="gov.miamidade.owlgdb.ui.view.menu2/SlotAA-D"/>
+        <path value="gov.miamidade.owlgdb.ui.view.menu2/SlotAA-E"/>
         <class value="gov.miamidade.hgowl.plugin.ui.DeleteOntologyFromRepositoryAction"/>
         <editorKitId value="HGOwlEditorKit"/>
     </extension>
@@ -148,6 +157,7 @@
     <extension id="ui.view.menu.hypergraphCommitActiveVersionControl"
                point="org.protege.editor.core.application.EditorKitMenuAction">
         <name value="Commit Active"/>
+        <toolTip value="Commits all pending changes to the local repository and creates a new revision of the ontology."/>
         <path value="gov.miamidade.owlgdb.ui.view.menu3/SlotAA-A"/>
         <class value="gov.miamidade.hgowl.plugin.ui.versioning.VHGCommitActiveAction"/>
         <editorKitId value="HGOwlEditorKit"/>
@@ -157,6 +167,7 @@
     <extension id="ui.view.menu.hypergraphHistoryActiveVersionControl"
                point="org.protege.editor.core.application.EditorKitMenuAction">
         <name value="History of Active"/>
+        <toolTip value="Shows all revisions and changesets that are in the local repository."/>
         <path value="gov.miamidade.owlgdb.ui.view.menu3/SlotAA-B"/>
         <class value="gov.miamidade.hgowl.plugin.ui.versioning.VHGHistoryActiveAction"/>
         <editorKitId value="HGOwlEditorKit"/>
@@ -165,6 +176,7 @@
     <extension id="ui.view.menu.hypergraphCommitVersionControl"
                point="org.protege.editor.core.application.EditorKitMenuAction">
         <name value="Commit Ontology Changes"/>
+        <toolTip value="Commits pending changes to the local repository and creates a new revision."/>
         <path value="gov.miamidade.owlgdb.ui.view.menu3/SlotAA-C"/>
         <class value="gov.miamidade.hgowl.plugin.ui.versioning.VHGCommitAction"/>
         <editorKitId value="HGOwlEditorKit"/>
@@ -173,6 +185,7 @@
     <extension id="ui.view.menu.hypergraphRollbackVersionControl"
                point="org.protege.editor.core.application.EditorKitMenuAction">
         <name value="Rollback Ontology Changes"/>
+        <toolTip value="Undoes pending changes and therefore returns the workingset to head revision."/>
         <path value="gov.miamidade.owlgdb.ui.view.menu3/SlotAA-D"/>
         <class value="gov.miamidade.hgowl.plugin.ui.versioning.VHGRollbackAction"/>
         <editorKitId value="HGOwlEditorKit"/>
@@ -181,6 +194,7 @@
     <extension id="ui.view.menu.hypergraphRevertOneVersionControl"
                point="org.protege.editor.core.application.EditorKitMenuAction">
         <name value="Revert Ontology one Revision from Head"/>
+        <toolTip value="Permanently deletes the last revision and changeset from the history, the previous will be the new head."/>
         <path value="gov.miamidade.owlgdb.ui.view.menu3/SlotAA-E"/>
         <class value="gov.miamidade.hgowl.plugin.ui.versioning.VHGRevertOneRevisionAction"/>
         <editorKitId value="HGOwlEditorKit"/>
@@ -189,6 +203,7 @@
     <extension id="ui.view.menu.hypergraphAddVersionControl"
                point="org.protege.editor.core.application.EditorKitMenuAction">
         <name value="Add Ontology to Version Control"/>
+        <toolTip value="After adding, all applied changes will be tracked, following a single branch versioning model."/>
         <path value="gov.miamidade.owlgdb.ui.view.menu3/SlotAA-G"/>
         <class value="gov.miamidade.hgowl.plugin.ui.versioning.VHGAddVersionControlAction"/>
         <editorKitId value="HGOwlEditorKit"/>
@@ -197,6 +212,7 @@
     <extension id="ui.view.menu.hypergraphRemoveVersionControl"
                point="org.protege.editor.core.application.EditorKitMenuAction">
         <name value="Remove Ontology from Version Control"/>
+        <toolTip value="Removing leaves the workingset intact, but deletes all changes, changesets and revision information permanently."/>
         <path value="gov.miamidade.owlgdb.ui.view.menu3/SlotAA-H"/>
         <class value="gov.miamidade.hgowl.plugin.ui.versioning.VHGRemoveVersionControlAction"/>
         <editorKitId value="HGOwlEditorKit"/>
@@ -209,7 +225,7 @@
 <!-- HYPERGRAPH P2P -->
     <extension id="ui.view.menu4"
     		   point="org.protege.editor.core.application.EditorKitMenuAction">
-        <name value="P2P"/>
+        <name value="Peer 2 Peer"/>
         <toolTip value="P2P specific actions"/>
         <path value="/SlotCR-E"/>
 	    <editorKitId value="HGOwlEditorKit"/>
@@ -218,6 +234,7 @@
     <extension id="ui.view.menu.hypergraphP2PPushActiveToSelectedPeer"
                point="org.protege.editor.core.application.EditorKitMenuAction">
         <name value="Push Active"/>
+        <toolTip value="Pushes all missing changesets and revisions of the active ontology to a remote peer."/>
         <path value="gov.miamidade.owlgdb.ui.view.menu4/SlotAA-B"/>
         <class value="gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDHGPushActiveAction"/>
         <editorKitId value="HGOwlEditorKit"/>
@@ -226,6 +243,7 @@
     <extension id="ui.view.menu.hypergraphP2PPullActiveFromSelectedPeer"
                point="org.protege.editor.core.application.EditorKitMenuAction">
         <name value="Pull Active"/>
+        <toolTip value="Pulls all missing changesets and revisions of the active ontology from a remote peer."/>
         <path value="gov.miamidade.owlgdb.ui.view.menu4/SlotAA-C"/>
         <class value="gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDHGPullActiveAction"/>
         <editorKitId value="HGOwlEditorKit"/>
@@ -234,6 +252,7 @@
     <extension id="ui.view.menu.hypergraphP2PPullAnyFromSelectedPeer"
                point="org.protege.editor.core.application.EditorKitMenuAction">
         <name value="Pull Any"/>
+        <toolTip value="Pulls all missing changesets and revisions of a user selected ontology from a remote peer."/>
         <path value="gov.miamidade.owlgdb.ui.view.menu4/SlotAA-D"/>
         <class value="gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDHGPullAnyAction"/>
         <editorKitId value="HGOwlEditorKit"/>
@@ -241,7 +260,8 @@
 
     <extension id="ui.view.menu.hypergraphP2PSelectedRemotePeer"
                point="org.protege.editor.core.application.EditorKitMenuAction">
-        <name value="Select Remote Peer"/>
+        <name value="Select Default Remote Peer"/>
+        <toolTip value="Selects a default remote peer to push and pull ontologies to/from."/>
         <path value="gov.miamidade.owlgdb.ui.view.menu4/SlotAA-E"/>
         <class value="gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDHGSelectRemotePeerAction"/>
         <editorKitId value="HGOwlEditorKit"/>
@@ -250,6 +270,7 @@
     <extension id="ui.view.menu.hypergraphP2PNetworkSignIn"
                point="org.protege.editor.core.application.EditorKitMenuAction">
         <name value="Sign In"/>
+        <toolTip value="Connects the local peer to an XMPP server \n using the P2P configuration in Preferences."/>
         <path value="gov.miamidade.owlgdb.ui.view.menu4/SlotAA-F"/>
         <class value="gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDHGStartNetworkingAction"/>
         <editorKitId value="HGOwlEditorKit"/>
@@ -258,6 +279,7 @@
     <extension id="ui.view.menu.hypergraphP2PNetworkSignOff"
                point="org.protege.editor.core.application.EditorKitMenuAction">
         <name value="Sign Off"/>
+        <toolTip value="Disconnectes the local peer from the XMPP server."/>
         <path value="gov.miamidade.owlgdb.ui.view.menu4/SlotAA-G"/>
         <class value="gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDHGStopNetworkingAction"/>
         <editorKitId value="HGOwlEditorKit"/>
