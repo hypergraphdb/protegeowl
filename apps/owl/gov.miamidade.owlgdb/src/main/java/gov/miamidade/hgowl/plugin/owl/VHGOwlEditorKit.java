@@ -7,6 +7,7 @@ import gov.miamidade.hgowl.plugin.ui.render.VHGOwlIconProviderImpl;
 import gov.miamidade.hgowl.plugin.ui.repository.VOntologyViewPanel;
 import gov.miamidade.hgowl.plugin.ui.repository.VRepositoryViewPanel;
 import gov.miamidade.hgowl.plugin.ui.versioning.VHGCommitDialog;
+import gov.miamidade.hgowl.plugin.ui.versioning.VHGHistoryDialog;
 
 import org.hypergraphdb.app.owl.HGDBOntology;
 import org.hypergraphdb.app.owl.versioning.Revision;
@@ -386,7 +387,8 @@ public class VHGOwlEditorKit extends HGOwlEditorKit {
 		VHGDBOntologyRepository vor = getVersionedRepository();
 		if (vor.isVersionControlled(activeOnto)) {
 			VersionedOntology vo = vor.getVersionControlledOntology(activeOnto);
-			VOntologyViewPanel.showRevisionDialog(getWorkspace(), vo);
+			//VOntologyViewPanel.showRevisionDialog(getWorkspace(), vo);
+			VHGHistoryDialog.showDialog(getWorkspace(), vo);
 		} else {
             JOptionPane.showMessageDialog(getWorkspace(),
                     "No History: Active ontology not version controlled",
