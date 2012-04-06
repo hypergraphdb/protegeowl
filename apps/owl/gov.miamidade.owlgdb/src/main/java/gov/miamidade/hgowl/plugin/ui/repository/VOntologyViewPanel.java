@@ -25,7 +25,8 @@ public class VOntologyViewPanel extends JPanel {
 	private static final long serialVersionUID = 159528341514944079L;
 
 	private VersionedOntology versionedOntology;
-
+	private VOntologyTableModel tableModel;
+	
     private JTable table;
 
 	public VOntologyViewPanel(VersionedOntology vOnto) {
@@ -35,7 +36,8 @@ public class VOntologyViewPanel extends JPanel {
 
     private void createUI() {
     	setLayout(new BorderLayout());
-        table = new JTable(new VOntologyTableModel(versionedOntology));
+    	tableModel = new VOntologyTableModel(versionedOntology);
+        table = new JTable(tableModel);
     	//0.Master 1.Revision 2.TimeStamp 3.User 4.Comment 5.#Changes (after revision)
     	DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
     	rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
@@ -73,7 +75,16 @@ public class VOntologyViewPanel extends JPanel {
 //        }
         return null;
     }
+    
+    public JTable getTable() {
+    	return table;
+    }
+    
+    public VOntologyTableModel getTableModel() {
+    	return tableModel;
+    }
 
+    
 //    public static OntologyRepositoryEntry showDeleteDialog(OntologyRepository repository) {
 //        repository.refresh();
 //        RepositoryViewPanel panel = new RepositoryViewPanel(repository);
