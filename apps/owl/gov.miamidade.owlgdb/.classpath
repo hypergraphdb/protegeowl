@@ -5,7 +5,8 @@
 	<classpathentry kind="src" path="src/main/resources"/>
 	<classpathentry kind="lib" path="/41org.protege.editor.owl/lib/protege-owlapi-extensions.jar" sourcepath="C:/_CiRM/workspaceecI/Protege4Libraries/owlapi-extensions/trunk/src/main/java"/>
 	<classpathentry kind="lib" path="/41org.protege.editor.owl/lib/xmlcatalog.jar"/>
-	<classpathentry kind="lib" path="/org.hypergraph.app.owl/lib/hgdb.jar"/>
+	<classpathentry kind="lib" path="/org.hypergraph.app.owl/lib/hgdb.jar" sourcepath="/hypergraphdb/p2p/src/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="lib" path="/org.hypergraph.app.owl/lib/hgdbp2p.jar" sourcepath="/hypergraphdb/p2p/src/java"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
