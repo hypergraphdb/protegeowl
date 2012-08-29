@@ -132,15 +132,11 @@ public class DynamicTeamMenu extends ProtegeDynamicAction {
 		cur.setEnabled(userOnline);
 		cur.setEditorKit(kit);
 		menu.add(cur);
-		cur = new VHGRollbackAction();
-		cur.putValue(Action.NAME, "Revert to...");
-		cur.setEditorKit(kit);
-		menu.add(cur);
-		//TODO just for now the generic revert one. needs to be revert active and show history.
 		cur = new VHGRevertOneRevisionAction();
 		cur.putValue(Action.NAME, "Revert to...");
 		cur.setEditorKit(kit);
 		menu.add(cur);
+		//TODO just for now the generic revert one. needs to be revert active and show history.
 		menu.addSeparator();
 	}
 
