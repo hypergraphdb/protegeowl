@@ -74,7 +74,8 @@ public class VOntologyTableModel extends AbstractTableModel {
 	 */
 	@Override
 	public int getRowCount() {
-		return versionedOntology.getNrOfRevisions();
+		//1 added for pending head changes
+		return versionedOntology.getNrOfRevisions() + 1;
 	}
 
 	/* (non-Javadoc)
@@ -82,17 +83,30 @@ public class VOntologyTableModel extends AbstractTableModel {
 	 */
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		//if (rowIndex > versionedOntology.getNrOfRevisions()) return null;
+		int revisionIndex = revisions.size() - rowIndex; // - 1;
+		if (revisionIndex == revisions.size()) {
+			return getValueForUncommittedAt(columnIndex);
+		} else if (revisionIndex > 0){
+			return getValueForCommittedAt(revisionIndex, columnIndex);
+		} else if (revisionIndex == 0){
+			//Initial
+			return getValueForInitialAt(columnIndex);
+		} else {
+			throw new IllegalArgumentException("Row with rowindex " + rowIndex + " does not exist.");
+		}
+	}
+
+	public Object getValueForCommittedAt(int revisionIndex, int columnIndex) {
+		if (revisionIndex < 1 || revisionIndex >= revisions.size()) {
+			throw new IllegalArgumentException("Revision index not a committed revision, was: " + revisionIndex);
+		}
+		Revision rev = revisions.get(revisionIndex);
+		ChangeSet cs = changesets.get(revisionIndex - 1);
 		Object returnObject;
-		Revision rev = revisions.get(revisions.size() - rowIndex - 1);
-		ChangeSet cs = changesets.get(changesets.size() - rowIndex - 1);
 		switch (columnIndex) {
 			case 0: {
-				//	Repo Branch info				
-				if (rowIndex == 0) {
+				if (revisionIndex == revisions.size() - 1) {
 					returnObject = "HEAD";
-				} else if (rowIndex == revisions.size() - 1) {
-					returnObject = "BASE";
 				} else {
 					returnObject = "";
 				}
@@ -115,7 +129,6 @@ public class VOntologyTableModel extends AbstractTableModel {
 				if (returnObject == null) returnObject = "";
 			}; break;
 			case 5: {
-				//#AddAxiom
 				returnObject = cs.size();
 			}; break;
 			default: {
@@ -124,4 +137,70 @@ public class VOntologyTableModel extends AbstractTableModel {
 			}
 		return returnObject;
 	}
+	
+	public Object getValueForUncommittedAt(int columnIndex) {
+		ChangeSet cs = changesets.get(changesets.size() - 1);
+		Object returnObject;
+		switch (columnIndex) {
+			case 0: {
+				returnObject = "UNCOMMITTED";
+			}; break;
+			case 1: {
+				//Revision
+				returnObject = "";
+			}; break;
+			case 2: {
+				//Timestamp
+				returnObject = "";
+			}; break;
+			case 3: {
+				//User
+				returnObject = "you";
+			}; break;
+			case 4: {
+				returnObject = "";
+			}; break;
+			case 5: {
+				returnObject = cs.size();
+			}; break;
+			default: {
+				returnObject = "unknown col index";
+			}; break;
+			}
+		return returnObject;
+	}
+
+	public Object getValueForInitialAt(int columnIndex) {
+		Revision rev = revisions.get(0);
+		Object returnObject;
+		switch (columnIndex) {
+			case 0: {
+				returnObject = "INIT";
+			}; break;
+			case 1: {
+				//Revision
+				returnObject = rev.getRevision();
+			}; break;
+			case 2: {
+				//Timestamp
+				returnObject = rev.getTimeStamp();
+			}; break;
+			case 3: {
+				//User
+				returnObject = rev.getUser();
+			}; break;
+			case 4: {
+				returnObject = rev.getRevisionComment();
+				if (returnObject == null) returnObject = "";
+			}; break;
+			case 5: {
+				returnObject = "";
+			}; break;
+			default: {
+				returnObject = "unknown col index";
+			}; break;
+			}
+		return returnObject;
+	}
+	
 }

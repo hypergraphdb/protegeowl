@@ -9,6 +9,9 @@ import java.awt.GridLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.util.ListIterator;
@@ -19,6 +22,7 @@ import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
@@ -66,6 +70,15 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 	
 	public VHGHistoryDialog(Window w, VersionedOntology vo) {
 		super(w);
+		w.addWindowListener(new WindowAdapter() {
+			/* (non-Javadoc)
+			 * @see java.awt.event.WindowAdapter#windowClosing(java.awt.event.WindowEvent)
+			 */
+			@Override
+			public void windowClosing(WindowEvent e) {
+				closeDialog();
+			}
+		});
 		versionedOntology = vo;
 		setTitle("Versioned HGDB Ontology - History of active Ontology " + vo.getWorkingSetData().getOntologyID());
 		JPanel centerPanel = new JPanel(new GridLayout(2, 1, 5, 5));
@@ -89,7 +102,7 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 		//
 		this.add(buttonPanel, BorderLayout.SOUTH);
 		this.add(centerPanel, BorderLayout.CENTER);
-		this.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		//this.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		setSize(800,600);
 	}
 
@@ -104,59 +117,79 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 		} else {
 			throw new IllegalArgumentException("Got an event from an unknown source!" + e);
 		}
+		closeDialog();
+	}
+
+	public void closeDialog() {
 		this.setVisible(false);
 		this.dispose();
 		versionedOntology = null;
 	}
+
 	
 	/**
 	 * 
 	 * @param selectedRev
 	 */
-	public void updateChangeSetList(int selectedIndex) {
-		HyperGraph graph = versionedOntology.getHyperGraph();
-		OWLOntology onto = versionedOntology.getWorkingSetData();
+	public void updateChangeSetList(int selectedRevisionIndex) {
 		DefaultListModel lm = new DefaultListModel();
-		if (selectedIndex != -1) {
-			java.util.List<Revision> revisions = versionedOntology.getRevisions(); 
-			Revision selectedRev = revisions.get(selectedIndex);
-			Revision nextRev = null; 
-			if (selectedIndex + 1 < revisions.size()) {
-				nextRev = revisions.get(selectedIndex + 1);
-				lm.addElement("<html>Showing Changes that were commited by <b>" 
-						+ nextRev.getUser() + "</b> at " 
-						+  dateF.format(nextRev.getTimeStamp()) + " after revision " 
-						+ selectedRev.getRevision() 
-						+ " constituting revision " + nextRev.getRevision() + "</html>");
-				lm.addElement("<html>with comment <b>" + nextRev.getRevisionComment() + "</b> </html>");  
-			} else {
+		if (selectedRevisionIndex != -1) {
+			java.util.List<Revision> revisions = versionedOntology.getRevisions();
+			java.util.List<ChangeSet> changeSets = versionedOntology.getChangeSets();
+			if (selectedRevisionIndex == revisions.size()) {
 				//Pending changes in local workingset
-				lm.addElement("<html>Showing <b>uncommitted</b> Changes that were made by <b>you</b> after revision </html>" 
-						+ selectedRev.getRevision()); 
-			}
-			// Iterate changeset reverse order
-			ChangeSet selectedCS = versionedOntology.getChangeSet(selectedRev);
-			int nrOfchanges = selectedCS.getChanges().size();
-			int i = nrOfchanges;
-			ListIterator<VOWLChange> lIt = selectedCS.getChanges().listIterator(nrOfchanges);
-			while (lIt.hasPrevious() && (nrOfchanges - i) < MAX_CHANGES_SHOWN) {
-				VOWLChange vc = lIt.previous();
-				i--;
-				OWLOntologyChange c = VOWLChangeFactory.create(vc, onto, graph);
-				lm.addElement("" + df.format(i) + " " + c.toString());
-			}
-			if (i != 0) {
-				lm.add(0, "<html><b>Number of changes omitted from view: " + i + "</b></html>");
-			}
-			if (nrOfchanges == 0) {
-				lm.addElement("There are no changes to show.");
+				lm.addElement("<html>Showing <b>uncommitted</b> Changes that were made by <b>you</b> </html>" );
+				ChangeSet selectedCS = changeSets.get(selectedRevisionIndex - 1);
+				renderChangeset(lm, selectedCS);
+			} else if (selectedRevisionIndex > 0) {
+				Revision selectedRev = revisions.get(selectedRevisionIndex);
+				ChangeSet selectedCS = changeSets.get(selectedRevisionIndex - 1);
+				lm.addElement("<html>Showing Changes that were commited by <b>" 
+						+ selectedRev.getUser() + "</b> at " 
+						+  dateF.format(selectedRev.getTimeStamp()) + " after revision " 
+						+ selectedRev.getRevision() 
+						+ " constituting revision " + selectedRev.getRevision() + "</html>");
+				lm.addElement("<html>with comment <b>" + selectedRev.getRevisionComment() + "</b> </html>");  
+				renderChangeset(lm, selectedCS);
+			} else if (selectedRevisionIndex == 0) {
+				Revision selectedRev = revisions.get(selectedRevisionIndex);
+				lm.addElement("<html> Initial revision that was created by <b>" 
+						+ selectedRev.getUser() + "</b> at " 
+						+  dateF.format(selectedRev.getTimeStamp()) 
+						+ "</html>");
+				lm.addElement("<html>with comment <b>" + selectedRev.getRevisionComment() + "</b> </html>");  
+				lm.addElement("<html>No changes to show.</html>");  
+			} else {
+				System.err.println("Cannot render revision: " + selectedRevisionIndex);
+				return;
 			}
 		} else {
-			// Empty list
+			// Empty list, nothing selected
 			lm.addElement(EMPTY_LIST_TEXT); 
 		}
 		changeSetList.setModel(lm);
 		//changeSetList.repaint();
+	}
+		
+	private void renderChangeset(DefaultListModel lm, ChangeSet cs) {
+		HyperGraph graph = versionedOntology.getHyperGraph();
+		OWLOntology onto = versionedOntology.getWorkingSetData();
+		// Iterate changeset reverse order
+		int nrOfchanges = cs.getChanges().size();
+		int i = nrOfchanges;
+		ListIterator<VOWLChange> lIt = cs.getChanges().listIterator(nrOfchanges);
+		while (lIt.hasPrevious() && (nrOfchanges - i) < MAX_CHANGES_SHOWN) {
+			VOWLChange vc = lIt.previous();
+			i--;
+			OWLOntologyChange c = VOWLChangeFactory.create(vc, onto, graph);
+			lm.addElement("" + df.format(i) + " " + c.toString());
+		}
+		if (i != 0) {
+			lm.add(0, "<html><b>Number of changes omitted from view: " + i + "</b></html>");
+		}
+		if (nrOfchanges == 0) {
+			lm.addElement("There are no changes to show.");
+		}
 	}
 
 	/* (non-Javadoc)
@@ -166,14 +199,14 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 	public void valueChanged(ListSelectionEvent e) {
 		if (e.getValueIsAdjusting()) return;
 		else {
-			
-			int selectedRevisionIndex = versionedOntology.getArity() - ontologyView.getTable().getSelectedRow() - 1;
+			//Row 0 shows pending changes selects latest changeset.
+			int selectedRevisionIndex = versionedOntology.getArity() - ontologyView.getTable().getSelectedRow();
 			//System.out.println("SELECTED: " + selectedRevisionIndex);
-			if (selectedRevisionIndex >= 0 && selectedRevisionIndex < versionedOntology.getArity()) {
+			if (selectedRevisionIndex >= 0 && selectedRevisionIndex <= versionedOntology.getArity()) {
 			//
 				//Revision selectedRevision = versionedOntology.getRevisions().get(selectedRevisionIndex);
 				updateChangeSetList(selectedRevisionIndex);
-				} else {
+			} else {
 				updateChangeSetList(-1);
 			}
 		}
