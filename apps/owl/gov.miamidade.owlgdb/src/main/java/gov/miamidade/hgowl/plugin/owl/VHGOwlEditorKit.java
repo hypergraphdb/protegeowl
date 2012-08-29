@@ -366,7 +366,13 @@ public class VHGOwlEditorKit extends HGOwlEditorKit {
     public VersionedOntology getVersionControlledOntologyBy(HGOntologyRepositoryEntry ontologyEntry) {
     	return getVersionedRepository().getVersionControlledOntology(ontologyEntry.getOntology());
     }
-    
+
+    public boolean isActiveOntologyVersioned() {
+		HGOwlModelManagerImpl hmm  = (HGOwlModelManagerImpl) getOWLModelManager();
+		OWLOntology activeOnto = hmm.getActiveOntology();
+    	return getVersionedRepository().getVersionControlledOntology(activeOnto) != null;
+    }
+
     void causeViewUpdate() {
 		HGOwlModelManagerImpl hmm  = (HGOwlModelManagerImpl) getOWLModelManager();
 		hmm.fireEvent(EventType.ONTOLOGY_RELOADED);

@@ -146,6 +146,22 @@
 
 <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 <!-- HYPERGRAPH VERSIONING -->
+<!-- HYPERGRAPH P2P TEAM -->
+    <extension id="ui.view.menu3"
+    		   point="org.protege.editor.core.application.EditorKitMenuAction">
+        <name value="Local Versioning"/>
+        <toolTip value="Actions related to versioning ontologies"/>
+        <path value="/SlotCR-D"/>
+        <class
+              value="gov.miamidade.hgowl.plugin.ui.versioning.DynamicVersioningMenu">
+        </class>
+        <dynamic
+              value="true">
+        </dynamic>
+	    <editorKitId value="HGOwlEditorKit"/>
+    </extension>
+    
+<!-- NOT DYNAMIC MENU: 
     <extension id="ui.view.menu3"
     		   point="org.protege.editor.core.application.EditorKitMenuAction">
         <name value="Versioning"/>
@@ -153,7 +169,8 @@
         <path value="/SlotCR-D"/>
 	    <editorKitId value="HGOwlEditorKit"/>
     </extension>
-
+-->
+<!--
     <extension id="ui.view.menu.hypergraphCommitActiveVersionControl"
                point="org.protege.editor.core.application.EditorKitMenuAction">
         <name value="Commit Active"/>
@@ -218,19 +235,27 @@
         <editorKitId value="HGOwlEditorKit"/>
     </extension>
 
+-->
 
 <!-- HYPERGRAPH VERSIONING END -->
 <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-<!-- HYPERGRAPH P2P -->
+<!-- HYPERGRAPH P2P TEAM -->
     <extension id="ui.view.menu4"
     		   point="org.protege.editor.core.application.EditorKitMenuAction">
-        <name value="Peer 2 Peer"/>
+        <name value="Team"/>
         <toolTip value="P2P specific actions"/>
         <path value="/SlotCR-E"/>
+        <class
+              value="gov.miamidade.hgowl.plugin.ui.versioning.distributed.DynamicTeamMenu">
+        </class>
+        <dynamic
+              value="true">
+        </dynamic>
 	    <editorKitId value="HGOwlEditorKit"/>
     </extension>
 
+<!--
     <extension id="ui.view.menu.hypergraphP2PPushActiveToSelectedPeer"
                point="org.protege.editor.core.application.EditorKitMenuAction">
         <name value="Push Active"/>
@@ -284,7 +309,7 @@
         <class value="gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDHGStopNetworkingAction"/>
         <editorKitId value="HGOwlEditorKit"/>
     </extension>
-
+-->
 <!-- HYPERGRAPH P2P END -->
 <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 

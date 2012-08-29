@@ -11,6 +11,10 @@ import gov.miamidade.hgowl.plugin.ui.versioning.distributed.RemoteRepositoryView
 
 import org.hypergraphdb.app.owl.versioning.VHGDBOntologyRepository;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
+import org.hypergraphdb.app.owl.versioning.distributed.CentralDistributedOntology;
+import org.hypergraphdb.app.owl.versioning.distributed.CentralDistributedOntology.CentralDistributionMode;
+import org.hypergraphdb.app.owl.versioning.distributed.DistributedOntology;
+import org.hypergraphdb.app.owl.versioning.distributed.PeerDistributedOntology;
 import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowserRepositoryActivity;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.PullActivity;
@@ -28,6 +32,13 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
  * @created Mar 26, 2012
  */
 public class VDHGOwlEditorKit extends VHGOwlEditorKit {
+
+	public enum OntologyDistributionState {
+		ONTO_NOT_SHARED, 
+		ONTO_SHARED_DISTRIBUTED,
+		ONTO_SHARED_CENTRAL_CLIENT,
+		ONTO_SHARED_CENTRAL_SERVER,
+	}
 
 	VDHGDBOntologyRepository repository; 
 	
@@ -289,5 +300,29 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
                 JOptionPane.WARNING_MESSAGE);
 		}
 		return vo;
+    }
+
+    public boolean isActiveOntologyShared() {
+    	return getActiveOntologyDistributionState() != OntologyDistributionState.ONTO_NOT_SHARED;
+    }
+    
+    public OntologyDistributionState getActiveOntologyDistributionState() {
+		HGOwlModelManagerImpl hmm  = (HGOwlModelManagerImpl) getOWLModelManager();
+		OWLOntology activeOnto = hmm.getActiveOntology();
+    	DistributedOntology donto = getVersionedRepository().getDistributedOntology(activeOnto);
+    	if (donto == null) {
+    		return OntologyDistributionState.ONTO_NOT_SHARED;
+    	} else if (donto instanceof CentralDistributedOntology) {
+    		CentralDistributedOntology cdonto = (CentralDistributedOntology)donto;
+    		if (cdonto.getCentralDistributionMode() == CentralDistributionMode.CLIENT) {
+    			return OntologyDistributionState.ONTO_SHARED_CENTRAL_CLIENT;
+    		} else {
+    			return OntologyDistributionState.ONTO_SHARED_CENTRAL_SERVER;
+    		}
+    	} else if (donto instanceof PeerDistributedOntology) {
+    		return OntologyDistributionState.ONTO_SHARED_DISTRIBUTED;
+    	} else {
+    		throw new IllegalStateException("getActiveOntologyDistributionState unknown for: " + donto);
+    	}
     }
 }
