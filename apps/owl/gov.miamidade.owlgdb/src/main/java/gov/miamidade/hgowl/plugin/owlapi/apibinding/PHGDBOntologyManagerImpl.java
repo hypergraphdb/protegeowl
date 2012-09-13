@@ -1,14 +1,29 @@
 package gov.miamidade.hgowl.plugin.owlapi.apibinding;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.Callable;
+
+import org.hypergraphdb.HyperGraph;
 import org.hypergraphdb.app.owl.HGDBApplication;
 import org.hypergraphdb.app.owl.HGDBOntology;
 import org.hypergraphdb.app.owl.HGDBOntologyManager;
+import org.hypergraphdb.app.owl.HGDBOntologyManagerImpl;
 import org.hypergraphdb.app.owl.HGDBOntologyRepository;
 import org.hypergraphdb.app.owl.core.OWLDataFactoryHGDB;
+import org.hypergraphdb.app.owl.exception.HGDBOntologyAlreadyExistsByDocumentIRIException;
+import org.hypergraphdb.app.owl.exception.HGDBOntologyAlreadyExistsByOntologyIDException;
+import org.hypergraphdb.app.owl.exception.HGDBOntologyAlreadyExistsByOntologyUUIDException;
 import org.hypergraphdb.app.owl.versioning.VHGDBOntologyRepository;
+import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
+import org.hypergraphdb.app.owl.versioning.distributed.activity.ActivityUtils;
 import org.protege.owlapi.model.ProtegeOWLOntologyManager;
+import org.semanticweb.owlapi.io.FileDocumentSource;
+import org.semanticweb.owlapi.io.OWLParserException;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChangeException;
+import org.semanticweb.owlapi.model.UnloadableImportException;
 
 /**
  * Manages multiple Ontologies. Based on OWL-API OWLOntologyManagerImpl and ProtegeOWLOntologyManager.
@@ -46,6 +61,17 @@ public class PHGDBOntologyManagerImpl extends ProtegeOWLOntologyManager implemen
 	public HGDBOntologyRepository getOntologyRepository() {
 		return ontologyRepository;
 	}
+	
+	/**
+	 * Imports a full versionedOntology from a VOWLXMLFormat file.
+	 * Throws one of: 
+	 * OWLOntologyChangeException, UnloadableImportException, HGDBOntologyAlreadyExistsByDocumentIRIException, HGDBOntologyAlreadyExistsByOntologyIDException, HGDBOntologyAlreadyExistsByOntologyUUIDException, OWLParserException, IOException 
+	 * wrapped as cause of a RuntimeException.
+	 */
+	public VersionedOntology importVersionedOntology(File vowlxmlFile) throws RuntimeException {
+		throw new IllegalStateException("Not yet implemented.");
+	}
+
 	
 	/* (non-Javadoc)
 	 * @see org.hypergraphdb.app.owl.HGDBOntologyManager#hasInMemoryOntology()
