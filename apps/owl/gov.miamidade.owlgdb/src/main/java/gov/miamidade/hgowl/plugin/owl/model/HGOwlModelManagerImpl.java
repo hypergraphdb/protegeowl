@@ -19,6 +19,7 @@ import java.util.Set;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.coode.xml.XMLWriterPreferences;
+import org.hypergraphdb.app.owl.HGDBIRIMapper;
 import org.hypergraphdb.app.owl.HGDBOntology;
 import org.hypergraphdb.app.owl.HGDBOntologyRepository;
 import org.protege.editor.core.AbstractModelManager;
@@ -1048,8 +1049,8 @@ public class HGOwlModelManagerImpl extends AbstractModelManager
     //
     //  Error handling
     //
+    
     //////////////////////////////////////////////////////////////////////////////////////
-
 
     public void setMissingImportHandler(MissingImportHandler missingImportHandler) {
         userResolvedIRIMapper.setMissingImportHandler(missingImportHandler);
