@@ -14,6 +14,7 @@ import org.coode.owlapi.turtle.TurtleOntologyStorer;
 import org.hypergraphdb.app.owl.HGDBOntologyFactory;
 import org.hypergraphdb.app.owl.HGDBStorer;
 import org.hypergraphdb.app.owl.core.OWLDataFactoryHGDB;
+import org.hypergraphdb.app.owl.versioning.distributed.serialize.VOWLXMLOntologyStorer;
 import org.semanticweb.owlapi.io.OWLParserFactoryRegistry;
 import org.semanticweb.owlapi.util.NonMappingOntologyIRIMapper;
 
@@ -53,6 +54,7 @@ public class PHGDBOWLManager {
 		ontologyManager.addOntologyStorer (new TurtleOntologyStorer());
 		ontologyManager.addOntologyStorer (new LatexOntologyStorer());
 		ontologyManager.addOntologyStorer (new HGDBStorer());
+		ontologyManager.addOntologyStorer (new VOWLXMLOntologyStorer());
 
 		ontologyManager.addIRIMapper (new NonMappingOntologyIRIMapper());
 
