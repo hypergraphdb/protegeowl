@@ -1,5 +1,6 @@
 package gov.miamidade.hgowl.plugin.ui.versioning.distributed;
 
+import gov.miamidade.hgowl.plugin.owl.VDHGOwlEditorKit;
 import gov.miamidade.hgowl.plugin.owl.VHGOwlEditorKit;
 
 import java.awt.event.ActionEvent;
@@ -11,7 +12,7 @@ import org.protege.editor.owl.ui.action.ProtegeOWLAction;
  * @author Thomas Hilpold (CIAO/Miami-Dade County)
  * @created Aug 24, 2012
  */
-public class VDHGCommitActionCentralServer extends ProtegeOWLAction {
+public class VDHGHistoryAction extends ProtegeOWLAction {
 
 	/* (non-Javadoc)
 	 * @see org.protege.editor.core.plugin.ProtegePluginInstance#initialise()
@@ -36,9 +37,9 @@ public class VDHGCommitActionCentralServer extends ProtegeOWLAction {
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		VHGOwlEditorKit vhgowlKit = (VHGOwlEditorKit) getEditorKit();
+		VDHGOwlEditorKit vdhgowlKit = (VDHGOwlEditorKit) getEditorKit();
 		try {
-			vhgowlKit.handleCommitActiveRequest();
+			vdhgowlKit.handleShowHistoryActiveDistributedRequest();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

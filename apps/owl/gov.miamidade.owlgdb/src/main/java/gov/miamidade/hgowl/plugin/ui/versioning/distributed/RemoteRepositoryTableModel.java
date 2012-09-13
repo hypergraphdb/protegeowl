@@ -1,6 +1,6 @@
 package gov.miamidade.hgowl.plugin.ui.versioning.distributed;
 
-import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowserRepositoryActivity.BrowseEntry;
+import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowseRepositoryActivity.BrowseEntry;
 import org.hypergraphdb.peer.HGPeerIdentity;
 import org.hypergraphdb.peer.HyperGraphPeer;
 
@@ -38,13 +38,13 @@ public class RemoteRepositoryTableModel extends AbstractTableModel {
             return "OntologyIRI";
         }
         else if(column == 1) {
-            return "VersionIRI";
-        }
-        else if(column == 2) {
             return "DocumentIRI";
         }
+        else if(column == 2) {
+            return "Team Info";
+        }
         else if(column == 3) {
-            return "UUID";
+            return "Last Revision";
         }
         else {
         	 throw new IllegalArgumentException();
@@ -55,11 +55,11 @@ public class RemoteRepositoryTableModel extends AbstractTableModel {
         if(columnIndex == 0) {
             return entries.get(rowIndex).getOwlOntologyIRI();
         } else if(columnIndex == 1) {
-            return entries.get(rowIndex).getOwlOntologyVersionIRI();
-        } else if(columnIndex == 2) {
             return entries.get(rowIndex).getOwlOntologyDocumentIRI();
+        } else if(columnIndex == 2) {
+            return entries.get(rowIndex).getDistributionMode();
         } else if(columnIndex == 3) {
-            return entries.get(rowIndex).getUuid();
+            return entries.get(rowIndex).getLastRevision();
         } else { 
             throw new IllegalArgumentException();
         }

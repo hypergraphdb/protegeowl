@@ -1,5 +1,7 @@
 package gov.miamidade.hgowl.plugin.ui.versioning.distributed;
 
+import gov.miamidade.hgowl.plugin.owl.VDHGOwlEditorKit;
+
 import java.awt.event.ActionEvent;
 
 import org.protege.editor.owl.ui.action.ProtegeOWLAction;
@@ -34,8 +36,12 @@ public class VDHGCompareAction extends ProtegeOWLAction {
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-
+		VDHGOwlEditorKit vdhgowlKit = (VDHGOwlEditorKit) getEditorKit();
+		try {
+			vdhgowlKit.handleCompareActiveRequest();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 }

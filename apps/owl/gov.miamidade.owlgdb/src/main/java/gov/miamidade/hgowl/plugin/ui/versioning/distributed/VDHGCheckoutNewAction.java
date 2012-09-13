@@ -8,7 +8,7 @@ import java.awt.event.ActionEvent;
 import org.protege.editor.owl.ui.action.ProtegeOWLAction;
 
 /**
- * VHGAddVersionControlAction.
+ * VHGAddActiveToVersionControlAction.
  * @author Thomas Hilpold (CIAO/Miami-Dade County)
  * @created Oct 11, 2011
  */
@@ -39,7 +39,7 @@ public class VDHGCheckoutNewAction extends ProtegeOWLAction {
 	public void actionPerformed(ActionEvent arg0) {
 		VDHGOwlEditorKit vdhgowlKit = (VDHGOwlEditorKit) getEditorKit();
 		try {
-			vdhgowlKit.handlePushActiveRequest();
+			vdhgowlKit.handleCheckoutRequest();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

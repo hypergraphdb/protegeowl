@@ -1,5 +1,8 @@
 package gov.miamidade.hgowl.plugin.ui.versioning.distributed;
 
+import gov.miamidade.hgowl.plugin.owl.VDHGOwlEditorKit;
+import gov.miamidade.hgowl.plugin.owl.VHGOwlEditorKit;
+
 import java.awt.event.ActionEvent;
 
 import org.protege.editor.owl.ui.action.ProtegeOWLAction;
@@ -34,8 +37,11 @@ public class VDHGCommitActionCentralClient extends ProtegeOWLAction {
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
+		VDHGOwlEditorKit vdhgowlKit = (VDHGOwlEditorKit) getEditorKit();
+		try {
+			vdhgowlKit.handleCommitAndPushActiveClientOntologyRequest();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
-
 }

@@ -8,7 +8,7 @@ import java.awt.event.ActionEvent;
 import org.protege.editor.owl.ui.action.ProtegeOWLAction;
 
 /**
- * VHGAddVersionControlAction.
+ * VDHGPullActiveAction is pull and update in one.
  * @author Thomas Hilpold (CIAO/Miami-Dade County)
  * @created Oct 11, 2011
  */

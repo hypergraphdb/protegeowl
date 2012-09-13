@@ -3,8 +3,8 @@ package gov.miamidade.hgowl.plugin.ui.versioning.distributed;
 import gov.miamidade.hgowl.plugin.owl.VDHGOwlEditorKit;
 import gov.miamidade.hgowl.plugin.owl.VDHGOwlEditorKit.OntologyDistributionState;
 import gov.miamidade.hgowl.plugin.ui.versioning.VHGHistoryActiveAction;
-import gov.miamidade.hgowl.plugin.ui.versioning.VHGRevertOneRevisionAction;
-import gov.miamidade.hgowl.plugin.ui.versioning.VHGRollbackAction;
+import gov.miamidade.hgowl.plugin.ui.versioning.VHGRevertActiveAction;
+import gov.miamidade.hgowl.plugin.ui.versioning.VHGRollbackActiveAction;
 
 import java.awt.event.ActionEvent;
 
@@ -96,12 +96,12 @@ public class DynamicTeamMenu extends ProtegeDynamicAction {
 		cur.setEditorKit(kit);
 		menu.add(cur);
 		menu.addSeparator();
-		cur = new VHGRollbackAction();
+		cur = new VHGRollbackActiveAction();
 		cur.putValue(Action.NAME, "Rollback...");
 		cur.setEditorKit(kit);
 		menu.add(cur);
 		//TODO just for now the generic revert one. needs to be revert active and show history.
-		cur = new VHGRevertOneRevisionAction();
+		cur = new VHGRevertActiveAction();
 		cur.putValue(Action.NAME, "Revert to...");
 		cur.setEditorKit(kit);
 		menu.add(cur);
@@ -110,29 +110,35 @@ public class DynamicTeamMenu extends ProtegeDynamicAction {
 
 	private void buildCentralClientMenuItems(JMenu menu, VDHGOwlEditorKit kit, boolean userOnline) {
 		ProtegeOWLAction cur;
-		cur = new VDHGCommitActionCentralServer();
+		cur = new VDHGCompareAction();
+		cur.putValue(Action.NAME, "Compare...");
+		//Do not allow offline user to commit.
+		cur.setEnabled(userOnline);
+		cur.setEditorKit(kit);
+		menu.add(cur);
+		menu.addSeparator();
+		cur = new VDHGCommitActionCentralClient();
 		cur.putValue(Action.NAME, "Commit...");
 		//Do not allow offline user to commit.
 		cur.setEnabled(userOnline);
 		cur.setEditorKit(kit);
 		menu.add(cur);
-		cur = new VDHGCommitActionCentralServer();
+		cur = new VDHGUpdateActionCentralClient();
 		cur.putValue(Action.NAME, "Update...");
 		//Do not allow offline user to commit.
 		cur.setEnabled(userOnline);
 		cur.setEditorKit(kit);
 		menu.add(cur);
-		cur = new VHGHistoryActiveAction();
+		cur = new VDHGHistoryAction();
 		cur.putValue(Action.NAME, "History...");
 		cur.setEditorKit(kit);
 		menu.add(cur);
 		menu.addSeparator();
-		cur = new VHGRollbackAction();
+		cur = new VHGRollbackActiveAction();
 		cur.putValue(Action.NAME, "Rollback...");
-		cur.setEnabled(userOnline);
 		cur.setEditorKit(kit);
 		menu.add(cur);
-		cur = new VHGRevertOneRevisionAction();
+		cur = new VHGRevertActiveAction();
 		cur.putValue(Action.NAME, "Revert to...");
 		cur.setEditorKit(kit);
 		menu.add(cur);

@@ -1,7 +1,11 @@
 package gov.miamidade.hgowl.plugin.ui.versioning.distributed;
 
+import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
 import org.hypergraphdb.peer.HGPeerIdentity;
 import org.hypergraphdb.peer.HyperGraphPeer;
+
+import gov.miamidade.hgowl.plugin.ui.versioning.distributed.PeerViewPanel.ViewMode;
+
 import java.awt.Color;
 import javax.swing.JTable;
 
@@ -17,8 +21,8 @@ public class PeerTable extends JTable {
      */
     private static final long serialVersionUID = 343836249221539974L;
 
-    public PeerTable(HyperGraphPeer peer) {
-    	peerTableModel = new PeerTableModel(peer); 
+    public PeerTable(VDHGDBOntologyRepository repository, ViewMode mode) {
+    	peerTableModel = new PeerTableModel(repository, mode); 
         setModel(peerTableModel);
         //setRowHeight(getRowHeight() + 4);
         setShowHorizontalLines(true);
@@ -31,6 +35,8 @@ public class PeerTable extends JTable {
 //        }
     }
 
+    
+    
     public void refresh() {
     	peerTableModel.refresh();
     }

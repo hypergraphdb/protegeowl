@@ -1,6 +1,6 @@
 package gov.miamidade.hgowl.plugin.ui.versioning.distributed;
 
-import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowserRepositoryActivity.BrowseEntry;
+import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowseRepositoryActivity.BrowseEntry;
 import java.awt.Color;
 import java.util.List;
 
