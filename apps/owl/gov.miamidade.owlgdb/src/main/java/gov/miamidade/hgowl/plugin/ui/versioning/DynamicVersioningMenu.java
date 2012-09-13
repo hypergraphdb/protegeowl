@@ -4,8 +4,8 @@ import gov.miamidade.hgowl.plugin.owl.VDHGOwlEditorKit;
 import gov.miamidade.hgowl.plugin.owl.VDHGOwlEditorKit.OntologyDistributionState;
 import gov.miamidade.hgowl.plugin.owl.VHGOwlEditorKit;
 import gov.miamidade.hgowl.plugin.ui.versioning.VHGHistoryActiveAction;
-import gov.miamidade.hgowl.plugin.ui.versioning.VHGRevertOneRevisionAction;
-import gov.miamidade.hgowl.plugin.ui.versioning.VHGRollbackAction;
+import gov.miamidade.hgowl.plugin.ui.versioning.VHGRevertActiveAction;
+import gov.miamidade.hgowl.plugin.ui.versioning.VHGRollbackActiveAction;
 
 import java.awt.event.ActionEvent;
 
@@ -89,7 +89,7 @@ public class DynamicVersioningMenu extends ProtegeDynamicAction {
 
 	private void buildNotVersionedMenu(JMenu menu, VHGOwlEditorKit kit) {
 		ProtegeOWLAction cur;
-		cur = new VHGAddVersionControlAction();
+		cur = new VHGAddActiveToVersionControlAction();
 		cur.putValue(Action.NAME, "Add to Local Version Control...");
 		cur.setEditorKit(kit);
 		menu.add(cur);
@@ -113,16 +113,16 @@ public class DynamicVersioningMenu extends ProtegeDynamicAction {
 		cur.setEditorKit(kit);
 		menu.add(cur);
 		menu.addSeparator();
-		cur = new VHGRollbackAction();
+		cur = new VHGRollbackActiveAction();
 		cur.putValue(Action.NAME, "Rollback...");
 		cur.setEditorKit(kit);
 		menu.add(cur);
-		cur = new VHGRevertOneRevisionAction();
+		cur = new VHGRevertActiveAction();
 		cur.putValue(Action.NAME, "Revert to...");
 		cur.setEditorKit(kit);
 		menu.add(cur);
 		menu.addSeparator();
-		cur = new VHGRemoveVersionControlAction();
+		cur = new VHGRemoveActiveFromVersionControlAction();
 		cur.putValue(Action.NAME, "Remove from Local Version Control...");
 		cur.setEditorKit(kit);
 		menu.add(cur);

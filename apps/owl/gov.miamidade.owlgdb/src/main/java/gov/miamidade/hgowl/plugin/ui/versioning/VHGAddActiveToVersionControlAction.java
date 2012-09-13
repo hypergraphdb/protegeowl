@@ -7,11 +7,11 @@ import java.awt.event.ActionEvent;
 import org.protege.editor.owl.ui.action.ProtegeOWLAction;
 
 /**
- * VHGAddVersionControlAction.
+ * VHGAddActiveToVersionControlAction.
  * @author Thomas Hilpold (CIAO/Miami-Dade County)
  * @created Oct 11, 2011
  */
-public class VHGRemoveVersionControlAction extends ProtegeOWLAction {
+public class VHGAddActiveToVersionControlAction extends ProtegeOWLAction {
 
 	private static final long serialVersionUID = -2085444668481360102L;
 
@@ -38,7 +38,7 @@ public class VHGRemoveVersionControlAction extends ProtegeOWLAction {
 	public void actionPerformed(ActionEvent arg0) {
 		VHGOwlEditorKit vhgowlKit = (VHGOwlEditorKit) getEditorKit();
 		try {
-			vhgowlKit.handleRemoveVersionControlRequest();
+			vhgowlKit.handleAddActiveToVersionControlRequest();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

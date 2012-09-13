@@ -36,6 +36,7 @@ public class VHGCommitDialog extends JDialog implements ActionListener {
 	
 	public static VHGCommitDialog showDialog(Component parent, VersionedOntology vo, OWLOntology onto) {
 		VHGCommitDialog dlg = new VHGCommitDialog(SwingUtilities.windowForComponent(parent), vo, onto);
+		dlg.setLocationRelativeTo(parent);
 		dlg.setModalityType(ModalityType.APPLICATION_MODAL);
 		dlg.setVisible(true);
 		dlg.setResizable(true);
