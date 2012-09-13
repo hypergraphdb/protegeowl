@@ -10,14 +10,20 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.coode.owlapi.latex.LatexOntologyFormat;
 import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxOntologyFormat;
+import org.coode.owlapi.obo.parser.OBOOntologyFormat;
+import org.coode.owlapi.turtle.TurtleOntologyFormat;
 import org.hypergraphdb.app.owl.HGDBOntologyFormat;
+import org.hypergraphdb.app.owl.versioning.distributed.serialize.VOWLXMLOntologyFormat;
 import org.protege.editor.core.ui.util.JOptionPaneEx;
 import org.protege.editor.owl.OWLEditorKit;
 import org.semanticweb.owlapi.io.OWLFunctionalSyntaxOntologyFormat;
 import org.semanticweb.owlapi.io.OWLXMLOntologyFormat;
 import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
 import org.semanticweb.owlapi.model.OWLOntologyFormat;
+
+import de.uulm.ecs.ai.owlapi.krssparser.KRSS2OntologyFormat;
 
 //import de.uulm.ecs.ai.owlapi.krssparser.KRSS2OntologyFormat;
 
@@ -46,15 +52,15 @@ public class HGOntologyFormatPanel extends JPanel {
     public HGOntologyFormatPanel() {
         List<Object> formats = new ArrayList<Object>();
         formats.add(new HGDBOntologyFormat());
-        formats.add(new RDFXMLOntologyFormat());
         formats.add(new OWLXMLOntologyFormat());
+        formats.add(new VOWLXMLOntologyFormat());
+        formats.add(new RDFXMLOntologyFormat());
         formats.add(new OWLFunctionalSyntaxOntologyFormat());
-        //formats.add(new ManchesterOWLSyntaxOntologyFormat());
-        
-        //formats.add(new OBOOntologyFormat());
-        //formats.add(new KRSS2OntologyFormat());
-        //formats.add(new LatexOntologyFormat());
-        //formats.add(new TurtleOntologyFormat());
+        formats.add(new ManchesterOWLSyntaxOntologyFormat());
+        formats.add(new OBOOntologyFormat());
+        formats.add(new KRSS2OntologyFormat());
+        formats.add(new LatexOntologyFormat());
+        formats.add(new TurtleOntologyFormat());
 
         formatComboBox = new JComboBox(formats.toArray());
         setLayout(new BorderLayout(12, 12));
