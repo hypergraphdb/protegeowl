@@ -53,8 +53,10 @@ public class HGOwlOntologyRepositoryFactory extends OntologyRepositoryFactory {
 	public OntologyRepository createRepository() {
 		OntologyRepository r;
 		if (dbRepository == null) throw new IllegalStateException("Cannot create HGOwlOntologyRepository. dbRepository was null.");
-		if (dbRepository instanceof VHGDBOntologyRepository) {
-			r = new VHGOwlOntologyRepository("Hypergraph with Versioning" , (VHGDBOntologyRepository)dbRepository);
+		if (dbRepository instanceof VDHGDBOntologyRepository) {
+			r = new VDHGOwlOntologyRepository("Hypergraph - Team " , (VDHGDBOntologyRepository)dbRepository);
+		} else if (dbRepository instanceof VHGDBOntologyRepository) {
+			r = new VHGOwlOntologyRepository("Hypergraph - Versioning" , (VHGDBOntologyRepository)dbRepository);
 		} else {
 			r = new HGOwlOntologyRepository("Hypergraph" , dbRepository);
 		}

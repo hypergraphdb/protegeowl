@@ -61,6 +61,8 @@ import org.semanticweb.owlapi.vocab.PrefixOWLOntologyFormat;
  */
 public class HGOwlEditorKit extends OWLEditorKit {
 
+	public static boolean DBG = false;
+	
 	private static final Logger logger = Logger.getLogger(HGOwlEditorKit.class);
 
     public static final String ID = "HGOwlEditorKit";
@@ -182,7 +184,7 @@ public class HGOwlEditorKit extends OWLEditorKit {
 
     
     public boolean handleLoadRecentRequest(EditorKitDescriptor descriptor) throws Exception {
-    	System.out.println("HG handleLoadRecentRequest");
+    	if (DBG) System.out.println("HG handleLoadRecentRequest");
         HGDBOntologyManager m = (HGDBOntologyManager) this.modelManager.getOWLOntologyManager();
         m.getOntologyRepository().printStatistics();
         boolean retValue = super.handleLoadRecentRequest(descriptor );
@@ -191,7 +193,7 @@ public class HGOwlEditorKit extends OWLEditorKit {
     }
 
     public boolean handleLoadRequest() throws Exception {
-    	System.out.println("HG HandleLoadRequest");
+    	if (DBG) System.out.println("HG HandleLoadRequest");
     	boolean success;
         HGDBOntologyManager m = (HGDBOntologyManager) this.modelManager.getOWLOntologyManager();
         m.getOntologyRepository().printStatistics();
@@ -212,10 +214,10 @@ public class HGOwlEditorKit extends OWLEditorKit {
     }
     
     public boolean handleLoadFromRepositoryRequest() throws Exception {
-    	System.out.println("HG HandleLoadFromRepositoryRequest");
+    	if (DBG) System.out.println("HG HandleLoadFromRepositoryRequest");
     	boolean success;
         HGDBOntologyManager m = (HGDBOntologyManager) this.modelManager.getOWLOntologyManager();
-        m.getOntologyRepository().printStatistics();
+        //m.getOntologyRepository().printStatistics();
         // Find Repository
 //2012.01.30 hilpold Bugfix versioned repo needs to be accomodated.       
 //        Collection<OntologyRepository> repositories = OntologyRepositoryManager.getManager().getOntologyRepositories();
@@ -246,7 +248,7 @@ public class HGOwlEditorKit extends OWLEditorKit {
     }
 
     public boolean handleDeleteFromRepositoryRequest() throws Exception {
-    	System.out.println("HG HandleDeleteFromRepositoryRequest");
+    	if (DBG) System.out.println("HG HandleDeleteFromRepositoryRequest");
     	boolean success;
         HGDBOntologyManager m = (HGDBOntologyManager) this.modelManager.getOWLOntologyManager();
         m.getOntologyRepository().printStatistics();
@@ -269,7 +271,7 @@ public class HGOwlEditorKit extends OWLEditorKit {
         	success = false;
         }
         // 
-        m.getOntologyRepository().printStatistics();
+        if (DBG) m.getOntologyRepository().printStatistics();
         return success;
     }
     
@@ -401,7 +403,7 @@ public class HGOwlEditorKit extends OWLEditorKit {
     }
 
     public void handleSave() throws Exception {
-    	System.out.println("HG handleSave ");
+    	if (DBG) System.out.println("HG handleSave ");
     	OWLOntology ont = getModelManager().getActiveOntology();
     	if (ont instanceof HGDBOntologyImpl) {
             String message = "This ontology is database backed and does not need to be saved to the database again.\n" 
@@ -664,6 +666,11 @@ public class HGOwlEditorKit extends OWLEditorKit {
         
 //    }
     
+    public OWLOntology getActiveOntology() {
+        HGOwlModelManagerImpl m = (HGOwlModelManagerImpl)getOWLModelManager();
+        return m.getActiveOntology();
+    }
+
     public void dispose() {
         super.dispose();
         //HGOwlModelManagerImpl m = (HGOwlModelManagerImpl)getOWLModelManager();

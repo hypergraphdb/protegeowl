@@ -12,8 +12,12 @@ import java.util.List;
 
 import org.hypergraphdb.app.owl.HGDBOntology;
 import org.hypergraphdb.app.owl.HGDBOntologyRepository;
-import org.hypergraphdb.app.owl.versioning.VHGDBOntologyRepository;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
+import org.hypergraphdb.app.owl.versioning.distributed.ClientCentralizedOntology;
+import org.hypergraphdb.app.owl.versioning.distributed.DistributedOntology;
+import org.hypergraphdb.app.owl.versioning.distributed.PeerDistributedOntology;
+import org.hypergraphdb.app.owl.versioning.distributed.ServerCentralizedOntology;
+import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
 import org.protege.editor.core.OntologyRepository;
 import org.protege.editor.core.OntologyRepositoryEntry;
 import org.protege.editor.core.editorkit.EditorKit;
@@ -28,32 +32,36 @@ import org.semanticweb.owlapi.util.OntologyIRIShortFormProvider;
  * 
  * @author Thomas Hilpold
  */
-public class VHGOwlOntologyRepository implements OntologyRepository {
+public class VDHGOwlOntologyRepository implements OntologyRepository {
 
+	public static boolean SHOW_EXTENDED_COLUMNS = false;
+	
 	public static final String VERSION_URI = "Version URI";
 	
 	public static final String PHYSICAL_URI = "Physical URI";
 
-	public static final String HEAD_REVISION = "Head Revision";
+	public static final String HEAD_REVISION = "Last Revision";
 
-	public static final String LAST_COMMIT = "Last Commit";
+	//public static final String LAST_COMMIT = "Last Commit";
 
-	public static final String UNCOMMITTED_CHANGES = "Uncommitted Changes";
+	public static final String DISTRIBUTED_INFO = "Team Info";
 
-	public static final List<Object> METADATA_KEYS = Arrays.asList(new Object[]{VERSION_URI, PHYSICAL_URI, HEAD_REVISION, LAST_COMMIT, UNCOMMITTED_CHANGES});
+	public static final List<Object> METADATA_KEYS = Arrays.asList(new Object[]{ DISTRIBUTED_INFO, HEAD_REVISION, });
+
+	public static final List<Object> METADATA_KEYS_EXT = Arrays.asList(new Object[]{ VERSION_URI, PHYSICAL_URI, HEAD_REVISION, DISTRIBUTED_INFO});
 	
     private String repositoryName;
 
-    private VHGDBOntologyRepository dbRepository;
+    private VDHGDBOntologyRepository dbRepository;
 
-    private List<VHGDBRepositoryEntry> entries;
+    private List<VDHGDBRepositoryEntry> entries;
 
     private OWLOntologyIRIMapper iriMapper;
 
-    public VHGOwlOntologyRepository(String repositoryName, VHGDBOntologyRepository dbRepository) {
+    public VDHGOwlOntologyRepository(String repositoryName, VDHGDBOntologyRepository dbRepository) {
         this.repositoryName = repositoryName;
         this.dbRepository = dbRepository;
-        entries = new ArrayList<VHGDBRepositoryEntry>();
+        entries = new ArrayList<VDHGDBRepositoryEntry>();
         iriMapper = new RepositoryIRIMapper();
     }
 
@@ -79,7 +87,7 @@ public class VHGOwlOntologyRepository implements OntologyRepository {
     }
 
     public List<Object> getMetaDataKeys() {
-        return METADATA_KEYS;
+    	return SHOW_EXTENDED_COLUMNS? METADATA_KEYS_EXT : METADATA_KEYS;
     }
 
     public void dispose() throws Exception {
@@ -94,11 +102,11 @@ public class VHGOwlOntologyRepository implements OntologyRepository {
         entries.clear();
         List<HGDBOntology>  l = dbRepository.getOntologies();
         for(HGDBOntology o : l) {
-            entries.add(new VHGDBRepositoryEntry(o));
+            entries.add(new VDHGDBRepositoryEntry(o));
         }
     }
 
-    public class VHGDBRepositoryEntry implements HGOntologyRepositoryEntry {
+    public class VDHGDBRepositoryEntry implements HGOntologyRepositoryEntry {
 
         private String shortName;
 
@@ -112,13 +120,11 @@ public class VHGOwlOntologyRepository implements OntologyRepository {
 
         private String headRevision;
 
-		private String lastCommitTime;
-
-		private String uncommittedChanges;
+		private String distributedInfo;
 		
 		private HGDBOntology ontology;
 
-        public VHGDBRepositoryEntry(HGDBOntology o) {
+        public VDHGDBRepositoryEntry(HGDBOntology o) {
         	ontologyID = o.getOntologyID();
             shortName = ontologyID.getOntologyIRI().getFragment();
             ontologyURI = URI.create(ontologyID.getOntologyIRI().toString());
@@ -132,14 +138,25 @@ public class VHGOwlOntologyRepository implements OntologyRepository {
             physicalURI = URI.create(o.getDocumentIRI().toString());
             if (dbRepository.isVersionControlled(o)) {
             	VersionedOntology vo = dbRepository.getVersionControlledOntology(o);
-            	headRevision = "" + vo.getHeadRevision().getRevision();
-            	lastCommitTime = VDRenderer.render(vo.getHeadRevision().getTimeStamp());
-            	//Format.getDateTimeInstance().format(vo.getWorkingSetChanges().getCreatedDate());
-            	uncommittedChanges = "" + vo.getWorkingSetChanges().size(); 
+            	DistributedOntology dOnto = dbRepository.getDistributedOntology(o);
+            	if (dOnto != null) {
+            		if (dOnto instanceof ClientCentralizedOntology) {
+            			ClientCentralizedOntology cco = (ClientCentralizedOntology) dOnto;
+            			distributedInfo = "Client (" + VDRenderer.render(cco.getServerPeer()) + ")";
+            		} else if (dOnto instanceof ServerCentralizedOntology) {
+            			distributedInfo = "Server";
+            		} else if (dOnto instanceof PeerDistributedOntology) { 
+            			distributedInfo = "Peer";
+            		} else {
+            			throw new IllegalStateException("Distributed Ontology Type not recognized " + dOnto);
+            		}
+            	} else {
+                	distributedInfo = "Local Versioning";
+            	}
+            	headRevision = VDRenderer.render(vo.getHeadRevision());
             } else {
-            	headRevision = "Not Versioned";
-            	lastCommitTime = "";
-            	uncommittedChanges = "";
+            	distributedInfo = "Not Versioned";
+            	headRevision = "";
             }
             ontology = o;
         }
@@ -174,18 +191,11 @@ public class VHGOwlOntologyRepository implements OntologyRepository {
 			return headRevision;
 		}
 
-		/**
-		 * @return the lastCommitTime
-		 */
-		public String getLastCommitTime() {
-			return lastCommitTime;
-		}
-
         /**
-		 * @return the uncommittedChanges
+		 * @return the distributedInfo
 		 */
 		public String getUncommittedChanges() {
-			return uncommittedChanges;
+			return distributedInfo;
 		}
 
 		public String getEditorKitId() {
@@ -197,11 +207,9 @@ public class VHGOwlOntologyRepository implements OntologyRepository {
         		return "" + getOntologyVersionURI();
         	} else if (key.equals(PHYSICAL_URI)) {
         		return "" + getPhysicalURI();
-        	} else if (key.equals(LAST_COMMIT)) {
-        		return getLastCommitTime();
         	} else if (key.equals(HEAD_REVISION)) {
         		return getHeadRevision();
-        	} else if (key.equals(UNCOMMITTED_CHANGES)) {
+        	} else if (key.equals(DISTRIBUTED_INFO)) {
         		return getUncommittedChanges();
         	} else {
         		throw new IllegalArgumentException("Key unknown.");
@@ -229,7 +237,7 @@ public class VHGOwlOntologyRepository implements OntologyRepository {
     private class RepositoryIRIMapper implements OWLOntologyIRIMapper {
 
         public IRI getDocumentIRI(IRI iri) {
-            for(VHGDBRepositoryEntry entry : entries) {
+            for(VDHGDBRepositoryEntry entry : entries) {
                 if(entry.getOntologyURI().equals(iri.toURI())) {
                     return IRI.create(entry.getPhysicalURI());
                 }
