@@ -1,6 +1,7 @@
 package gov.miamidade.hgowl.plugin.ui.repository;
 
 import gov.miamidade.hgowl.plugin.owl.model.HGOntologyRepositoryEntry;
+import gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDRenderer;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -63,16 +64,9 @@ public class VOntologyViewPanel extends JPanel {
         return new Dimension(850, 400);
     }
 
-    public static HGOntologyRepositoryEntry showRevisionDialog(Component parent, VersionedOntology vo) {
+    public static HGOntologyRepositoryEntry showRevisionDialog(String title, Component parent, VersionedOntology vo) {
         VOntologyViewPanel panel = new VOntologyViewPanel(vo);
-        String title;
-        title = "Versioned Ontology History " 
-    		+ vo.getWorkingSetData().getOntologyID().getOntologyIRI()
-    		+ " ID: " + vo.getHeadRevision().getOntologyUUID();
         JOptionPane.showMessageDialog(parent, panel, title, JOptionPane.PLAIN_MESSAGE);
-//        if(ret == JOptionPane.OK_OPTION) {
-//        	//DO NOTHING FOR NOW
-//        }
         return null;
     }
     

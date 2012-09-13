@@ -24,7 +24,7 @@ public class RepositoryTable extends JTable {
         setRowHeight(getRowHeight() + 4);
         setShowHorizontalLines(true);
         setGridColor(Color.LIGHT_GRAY);
-        getColumnModel().getColumn(0).setPreferredWidth(100);
+        getColumnModel().getColumn(0).setWidth(100);
         getTableHeader().addMouseListener(new MouseAdapter() {
 
             public void mouseReleased(MouseEvent e) {
