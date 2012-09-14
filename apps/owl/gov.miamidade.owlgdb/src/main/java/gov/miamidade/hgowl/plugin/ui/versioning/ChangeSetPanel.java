@@ -86,7 +86,7 @@ public class ChangeSetPanel extends JPanel {
 			lm.addElement(firstItemText);
 		}
 		if (cs != null) {
-			scrollPane.setColumnHeaderView(new JLabel("Number of changes: " + cs.getArity()));
+			scrollPane.setColumnHeaderView(new JLabel("<html>Number of changes: " + cs.getArity() + " <br> Use Ctrl-C to copy changes. </html>"));
 			renderChangeset(lm, cs, graph, onto);
 		}
 		changeSetList.setModel(lm);

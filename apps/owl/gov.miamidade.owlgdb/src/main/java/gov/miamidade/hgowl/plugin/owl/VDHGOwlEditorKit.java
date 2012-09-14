@@ -112,8 +112,9 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 						} else {
 							//Check if exists on server, no push if local newer.
 							int shareRemoteServerOption = JOptionPane.showConfirmDialog(getWorkspace(),
-									"The active ontology " + activeVo.getWorkingSetData().getOntologyID() 
-									+ "\r\n will be shared on " + serverPeer + " \r\n"
+									"The active ontology " + VDRenderer.render(activeVo) 
+									+ "\r\n will be shared on " + VDRenderer.render(serverPeer) + " \r\n"
+									+ "\r\n will be shared on " + repository.getPeerUserId(serverPeer) + " \r\n"
 									+ "All necessary data will be transmittet to the server. Do you want to continue?.", 
 									"Hypergraph Team - Share - Share on Server" ,
 									JOptionPane.YES_NO_OPTION,
@@ -169,7 +170,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 			repository.cancelSharing(activeOntology);
 			JOptionPane.showMessageDialog(getWorkspace(),
 					"Sharing of the active ontology was cancelled. The full history is still available.", "Hypergraph Team - Share - Cancel Sharing complete",
-					JOptionPane.ERROR_MESSAGE);
+					JOptionPane.INFORMATION_MESSAGE);
 			//Need to update dropdown to change icon
 			causeViewUpdate();
 	}
@@ -425,7 +426,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 			// NO PENDING CHANGES OK
 			//System.out.println("No pending changes.");
             JOptionPane.showMessageDialog(getWorkspace(),
-                    "Cannot commit: No pending changes",
+                    "No need to commit: No pending changes",
                     "Hypergraph Team - Commit - No Changes to commit",
                     JOptionPane.WARNING_MESSAGE);
 		} else {
@@ -632,12 +633,14 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 				JOptionPane.showMessageDialog(getWorkspace(),
 						"You are not signed in.", 
 						"Hypergraph Team - Error ", JOptionPane.ERROR_MESSAGE);
+				server = null;
 			} else {
 				if (!repository.getPeers().contains(server)) {
 					JOptionPane.showMessageDialog(getWorkspace(),
 							"The server or peer is not accessible on the network. \r\n"
 							+ server, 
 							"Hypergraph Team - Network Error ", JOptionPane.ERROR_MESSAGE);
+					server = null;
 				}
 			}
 		}
