@@ -1,20 +1,12 @@
 package gov.miamidade.hgowl.plugin.ui.versioning;
 
+import gov.miamidade.hgowl.plugin.ui.render.OWLChangeCellRenderer;
 import gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDRenderer;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.ScrollPane;
-import java.awt.Scrollbar;
 import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
 import java.util.ListIterator;
 
 import javax.swing.Action;
@@ -29,13 +21,13 @@ import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.TransferHandler;
-import javax.swing.border.Border;
 
 import org.hypergraphdb.HyperGraph;
 import org.hypergraphdb.app.owl.HGDBOntology;
 import org.hypergraphdb.app.owl.versioning.ChangeSet;
 import org.hypergraphdb.app.owl.versioning.change.VOWLChange;
 import org.hypergraphdb.app.owl.versioning.change.VOWLChangeFactory;
+import org.protege.editor.owl.OWLEditorKit;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
 
@@ -53,8 +45,9 @@ public class ChangeSetPanel extends JPanel {
 	private int maxChangesVisible = Integer.MAX_VALUE;
 	private ChangeSet changeSet;
 	JScrollPane scrollPane;
+	private OWLChangeCellRenderer changeRenderer;
 	
-	public ChangeSetPanel() {
+	public ChangeSetPanel(OWLEditorKit kit) {
 		setLayout(new GridLayout());
 		setBackground(Color.RED);
 		//JPanel scrollPanel = new JPanel(new GridLayout(1, 1,0,0));
@@ -66,6 +59,8 @@ public class ChangeSetPanel extends JPanel {
 		//scrollPanel.add(scrollPane);
 		this.add(scrollPane);
 		enableClipBoardCopy(changeSetList);
+		changeRenderer = new OWLChangeCellRenderer(kit);
+		changeSetList.setCellRenderer(changeRenderer);
 		//this.add(new JLabel("<html><small>Use <i>Ctrl-C</i> to copy changes</small></html>"), BorderLayout.PAGE_END);
 	}
 
@@ -107,7 +102,7 @@ public class ChangeSetPanel extends JPanel {
 			VOWLChange vc = lIt.previous();
 			i--;
 			OWLOntologyChange c = VOWLChangeFactory.create(vc, onto, graph);
-			lm.addElement("" + VDRenderer.render(i) + " " + c.toString());
+			lm.addElement(c); //"" + VDRenderer.render(i) + " " + c.toString());
 		}
 		if (i != 0) {
 			lm.add(0, "<html><b>Number of changes omitted from view: " + i + "</b></html>");

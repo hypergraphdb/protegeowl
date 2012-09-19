@@ -18,6 +18,7 @@ import javax.swing.SwingUtilities;
 
 import org.hypergraphdb.app.owl.versioning.ChangeSet;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
+import org.protege.editor.owl.OWLEditorKit;
 
 /**
  * Rollback Dialog for rolling back local uncommitted changes.
@@ -33,8 +34,8 @@ public class RollbackDialog extends JDialog implements ActionListener {
 
 	private boolean userRollbackOK;
 	
-	public static RollbackDialog showDialog(String title, Component parent, VersionedOntology vo) {
-		RollbackDialog dlg = new RollbackDialog(title, SwingUtilities.windowForComponent(parent), vo);
+	public static RollbackDialog showDialog(String title, Component parent, VersionedOntology vo, OWLEditorKit kit) {
+		RollbackDialog dlg = new RollbackDialog(title, SwingUtilities.windowForComponent(parent), vo, kit);
 		dlg.setLocationRelativeTo(parent);
 		dlg.setModalityType(ModalityType.APPLICATION_MODAL);
 		dlg.setResizable(true);
@@ -44,7 +45,7 @@ public class RollbackDialog extends JDialog implements ActionListener {
 	}
 	
 	
-	public RollbackDialog(String title, Window w, VersionedOntology vo) {
+	public RollbackDialog(String title, Window w, VersionedOntology vo, OWLEditorKit kit) {
 		super(w);
 		setTitle(title);
 		ChangeSet workingSetChanges  = vo.getWorkingSetChanges();
@@ -63,7 +64,7 @@ public class RollbackDialog extends JDialog implements ActionListener {
 		buttonPanel.add(btOK);
 		buttonPanel.add(btCancel);
 		//
-		changeSetPanel = new ChangeSetPanel();
+		changeSetPanel = new ChangeSetPanel(kit);
 		changeSetPanel.setChangeSet(workingSetChanges, vo.getHyperGraph(), vo.getWorkingSetData());
 		//renderChangeset((DefaultListModel)changeSetList.getModel(), workingSetChanges, vo.getHyperGraph(), vo.getWorkingSetData());
 		this.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);

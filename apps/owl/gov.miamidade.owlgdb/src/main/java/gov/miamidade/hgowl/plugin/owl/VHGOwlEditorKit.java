@@ -211,7 +211,7 @@ public class VHGOwlEditorKit extends HGOwlEditorKit {
         	if (vo != null) {
         		//? Head Changes.size() == 0, nothing to do
         		if (vo.getWorkingSetChanges().size() > 0) {
-        			RollbackDialog dlg = RollbackDialog.showDialog("Hypergraph Versioning - Rollback", getWorkspace(), vo);
+        			RollbackDialog dlg = RollbackDialog.showDialog("Hypergraph Versioning - Rollback", getWorkspace(), vo, this);
         			if (dlg.isRolbackOK()) {
 //            		int userConfirm = JOptionPane.showConfirmDialog(getWorkspace(),
 //                            "All currently pending changes for : \r\n" + VDRenderer.render(activeOntology) 
@@ -387,7 +387,7 @@ public class VHGOwlEditorKit extends HGOwlEditorKit {
 		if (vor.isVersionControlled(activeOnto)) {
 			VersionedOntology vo = vor.getVersionControlledOntology(activeOnto);
 			//VOntologyViewPanel.showRevisionDialog(getWorkspace(), vo);
-			VHGHistoryDialog.showDialog("Hypergraph Versioning - History of " + VDRenderer.render(vo), getWorkspace(), vo);
+			VHGHistoryDialog.showDialog("Hypergraph Versioning - History of " + VDRenderer.render(vo), getWorkspace(), vo, this);
 		} else {
             JOptionPane.showMessageDialog(getWorkspace(),
                     "No History: Active ontology not version controlled",

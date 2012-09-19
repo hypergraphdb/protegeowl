@@ -20,6 +20,7 @@ import org.hypergraphdb.app.owl.versioning.ChangeSet;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.hypergraphdb.app.owl.versioning.distributed.DistributedOntology;
 import org.hypergraphdb.peer.HGPeerIdentity;
+import org.protege.editor.owl.OWLEditorKit;
 
 /**
  * CommitDialog for remote commit of Distributed C/S ontology.
@@ -37,8 +38,8 @@ public class CommitDialog extends JDialog implements ActionListener {
 	private boolean userCommitOK;
 	private String userCommitComment;
 	
-	public static CommitDialog showDialog(String title, Component parent, DistributedOntology dOnto, HGPeerIdentity server, String userId) {
-		CommitDialog dlg = new CommitDialog(title, SwingUtilities.windowForComponent(parent), dOnto, server, userId);
+	public static CommitDialog showDialog(String title, Component parent, DistributedOntology dOnto, HGPeerIdentity server, String userId, OWLEditorKit kit) {
+		CommitDialog dlg = new CommitDialog(title, SwingUtilities.windowForComponent(parent), dOnto, server, userId, kit);
 		dlg.setLocationRelativeTo(parent);
 		dlg.setModalityType(ModalityType.APPLICATION_MODAL);
 		dlg.setResizable(true);
@@ -48,7 +49,7 @@ public class CommitDialog extends JDialog implements ActionListener {
 	}
 	
 	
-	public CommitDialog(String title, Window w, DistributedOntology dOnto, HGPeerIdentity server, String userId) {
+	public CommitDialog(String title, Window w, DistributedOntology dOnto, HGPeerIdentity server, String userId, OWLEditorKit kit) {
 		super(w);
 		setTitle(title);
 		VersionedOntology vo = dOnto.getVersionedOntology();
@@ -74,7 +75,7 @@ public class CommitDialog extends JDialog implements ActionListener {
 		buttonPanel.add(btOK);
 		buttonPanel.add(btCancel);
 		//
-		changeSetPanel = new ChangeSetPanel();
+		changeSetPanel = new ChangeSetPanel(kit);
 		changeSetPanel.setChangeSet(workingSetChanges, vo.getHyperGraph(), vo.getWorkingSetData());
 		//renderChangeset((DefaultListModel)changeSetList.getModel(), workingSetChanges, vo.getHyperGraph(), vo.getWorkingSetData());
 		this.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);

@@ -79,7 +79,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 
 	public void handleShowHistoryActiveDistributedRequest() {
 		DistributedOntology dOnto = getActiveOntologyAsDistributed();
-		VHGHistoryDialog.showDialog("Hypergraph Team - History of " + VDRenderer.render(dOnto), getWorkspace(), dOnto.getVersionedOntology());
+		VHGHistoryDialog.showDialog("Hypergraph Team - History of " + VDRenderer.render(dOnto), getWorkspace(), dOnto.getVersionedOntology(), this);
 	} 
 
 	public void handleShareActiveRequest() {
@@ -214,17 +214,19 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 		HGDBOntology activeOntology = (HGDBOntology)getActiveOntology(); 
 		DistributedOntology dOnto = repository.getDistributedOntology(activeOntology);
 		HGPeerIdentity serverPeer;
+		String action = "Pull";
 		if (dOnto == null) return;
 		if (!(dOnto instanceof ClientCentralizedOntology)) {
 			if (!ensureRemotePeerAccessible()) return;
 			serverPeer = selectedRemotePeer;
+			action = "Update";
 		} else {
 			serverPeer = ((ClientCentralizedOntology)dOnto).getServerPeer();
 		}
-		int confirm = JOptionPane.showConfirmDialog(getWorkspace(), "Pulling for " + dOnto.toString() + "\n from "
+		int confirm = JOptionPane.showConfirmDialog(getWorkspace(), action + " for " + dOnto.toString() + "\n from "
 				+ serverPeer + " " + repository.getPeer().getNetworkTarget(serverPeer)
-				+ "\n Press OK to start Pull. Please wait for the completed message and follow progess on console. ",
-				"Hypergraph Team - Pull - in Progress", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+				+ "\n Press OK to start " + action + ". Please wait for the completed message and follow progess on console. ",
+				"Hypergraph Team - " + action + " - in Progress", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
 		if (confirm != JOptionPane.OK_OPTION) {
 			// user cancelled.
 			return;
@@ -234,15 +236,15 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 			ActivityResult paa = pa.getFuture().get();
 			if (paa.getException() == null) {
 				JOptionPane.showMessageDialog(getWorkspace(),
-						"Pulling " + dOnto.toString() + "\n from " 
+						action + " " + dOnto.toString() + "\n from " 
 						+ serverPeer + " " + repository.getPeer().getNetworkTarget(serverPeer)
 								+ "\n completed with the following message: \n" + pa.getCompletedMessage(),
-						"Hypergraph Team - Pull - Complete", JOptionPane.INFORMATION_MESSAGE);
+						"Hypergraph Team - " + action + " - Complete", JOptionPane.INFORMATION_MESSAGE);
 			} else {
 				throw paa.getException();
 			}
 		} catch (Throwable e) {
-			JOptionPane.showMessageDialog(getWorkspace(), e.toString() + " - " + e.getMessage(), "P2P Pull Error",
+			JOptionPane.showMessageDialog(getWorkspace(), e.toString() + " - " + e.getMessage(), "Team - "+ action + " - Error",
 					JOptionPane.ERROR_MESSAGE);
 		}
 		// Fire Onto Reloaded
@@ -432,7 +434,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 		} else {
 			// 	COMMIT WHAT WHO INCREMENT OK CANCEL
 			String title = "Hypergraph Team - Commit " + VDRenderer.render(activeOnto);
-			CommitDialog dlg = CommitDialog.showDialog(title, getWorkspace(), activeOnto, server, userId);
+			CommitDialog dlg = CommitDialog.showDialog(title, getWorkspace(), activeOnto, server, userId, this);
 			if (dlg.isCommitOK()) {
 				//Check if allowed
 				if (checkCommitPushAllowed(activeOnto, server)) {

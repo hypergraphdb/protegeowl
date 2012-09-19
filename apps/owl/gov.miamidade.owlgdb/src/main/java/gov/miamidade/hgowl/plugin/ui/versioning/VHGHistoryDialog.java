@@ -12,32 +12,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.util.ListIterator;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.hypergraphdb.HyperGraph;
 import org.hypergraphdb.app.owl.versioning.ChangeSet;
 import org.hypergraphdb.app.owl.versioning.Revision;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
-import org.hypergraphdb.app.owl.versioning.change.VOWLChange;
-import org.hypergraphdb.app.owl.versioning.change.VOWLChangeFactory;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.protege.editor.owl.OWLEditorKit;
 
 /**
  * VHGCommitDialog shows all revisions of a given versioned ontology, allows the user to select a revisions 
@@ -56,11 +44,10 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 	private ChangeSetPanel changeSetPanel;
 	private JButton btClose;
 
-	private DecimalFormat df = new DecimalFormat("####000");
-	private DateFormat dateF = DateFormat.getDateTimeInstance();
+	//private DateFormat dateF = DateFormat.getDateTimeInstance();
 
-	public static VHGHistoryDialog showDialog(String title, Component parent, VersionedOntology vo) {
-		VHGHistoryDialog dlg = new VHGHistoryDialog(SwingUtilities.windowForComponent(parent), vo);
+	public static VHGHistoryDialog showDialog(String title, Component parent, VersionedOntology vo, OWLEditorKit kit) {
+		VHGHistoryDialog dlg = new VHGHistoryDialog(SwingUtilities.windowForComponent(parent), vo, kit);
 		dlg.setTitle(title);
 		dlg.setLocationRelativeTo(parent);
 		dlg.setModalityType(ModalityType.APPLICATION_MODAL);
@@ -71,7 +58,7 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 	}
 	
 	
-	public VHGHistoryDialog(Window w, VersionedOntology vo) {
+	public VHGHistoryDialog(Window w, VersionedOntology vo, OWLEditorKit kit) {
 		super(w);
 		w.addWindowListener(new WindowAdapter() {
 			/* (non-Javadoc)
@@ -100,7 +87,7 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 		centerPanel.add(ontologyView);
 		
 		//BOTTOM SHOWS SELECTED CHANGESET
-		changeSetPanel = new ChangeSetPanel(); //(new String[]{EMPTY_LIST_TEXT});
+		changeSetPanel = new ChangeSetPanel(kit); //(new String[]{EMPTY_LIST_TEXT});
 		//centerPanel.add(new JScrollPane(changeSetList));
 		centerPanel.add(changeSetPanel);
 		
@@ -150,16 +137,15 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 				selectedCS = changeSets.get(selectedRevisionIndex - 1);
 				firstItemString = "<html>Showing Changes that were commited by <b>" 
 						+ selectedRev.getUser() + "</b> at " 
-						+  dateF.format(selectedRev.getTimeStamp()) + " after revision " 
-						+ selectedRev.getRevision() 
-						+ " constituting revision " + selectedRev.getRevision() + "</html>";
+						+  VDRenderer.render(selectedRev.getTimeStamp()) + " for revision " 
+						+ selectedRev.getRevision() + "</html>";
 						firstItemString += "<br> with comment <b>" + selectedRev.getRevisionComment() + "</b>";  
 				//renderChangeset(lm, selectedCS);
 			} else if (selectedRevisionIndex == 0) {
 				Revision selectedRev = revisions.get(selectedRevisionIndex);
 				firstItemString = ("<html> Initial revision that was created by <b>" 
 						+ selectedRev.getUser() + "</b> at " 
-						+  dateF.format(selectedRev.getTimeStamp()) 
+						+  VDRenderer.render(selectedRev.getTimeStamp()) 
 						+ "</html>");
 				//lm.addElement("<html>with comment <b>" + selectedRev.getRevisionComment() + "</b> </html>");  
 				//lm.addElement("<html>No changes to show.</html>");  
