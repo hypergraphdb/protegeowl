@@ -263,7 +263,7 @@ public class VHGOwlEditorKit extends HGOwlEditorKit {
         		// ?Head == Base?, cannot do it
         		//not on pending changes!
         		// Allow working set changes
-        		VHGRevertDialog dlg = VHGRevertDialog.showDialog("Hypergraph Versioning - Revert " + VDRenderer.render(vo), getWorkspace(), vo);
+        		VHGRevertDialog dlg = VHGRevertDialog.showDialog("Hypergraph Versioning - Revert " + VDRenderer.render(vo), getWorkspace(), vo, this);
         		if (dlg.isUserConfirmedRevert()) {
         			Revision selectedRevision = dlg.getSelectedRevision();
         			if (selectedRevision != null) {
