@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.SortedSet;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -41,7 +42,7 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 	private static final long serialVersionUID = -284973463639671572L;
 	private VersionedOntology versionedOntology;
 	private VOntologyViewPanel ontologyView;
-	private ChangeSetPanel changeSetPanel;
+	private ChangeSetTablePanel changeSetPanel;
 	private JButton btClose;
 
 	//private DateFormat dateF = DateFormat.getDateTimeInstance();
@@ -87,7 +88,7 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 		centerPanel.add(ontologyView);
 		
 		//BOTTOM SHOWS SELECTED CHANGESET
-		changeSetPanel = new ChangeSetPanel(kit); //(new String[]{EMPTY_LIST_TEXT});
+		changeSetPanel = new ChangeSetTablePanel(vo.getWorkingSetData(), vo.getHyperGraph(), kit); //(new String[]{EMPTY_LIST_TEXT});
 		//centerPanel.add(new JScrollPane(changeSetList));
 		centerPanel.add(changeSetPanel);
 		
@@ -124,6 +125,8 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 	public void updateChangeSetList(int selectedRevisionIndex) {
 		String firstItemString = null;
 		ChangeSet selectedCS = null;
+		SortedSet<Integer> selectedCSConflicts = null;
+
 		if (selectedRevisionIndex != -1) {
 			java.util.List<Revision> revisions = versionedOntology.getRevisions();
 			java.util.List<ChangeSet> changeSets = versionedOntology.getChangeSets();
@@ -131,6 +134,7 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 				//Pending changes in local workingset
 				firstItemString = "<html>Showing <b>uncommitted</b> Changes that were made by <b>you</b> </html>";
 				selectedCS = changeSets.get(selectedRevisionIndex - 1);
+				selectedCSConflicts = versionedOntology.getWorkingSetConflicts();
 				//renderChangeset(lm, selectedCS);
 			} else if (selectedRevisionIndex > 0) {
 				Revision selectedRev = revisions.get(selectedRevisionIndex);
@@ -157,7 +161,7 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 			// Empty list, nothing selected
 			firstItemString = EMPTY_LIST_TEXT; 
 		}
-		changeSetPanel.setChangeSet(selectedCS, versionedOntology.getHyperGraph(), versionedOntology.getWorkingSetData(), firstItemString);		
+		changeSetPanel.setChangeSet(selectedCS, selectedCSConflicts, firstItemString);		
 	}
 
 	

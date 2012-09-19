@@ -16,6 +16,7 @@ import java.awt.event.WindowListener;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.util.ListIterator;
+import java.util.SortedSet;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -36,6 +37,7 @@ import org.hypergraphdb.app.owl.versioning.Revision;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.hypergraphdb.app.owl.versioning.change.VOWLChange;
 import org.hypergraphdb.app.owl.versioning.change.VOWLChangeFactory;
+import org.protege.editor.owl.OWLEditorKit;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
 
@@ -54,17 +56,15 @@ public class VHGRevertDialog extends JDialog implements ActionListener, ListSele
 	private Revision selectedRevision;
 
 	private VersionedOntology versionedOntology;
+	private ChangeSetTablePanel changeSetPanel;
 	private VOntologyViewPanel ontologyView;
-	private JList changeSetList;
 	private JButton btOK;
 	private JButton btCancel;
 
-	private DecimalFormat df = new DecimalFormat("####000");
-	private DateFormat dateF = DateFormat.getDateTimeInstance();
 	private boolean userConfirmedRevert;
 
-	public static VHGRevertDialog showDialog(String title, Component parent, VersionedOntology vo) {
-		VHGRevertDialog dlg = new VHGRevertDialog(title, SwingUtilities.windowForComponent(parent), vo);
+	public static VHGRevertDialog showDialog(String title, Component parent, VersionedOntology vo, OWLEditorKit kit) {
+		VHGRevertDialog dlg = new VHGRevertDialog(title, SwingUtilities.windowForComponent(parent), vo, kit);
 		dlg.setLocationRelativeTo(parent);
 		dlg.setModalityType(ModalityType.APPLICATION_MODAL);
 		dlg.setResizable(true);
@@ -74,7 +74,7 @@ public class VHGRevertDialog extends JDialog implements ActionListener, ListSele
 	}
 	
 	
-	public VHGRevertDialog(String title, Window w, VersionedOntology vo) {
+	public VHGRevertDialog(String title, Window w, VersionedOntology vo, OWLEditorKit kit) {
 		super(w);
 		w.addWindowListener(new WindowAdapter() {
 			/* (non-Javadoc)
@@ -86,7 +86,7 @@ public class VHGRevertDialog extends JDialog implements ActionListener, ListSele
 			}
 		});
 		versionedOntology = vo;
-		setTitle(title);
+        setLayout(new BorderLayout());
         String message = "<html> <h2> Revert Ontology to older revision </h2> "
 		    +"<table width='100%' border='0'>"
 		    +"<tr><td align='right'><b>Ontology:</b></td><td>"+ VDRenderer.render(vo) + "</td></tr>"
@@ -95,7 +95,6 @@ public class VHGRevertDialog extends JDialog implements ActionListener, ListSele
 		    +"</table>";
 		JPanel northPanel = new JPanel(new BorderLayout(5, 5));
 		northPanel.add(new JLabel(message), BorderLayout.NORTH);
-		
 		JPanel centerPanel = new JPanel(new GridLayout(2, 1, 5, 5));
 		// TOP SHOWS REVISIONS
 		ontologyView = new VOntologyViewPanel(vo);
@@ -104,22 +103,23 @@ public class VHGRevertDialog extends JDialog implements ActionListener, ListSele
 		centerPanel.add(ontologyView);
 		
 		//BOTTOM SHOWS SELECTED CHANGESET
-		changeSetList = new JList(new String[]{EMPTY_LIST_TEXT});
-		centerPanel.add(new JScrollPane(changeSetList));
+		changeSetPanel = new ChangeSetTablePanel(vo.getWorkingSetData(), vo.getHyperGraph(), kit); //(new String[]{EMPTY_LIST_TEXT});
+		//centerPanel.add(new JScrollPane(changeSetList));
+		centerPanel.add(changeSetPanel);
 		
 		btOK = new JButton("Revert ontology");
 		btOK.addActionListener(this);
 		btCancel = new JButton("Cancel");	
 		btCancel.addActionListener(this);
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		buttonPanel.add(btOK);
 		buttonPanel.add(btCancel);
+		buttonPanel.add(btOK);
 		//
 		add(northPanel, BorderLayout.NORTH);
 		add(buttonPanel, BorderLayout.SOUTH);
 		add(centerPanel, BorderLayout.CENTER);
 		//this.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-		setSize(850,500);
+		setSize(1000,600);
 	}
 
 
@@ -136,82 +136,59 @@ public class VHGRevertDialog extends JDialog implements ActionListener, ListSele
 		}
 		closeDialog();
 	}
-
+	
 	public void closeDialog() {
 		this.setVisible(false);
 		this.dispose();
 		versionedOntology = null;
 	}
 
-	
 	/**
 	 * 
 	 * @param selectedRev
 	 */
 	public void updateChangeSetList(int selectedRevisionIndex) {
-		DefaultListModel lm = new DefaultListModel();
+		String firstItemString = null;
+		ChangeSet selectedCS = null;
+		SortedSet<Integer> selectedCSConflicts = null;
+
 		if (selectedRevisionIndex != -1) {
 			java.util.List<Revision> revisions = versionedOntology.getRevisions();
 			java.util.List<ChangeSet> changeSets = versionedOntology.getChangeSets();
 			if (selectedRevisionIndex == revisions.size()) {
 				//Pending changes in local workingset
-				lm.addElement("<html>Showing <b>uncommitted</b> Changes that were made by <b>you</b> </html>" );
-				ChangeSet selectedCS = changeSets.get(selectedRevisionIndex - 1);
-				renderChangeset(lm, selectedCS);
+				firstItemString = "<html>Showing <b>uncommitted</b> Changes that were made by <b>you</b> </html>";
+				selectedCS = changeSets.get(selectedRevisionIndex - 1);
+				selectedCSConflicts = versionedOntology.getWorkingSetConflicts();
+				//renderChangeset(lm, selectedCS);
 			} else if (selectedRevisionIndex > 0) {
 				Revision selectedRev = revisions.get(selectedRevisionIndex);
-				ChangeSet selectedCS = changeSets.get(selectedRevisionIndex - 1);
-				lm.addElement("<html>Showing Changes that were commited by <b>" 
+				selectedCS = changeSets.get(selectedRevisionIndex - 1);
+				firstItemString = "<html>Showing Changes that were commited by <b>" 
 						+ selectedRev.getUser() + "</b> at " 
-						+  dateF.format(selectedRev.getTimeStamp()) + " after revision " 
-						+ selectedRev.getRevision() 
-						+ " constituting revision " + selectedRev.getRevision() + "</html>");
-				lm.addElement("<html>with comment <b>" + selectedRev.getRevisionComment() + "</b> </html>");  
-				renderChangeset(lm, selectedCS);
+						+  VDRenderer.render(selectedRev.getTimeStamp()) + " for revision " 
+						+ selectedRev.getRevision() + "</html>";
+						firstItemString += "<br> with comment <b>" + selectedRev.getRevisionComment() + "</b>";  
+				//renderChangeset(lm, selectedCS);
 			} else if (selectedRevisionIndex == 0) {
 				Revision selectedRev = revisions.get(selectedRevisionIndex);
-				lm.addElement("<html> Initial revision that was created by <b>" 
+				firstItemString = ("<html> Initial revision that was created by <b>" 
 						+ selectedRev.getUser() + "</b> at " 
-						+  dateF.format(selectedRev.getTimeStamp()) 
+						+  VDRenderer.render(selectedRev.getTimeStamp()) 
 						+ "</html>");
-				lm.addElement("<html>with comment <b>" + selectedRev.getRevisionComment() + "</b> </html>");  
-				lm.addElement("<html>No changes to show.</html>");  
+				//lm.addElement("<html>with comment <b>" + selectedRev.getRevisionComment() + "</b> </html>");  
+				//lm.addElement("<html>No changes to show.</html>");  
 			} else {
 				System.err.println("Cannot render revision: " + selectedRevisionIndex);
 				return;
 			}
 		} else {
 			// Empty list, nothing selected
-			lm.addElement(EMPTY_LIST_TEXT); 
+			firstItemString = EMPTY_LIST_TEXT; 
 		}
-		changeSetList.setModel(lm);
-		//changeSetList.repaint();
-	}
-		
-	private void renderChangeset(DefaultListModel lm, ChangeSet cs) {
-		HyperGraph graph = versionedOntology.getHyperGraph();
-		OWLOntology onto = versionedOntology.getWorkingSetData();
-		// Iterate changeset reverse order
-		int nrOfchanges = cs.getChanges().size();
-		int i = nrOfchanges;
-		ListIterator<VOWLChange> lIt = cs.getChanges().listIterator(nrOfchanges);
-		while (lIt.hasPrevious() && (nrOfchanges - i) < MAX_CHANGES_SHOWN) {
-			VOWLChange vc = lIt.previous();
-			i--;
-			OWLOntologyChange c = VOWLChangeFactory.create(vc, onto, graph);
-			lm.addElement("" + df.format(i) + " " + c.toString());
-		}
-		if (i != 0) {
-			lm.add(0, "<html><b>Number of changes omitted from view: " + i + "</b></html>");
-		}
-		if (nrOfchanges == 0) {
-			lm.addElement("There are no changes to show.");
-		}
+		changeSetPanel.setChangeSet(selectedCS, selectedCSConflicts, firstItemString);		
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
-	 */
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
 		if (e.getValueIsAdjusting()) return;

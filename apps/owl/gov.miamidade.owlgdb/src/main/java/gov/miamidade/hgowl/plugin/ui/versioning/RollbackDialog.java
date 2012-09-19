@@ -28,7 +28,7 @@ import org.protege.editor.owl.OWLEditorKit;
 public class RollbackDialog extends JDialog implements ActionListener {
 	
 	private static final long serialVersionUID = -2849737178569671572L;
-	private ChangeSetPanel changeSetPanel;
+	private ChangeSetTablePanel changeSetPanel;
 	private JButton btOK;
 	private JButton btCancel;
 
@@ -64,8 +64,8 @@ public class RollbackDialog extends JDialog implements ActionListener {
 		buttonPanel.add(btOK);
 		buttonPanel.add(btCancel);
 		//
-		changeSetPanel = new ChangeSetPanel(kit);
-		changeSetPanel.setChangeSet(workingSetChanges, vo.getHyperGraph(), vo.getWorkingSetData());
+		changeSetPanel = new ChangeSetTablePanel(vo.getWorkingSetData(), vo.getHyperGraph(), kit);
+		changeSetPanel.setChangeSet(vo.getWorkingSetChanges(), vo.getWorkingSetConflicts(), "Rollback");
 		//renderChangeset((DefaultListModel)changeSetList.getModel(), workingSetChanges, vo.getHyperGraph(), vo.getWorkingSetData());
 		this.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		this.add(northPanel, BorderLayout.NORTH);

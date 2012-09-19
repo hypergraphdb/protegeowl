@@ -36,6 +36,7 @@ import org.semanticweb.owlapi.model.OWLOntologyChange;
  * 
  * @author Thomas Hilpold (CIAO/Miami-Dade County)
  * @created Sep 13, 2012
+ * @deprecated
  */
 public class ChangeSetPanel extends JPanel {
 
@@ -47,7 +48,7 @@ public class ChangeSetPanel extends JPanel {
 	JScrollPane scrollPane;
 	private OWLChangeCellRenderer changeRenderer;
 	
-	public ChangeSetPanel(OWLEditorKit kit) {
+	public ChangeSetPanel(OWLEditorKit kit, int i) {
 		setLayout(new GridLayout());
 		setBackground(Color.RED);
 		//JPanel scrollPanel = new JPanel(new GridLayout(1, 1,0,0));

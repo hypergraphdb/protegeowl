@@ -1,6 +1,7 @@
 package gov.miamidade.hgowl.plugin.ui.versioning.distributed;
 
 import gov.miamidade.hgowl.plugin.ui.versioning.ChangeSetPanel;
+import gov.miamidade.hgowl.plugin.ui.versioning.ChangeSetTablePanel;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -31,7 +32,7 @@ public class CommitDialog extends JDialog implements ActionListener {
 	
 	private static final long serialVersionUID = -2849737178569671572L;
 	private JTextField tfUserComment;
-	private ChangeSetPanel changeSetPanel;
+	private ChangeSetTablePanel changeSetPanel;
 	private JButton btOK;
 	private JButton btCancel;
 
@@ -75,8 +76,8 @@ public class CommitDialog extends JDialog implements ActionListener {
 		buttonPanel.add(btOK);
 		buttonPanel.add(btCancel);
 		//
-		changeSetPanel = new ChangeSetPanel(kit);
-		changeSetPanel.setChangeSet(workingSetChanges, vo.getHyperGraph(), vo.getWorkingSetData());
+		changeSetPanel = new ChangeSetTablePanel(vo.getWorkingSetData(), vo.getHyperGraph(), kit);
+		changeSetPanel.setChangeSet(vo.getWorkingSetChanges(), vo.getWorkingSetConflicts(), "");
 		//renderChangeset((DefaultListModel)changeSetList.getModel(), workingSetChanges, vo.getHyperGraph(), vo.getWorkingSetData());
 		this.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		this.add(northPanel, BorderLayout.NORTH);
