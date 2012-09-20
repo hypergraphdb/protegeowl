@@ -43,11 +43,11 @@ public class PHGDBOntologyManagerImpl extends ProtegeOWLOntologyManager implemen
 		if (HGDBApplication.DISTRIBUTED) {
 			ontologyRepository = VDHGDBOntologyRepository.getInstance();
 			((VDHGDBOntologyRepository)ontologyRepository).setOntologyManager(this);
-			this.addImpendingOntologyChangeListener(((VDHGDBOntologyRepository)ontologyRepository));
+			this.addOntologyChangeListener(((VDHGDBOntologyRepository)ontologyRepository));
 			
 		} else if (HGDBApplication.VERSIONING) {
 			ontologyRepository = VHGDBOntologyRepository.getInstance();
-			this.addImpendingOntologyChangeListener(((VHGDBOntologyRepository)ontologyRepository));
+			this.addOntologyChangeListener(((VHGDBOntologyRepository)ontologyRepository));
 		} else {
 			ontologyRepository = HGDBOntologyRepository.getInstance();
 		}
