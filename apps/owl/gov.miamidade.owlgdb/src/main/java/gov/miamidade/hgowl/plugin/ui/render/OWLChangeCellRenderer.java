@@ -51,7 +51,7 @@ public class OWLChangeCellRenderer extends OWLCellRenderer {
 	 */
 	public OWLChangeCellRenderer(OWLEditorKit owlEditorKit) {
 		super(owlEditorKit);
-        setHighlightKeywords(true);
+        setHighlightKeywords(false);
         initIcons();
 	}
 
