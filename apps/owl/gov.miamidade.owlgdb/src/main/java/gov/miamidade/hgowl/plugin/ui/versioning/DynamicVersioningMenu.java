@@ -1,18 +1,13 @@
 package gov.miamidade.hgowl.plugin.ui.versioning;
 
 import gov.miamidade.hgowl.plugin.owl.VDHGOwlEditorKit;
-import gov.miamidade.hgowl.plugin.owl.VDHGOwlEditorKit.OntologyDistributionState;
 import gov.miamidade.hgowl.plugin.owl.VHGOwlEditorKit;
-import gov.miamidade.hgowl.plugin.ui.versioning.VHGHistoryActiveAction;
-import gov.miamidade.hgowl.plugin.ui.versioning.VHGRevertActiveAction;
-import gov.miamidade.hgowl.plugin.ui.versioning.VHGRollbackActiveAction;
 
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 
 import org.protege.editor.core.editorkit.EditorKit;
 import org.protege.editor.core.ui.action.ProtegeDynamicAction;

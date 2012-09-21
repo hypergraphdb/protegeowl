@@ -1,6 +1,5 @@
 package gov.miamidade.hgowl.plugin.ui.versioning;
 
-import gov.miamidade.hgowl.plugin.ui.versioning.ChangeSetPanel;
 import gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDRenderer;
 
 import java.awt.BorderLayout;
@@ -16,7 +15,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import org.hypergraphdb.app.owl.versioning.ChangeSet;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.protege.editor.owl.OWLEditorKit;
 
@@ -48,7 +46,6 @@ public class RollbackDialog extends JDialog implements ActionListener {
 	public RollbackDialog(String title, Window w, VersionedOntology vo, OWLEditorKit kit) {
 		super(w);
 		setTitle(title);
-		ChangeSet workingSetChanges  = vo.getWorkingSetChanges();
 		String message = "<html> <h2> Rollback Pending Ontology Changes </h2> "
 		    +"<table width='100%' border='0'>"
 		    +"<tr><td align='right'><b>Ontology:</b></td><td>"+ VDRenderer.render(vo) + "</td></tr>"
@@ -74,7 +71,7 @@ public class RollbackDialog extends JDialog implements ActionListener {
 		setSize(900,450);
 	}
 	
-	public boolean isRolbackOK() {
+	public boolean isRollbackOK() {
 		return userRollbackOK;
 	}
 
