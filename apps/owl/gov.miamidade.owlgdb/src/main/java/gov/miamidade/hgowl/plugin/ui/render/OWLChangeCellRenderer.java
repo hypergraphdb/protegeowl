@@ -1,5 +1,6 @@
 package gov.miamidade.hgowl.plugin.ui.render;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.net.URL;
 
@@ -46,6 +47,9 @@ public class OWLChangeCellRenderer extends OWLCellRenderer {
 	private ListCellRenderer defaultListCellRenderer = new DefaultListCellRenderer();
 	private TableCellRenderer defaultTableCellRenderer = new DefaultTableCellRenderer();
 	private TreeCellRenderer defaultTreeCellRenderer = new DefaultTreeCellRenderer();
+	
+	private Color unselectedBackground;
+	
 	/**
 	 * @param owlEditorKit
 	 */
@@ -71,6 +75,7 @@ public class OWLChangeCellRenderer extends OWLCellRenderer {
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 			int row, int column) {
+		Component comp;
 		objectToRender = value;
 		if(objectToRender instanceof OWLAxiomChange) {
 			value = ((OWLOntologyChange) objectToRender).getAxiom();
@@ -84,10 +89,18 @@ public class OWLChangeCellRenderer extends OWLCellRenderer {
 			//do nothing
 		}
 		if (value instanceof String) {
-			return defaultTableCellRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+			 comp = defaultTableCellRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 		} else {
-			return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+			comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 		}
+		if (isSelected) {
+            comp.setForeground(table.getSelectionForeground());
+            comp.setBackground(table.getSelectionBackground());
+		} else {
+            comp.setForeground(table.getForeground());
+            comp.setBackground(table.getBackground());
+		}
+		return comp;
 	}
 
 	/* (non-Javadoc)
