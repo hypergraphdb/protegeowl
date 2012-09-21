@@ -1,6 +1,7 @@
 package gov.miamidade.hgowl.plugin.owl;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -45,6 +46,7 @@ import org.hypergraphdb.peer.workflow.ActivityResult;
 import org.protege.editor.core.OntologyRepository;
 import org.protege.editor.core.OntologyRepositoryManager;
 import org.protege.editor.owl.OWLEditorKitFactory;
+import org.protege.editor.owl.ui.view.AnonymousClassesView;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 
@@ -56,6 +58,8 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
  */
 public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 
+	public static int ACTIVITY_TIMEOUT_SECS = 180;
+	
 	public enum OntologyDistributionState {
 		ONTO_NOT_SHARED, ONTO_SHARED_DISTRIBUTED, ONTO_SHARED_CENTRAL_CLIENT, ONTO_SHARED_CENTRAL_SERVER,
 	}
@@ -66,6 +70,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 
 	public VDHGOwlEditorKit(OWLEditorKitFactory editorKitFactory) {
 		super(editorKitFactory);
+		System.out.println("ACTIVITY TIMEOUT IS " + ACTIVITY_TIMEOUT_SECS + " secs");
 	}
 
 	protected void initialise() {
@@ -113,18 +118,23 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 							//Check if exists on server, no push if local newer.
 							int shareRemoteServerOption = JOptionPane.showConfirmDialog(getWorkspace(),
 									"The active ontology " + VDRenderer.render(activeVo) 
-									+ "\r\n will be shared on " + VDRenderer.render(serverPeer) + " \r\n"
-									+ "\r\n will be shared on " + repository.getPeerUserId(serverPeer) + " \r\n"
-									+ "All necessary data will be transmittet to the server. Do you want to continue?.", 
+									+ "\r\n will be shared on " + VDRenderer.render(serverPeer) + " "
+									+ repository.getPeerUserId(serverPeer) + " \r\n"
+									+ "All necessary data will be transmitted to the server. Do you want to continue?.", 
 									"Hypergraph Team - Share - Share on Server" ,
 									JOptionPane.YES_NO_OPTION,
 									JOptionPane.INFORMATION_MESSAGE);
 							if (shareRemoteServerOption == JOptionPane.YES_OPTION) {
-								repository.shareRemoteInServerMode(activeVo, serverPeer);
+								try {
+									repository.shareRemoteInServerMode(activeVo, serverPeer, ACTIVITY_TIMEOUT_SECS);
+								} catch (Throwable t) {
+									showException(t, "System Error while sharing remote in server mode");
+									return;
+								}
 								//Update icon
 								causeViewUpdate();
 								JOptionPane.showMessageDialog(getWorkspace(),
-										"Sharing active ontology on selected server completed. The ontology was uploaded.", "Hypergraph Team - Share - Sharing completed.",
+										"Sharing active ontology on selected server completed. All necessary data was sucessfullty transmitted.", "Hypergraph Team - Share - Sharing completed.",
 										JOptionPane.INFORMATION_MESSAGE);
 							} else {
 								JOptionPane.showMessageDialog(getWorkspace(),
@@ -196,7 +206,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 		}
 		PushActivity pa = repository.push(dOnto, serverPeer);
 		try {
-			ActivityResult paa = pa.getFuture().get();
+			ActivityResult paa = pa.getFuture().get(ACTIVITY_TIMEOUT_SECS, TimeUnit.SECONDS);
 			if (paa.getException() == null) {
 				JOptionPane.showMessageDialog(getWorkspace(),
 						"Push completed with the following message: " + pa.getCompletedMessage(), "Hypergraph Team - Push Complete",
@@ -204,9 +214,9 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 			} else {
 				throw paa.getException();
 			}
-		} catch (Throwable e) {
-			JOptionPane.showMessageDialog(getWorkspace(), e.toString() + " - " + e.getMessage(), "Hypergraph Team - Push Error",
-					JOptionPane.ERROR_MESSAGE);
+		} catch (Throwable t) {
+			showException(t, "System Error while pushing ontology");
+			return;
 		}
 	}
 
@@ -233,7 +243,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 		}
 		PullActivity pa = repository.pull(dOnto, serverPeer);
 		try {
-			ActivityResult paa = pa.getFuture().get();
+			ActivityResult paa = pa.getFuture().get(ACTIVITY_TIMEOUT_SECS, TimeUnit.SECONDS);
 			if (paa.getException() == null) {
 				JOptionPane.showMessageDialog(getWorkspace(),
 						action + " " + dOnto.toString() + "\n from " 
@@ -243,15 +253,18 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 			} else {
 				throw paa.getException();
 			}
-		} catch (Throwable e) {
-			JOptionPane.showMessageDialog(getWorkspace(), e.toString() + " - " + e.getMessage(), "Team - "+ action + " - Error",
-					JOptionPane.ERROR_MESSAGE);
+		} catch (Throwable t) {
+			showException(t, "System error while pulling ontology");
+			return;
+//			JOptionPane.showMessageDialog(getWorkspace(), e.toString() + " - " + e.getMessage(), "Team - "+ action + " - Error",			
+//					JOptionPane.ERROR_MESSAGE);
 		}
 		// Fire Onto Reloaded
 		try {
 			this.getOWLModelManager().reload(dOnto.getWorkingSetData());
 		} catch (OWLOntologyCreationException e) {
-			e.printStackTrace();
+			showException(e, "OWLOntologyCreation after pulling ontology");
+			return;
 		}
 	}
 
@@ -388,7 +401,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 					}
 					// START PULL
 					PullActivity pa = repository.pullNew(remoteEntry.getUuid(), serverPeer);
-					ActivityResult paa = pa.getFuture().get();
+					ActivityResult paa = pa.getFuture().get(ACTIVITY_TIMEOUT_SECS, TimeUnit.SECONDS);
 					if (paa.getException() == null) {
 						JOptionPane.showMessageDialog(getWorkspace(),
 								"Checkout of " + remoteEntry.toString() + "\n from " + VDRenderer.render(serverPeer)
@@ -412,8 +425,10 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 						JOptionPane.INFORMATION_MESSAGE);
 			}
 		} catch (Throwable t) {
-			JOptionPane.showMessageDialog(getWorkspace(), getRenderedActivityException(t), "Hypergraph Team - Checkout - Error",
-				JOptionPane.ERROR_MESSAGE);
+			showException(t, "System error while checking out ontology");
+			return;
+//			JOptionPane.showMessageDialog(getWorkspace(), getRenderedActivityException(t), "Hypergraph Team - Checkout - Error",
+//				JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	
@@ -431,6 +446,12 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
                     "No need to commit: No pending changes",
                     "Hypergraph Team - Commit - No Changes to commit",
                     JOptionPane.WARNING_MESSAGE);
+		} else if (vo.getNrOfCommittableChanges() == 0) {
+            JOptionPane.showMessageDialog(getWorkspace(),
+                    "Cannot Commit: All pending changes are conflicts \r\n"
+            		+ "Check Team/History.",
+                    "Hypergraph Team - Commit - All pending changes are conflicts",
+                    JOptionPane.WARNING_MESSAGE);
 		} else {
 			// 	COMMIT WHAT WHO INCREMENT OK CANCEL
 			String title = "Hypergraph Team - Commit " + VDRenderer.render(activeOnto);
@@ -444,7 +465,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 					boolean needsUndo = false;
 					try {
 						PushActivity pa = repository.push(activeOnto, server);
-						ActivityResult ar = pa.getFuture().get(60, TimeUnit.SECONDS);
+						ActivityResult ar = pa.getFuture().get(ACTIVITY_TIMEOUT_SECS, TimeUnit.SECONDS);
 						if (ar.getException() != null) {
 							throw ar.getException();
 						}
@@ -454,8 +475,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 			                    JOptionPane.INFORMATION_MESSAGE);
 					} catch (Throwable t) {
 						needsUndo = true;
-						t.printStackTrace();
-						throw new RuntimeException(t);
+						showException(t, "System error while pushing ontology");
 					} finally {
 						if (needsUndo) vo.undoCommit();
 					}
@@ -473,7 +493,12 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 	 */
 	public boolean checkCommitPushAllowed(DistributedOntology dOnto, HGPeerIdentity server) {
 		boolean mayCommit;
-		VersionedOntologyComparisonResult result = repository.compareOntologyToRemote(dOnto, server);
+		VersionedOntologyComparisonResult result = null;
+		try {
+			result = repository.compareOntologyToRemote(dOnto, server, ACTIVITY_TIMEOUT_SECS);
+		} catch (Throwable t) {
+			showException(t, "System error while comparing to remote");
+		}
 		if (result != null) {
 			if (result.isConflict()) {
 	            JOptionPane.showMessageDialog(getWorkspace(),
@@ -544,7 +569,13 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 	}
 	
 	public boolean checkPullAllowed(DistributedOntology dOnto, HGPeerIdentity server) {
-		VersionedOntologyComparisonResult result = repository.compareOntologyToRemote(dOnto, server);
+		VersionedOntologyComparisonResult result = null;
+		try {
+			result = repository.compareOntologyToRemote(dOnto, server, ACTIVITY_TIMEOUT_SECS);
+		} catch (Throwable t) {
+			showException(t, "System error while comparing ontologies");
+			return false;
+		}
 		return checkPullAllowed(result);
 	}
 
@@ -559,7 +590,13 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 		if (serverPeer == null) return;
 		//Show Pull Dialog with incoming changes
 		//Offer to Pull until a certain revision
-		VersionedOntologyComparisonResult result = repository.compareOntologyToRemote(dOnto, serverPeer);
+		VersionedOntologyComparisonResult result;
+		try {
+			result = repository.compareOntologyToRemote(dOnto, serverPeer, ACTIVITY_TIMEOUT_SECS);
+		} catch (Exception e) {
+			showException(e, "System error while comparing to remote.");
+			return;
+		}
 		if (checkPullAllowed(dOnto, serverPeer)) {
 			int confirm = PullDistributedOntologyViewPanel.showUpdateVersionedOntologyDialog(
 					getWorkspace(), 
@@ -576,25 +613,30 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 						"There was no revision checked for the update. " 
 						,"Hypergraph Team - Update - No revision to transmit", JOptionPane.WARNING_MESSAGE);
 				return;
-			}
-			PullActivity pa = repository.pullUntilRevision(dOnto, serverPeer, lastPullRevision);
-			try {
-				ActivityResult paa = pa.getFuture().get();
-				if (paa.getException() == null) {
-					JOptionPane.showMessageDialog(getWorkspace(),
-							"Updating " + VDRenderer.render(dOnto) + "\n from " 
-							+ VDRenderer.render(serverPeer) + " " + repository.getPeerUserId(serverPeer)
-									+ "\n completed with the following message: \n" + pa.getCompletedMessage(),
-							"Hypergraph Team - Update - Complete", JOptionPane.INFORMATION_MESSAGE);
-				} else {
-					throw paa.getException();
+			} 
+			if (areYouSure("Hyperaph Team - Update", "Are you sure to update?")) {
+				PullActivity pa = repository.pullUntilRevision(dOnto, serverPeer, lastPullRevision);
+				try {
+					ActivityResult paa = pa.getFuture().get(60, TimeUnit.SECONDS);
+					if (paa.getException() == null) {
+						JOptionPane.showMessageDialog(getWorkspace(),
+								"Updating " + VDRenderer.render(dOnto) + "\n from " 
+								+ VDRenderer.render(serverPeer) + " " + repository.getPeerUserId(serverPeer)
+										+ "\n completed with the following message: \n" + pa.getCompletedMessage(),
+								"Hypergraph Team - Update - Complete", JOptionPane.INFORMATION_MESSAGE);
+					} else {
+						throw paa.getException();
+					}
+				} catch (Throwable e) {
+					showException(e, "System error while pull until revision.");
+//					JOptionPane.showMessageDialog(getWorkspace(), e.toString() + " - " + e.getMessage(), "Team Update Error",
+//							JOptionPane.ERROR_MESSAGE);
 				}
-			} catch (Throwable e) {
-				JOptionPane.showMessageDialog(getWorkspace(), e.toString() + " - " + e.getMessage(), "P2P Pull Error",
-						JOptionPane.ERROR_MESSAGE);
+				// Fire Onto Reloaded
+				causeViewUpdate();
+			} else {
+				//user cancelled
 			}
-			// Fire Onto Reloaded
-			causeViewUpdate();
 		} // else UI already showed reason
 	}
 
@@ -603,7 +645,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 		HGPeerIdentity server = getServerForDistributedOntology(dOnto);
 		if (server == null) return;
 		String userId = repository.getPeerUserId(server);
-		VersionedOntologyComparisonResult result = repository.compareOntologyToRemote(dOnto, server);
+		VersionedOntologyComparisonResult result = repository.compareOntologyToRemote(dOnto, server, ACTIVITY_TIMEOUT_SECS);
 		if (result != null) {
 			String title = "Hypergraph Team - Compare " + VDRenderer.render(dOnto) + " Remote: " + VDRenderer.render(server);
 			CompareVersionedOntologyViewPanel.showCompareVersionedOntologyDialog(title, getWorkspace(), dOnto, server, userId, result);
@@ -748,8 +790,8 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 			throw new IllegalStateException("getActiveOntologyDistributionState unknown for: " + donto);
 		}
 	}
-	
-    /**
+
+	/**
      * Returns the VD OntologyRepository implementation of our plugin (Protege Interface).
      * 
      * @return
@@ -762,5 +804,21 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
         	}
         }
         return null;
+    }
+    
+    public void showException(Throwable t, String title) {
+    	Throwable cur = t;
+    	while (cur.getCause() != null) {
+    		cur = cur.getCause(); 
+    	}
+    	String excRendered = cur.toString();
+		JOptionPane.showMessageDialog(getWorkspace(),
+				"System Error: \r\n Caused by: " 
+				+ excRendered + " \r\n",
+				title, JOptionPane.ERROR_MESSAGE);
+		//Print Exception to console
+		System.err.println("System Error " + new Date() + " r\n"
+				+ excRendered);
+		t.printStackTrace(System.err);
     }
 }

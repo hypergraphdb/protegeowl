@@ -147,6 +147,13 @@ public class VHGOwlEditorKit extends HGOwlEditorKit {
                         "Cannot commit: No pending changes",
                         "Hypergraph Versioning - No Changes",
                         JOptionPane.INFORMATION_MESSAGE);
+			} else if (vo.getNrOfCommittableChanges() == 0){
+				// ALL PENDING CHANGES ARE CONFLICTS
+                JOptionPane.showMessageDialog(getWorkspace(),
+                        "Cannot commit: All your pending changes are conflicts \r\n"
+                		+"Conflicts will not be committed. Use Rollback.",
+                        "Hypergraph Versioning - All changes are conflicts",
+                        JOptionPane.INFORMATION_MESSAGE);
 			} else {
 				// 	COMMIT WHAT WHO INCREMENT OK CANCEL
 				VHGCommitDialog dlg = VHGCommitDialog.showDialog(getWorkspace(), vo, activeOnto);
@@ -212,21 +219,18 @@ public class VHGOwlEditorKit extends HGOwlEditorKit {
         		//? Head Changes.size() == 0, nothing to do
         		if (vo.getWorkingSetChanges().size() > 0) {
         			RollbackDialog dlg = RollbackDialog.showDialog("Hypergraph Versioning - Rollback", getWorkspace(), vo, this);
-        			if (dlg.isRolbackOK()) {
-//            		int userConfirm = JOptionPane.showConfirmDialog(getWorkspace(),
-//                            "All currently pending changes for : \r\n" + VDRenderer.render(activeOntology) 
-//                            + "\r\n will be deleted. This cannot be undone locally. " 
-//                            + "\r\n The number of changes to be rolled back is : " +  vo.getWorkingSetChanges().size()
-//                            + "\r\n  Do you wish to roll back ?",
-//                            "Hypergraph Versioning - Rollback Confirm",
-//                            JOptionPane.YES_NO_OPTION);
-//            		if (userConfirm == JOptionPane.YES_OPTION) { 
-            			vo.rollback();
-            			//Update Protege
-            			causeViewUpdate();
-            			//Clear undo/redo history on revert
-            			getModelManager().getHistoryManager().clear();
-            			success = true;
+        			if (dlg.isRollbackOK()) {
+        				if (areYouSure("Hypergraph Versioning - Rollback", 
+        						"Your pending changes will be lost. \r\n Are you sure to rollback?")) {
+	            			vo.rollback();
+	            			//Update Protege
+	            			causeViewUpdate();
+	            			//Clear undo/redo history on revert
+	            			getModelManager().getHistoryManager().clear();
+	            			success = true;
+        				} else {
+        					success = false;
+        				}
             		} else {
             			//User abort: no dialog
             			success = false;
@@ -269,19 +273,38 @@ public class VHGOwlEditorKit extends HGOwlEditorKit {
         			if (selectedRevision != null) {
         				if (!selectedRevision.equals(vo.getHeadRevision())) {
 	        				if (vo.getNrOfRevisions() > 1) {
-		            			vo.revertHeadTo(selectedRevision, true);
-		            			causeViewUpdate();
-		            			//Clear undo/redo history on revert
-		            			getModelManager().getHistoryManager().clear();
-		            			success = true;
-		                        JOptionPane.showMessageDialog(getWorkspace(),
-		                                "This ontology was sucessfully  reverted. " 
-		                        		+ "Head is now: \r\n" 
-		                        		+ VDRenderer.render(vo.getHeadRevision()) 
-		                        		+ "\r\n  (" + (vo.getHeadRevision().getRevisionComment()) + ")"
-		                        		+ "\r\n Reapplied uncommitted changes: " + vo.getWorkingSetChanges().size(),
-		                                "Hypergraph Versioning - Revert Completed",
-		                                JOptionPane.INFORMATION_MESSAGE);
+	        					if (areYouSure("Hypergraph Versioning - Revert", 
+	        							"Are you sure to revert ontololgy?")) {
+			            			vo.revertHeadTo(selectedRevision, true);
+			            			causeViewUpdate();
+			            			//Clear undo/redo history on revert
+			            			getModelManager().getHistoryManager().clear();
+			            			success = true;
+			            			if (vo.getWorkingSetConflicts().isEmpty()) {
+				                        JOptionPane.showMessageDialog(getWorkspace(),
+				                                "This ontology was sucessfully reverted. " 
+				                        		+ "Head is now: \r\n" 
+				                        		+ VDRenderer.render(vo.getHeadRevision()) 
+				                        		+ "\r\n  (" + (vo.getHeadRevision().getRevisionComment()) + ")"
+				                        		+ "\r\n Reapplied uncommitted changes: " + vo.getWorkingSetChanges().size(),
+				                                "Hypergraph Versioning - Revert Completed",
+				                                JOptionPane.INFORMATION_MESSAGE);
+			            			} else {
+			            				//Conflicts.
+				                        JOptionPane.showMessageDialog(getWorkspace(),
+				                                "This ontology was sucessfully reverted, but conflicts occured with your uncommitted changes. " 
+				                        		+ "Head is now: \r\n" 
+				                        		+ VDRenderer.render(vo.getHeadRevision()) 
+				                        		+ "\r\n  (" + (vo.getHeadRevision().getRevisionComment()) + ")"
+				                        		+ "\r\n Reapplied uncommitted changes: " + vo.getWorkingSetChanges().size()
+				                        		+ "\r\n Conflicts: " + vo.getWorkingSetConflicts().size()
+				                        		+ "\r\n Please open Team/History for details on conflicts.",
+				                                "Hypergraph Versioning - Revert Completed with Conflicts",
+				                                JOptionPane.WARNING_MESSAGE);
+			            			}
+	        					} else {
+	        						success = false;
+	        					}
 		        			} else {
 		        				//cannot revert beyond base
 		                        JOptionPane.showMessageDialog(getWorkspace(),
@@ -396,6 +419,12 @@ public class VHGOwlEditorKit extends HGOwlEditorKit {
 		}
 	} 
 
+	public boolean areYouSure(String title, String txt) {
+		int confirm = JOptionPane.showConfirmDialog(getWorkspace(), 
+				txt, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+		return (confirm == JOptionPane.OK_OPTION);
+	}
+	
 	public String getRenderedActivityException(Throwable e) {
     	Throwable ex = e;
     	while (ex instanceof RuntimeException && ex.getCause() != null) {
