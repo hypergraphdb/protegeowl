@@ -2,6 +2,8 @@ package gov.miamidade.hgowl.plugin.owl;
 
 import java.io.File;
 
+import javax.swing.JOptionPane;
+
 import gov.miamidade.hgowl.plugin.HGOwlProperties;
 
 import org.hypergraphdb.app.owl.HGDBApplication;
@@ -21,9 +23,18 @@ import org.protege.editor.core.OntologyRepositoryFactory;
 public class HGOwlOntologyRepositoryFactory extends OntologyRepositoryFactory {
 
 	HGDBOntologyRepository dbRepository;
-	
+
 	@Override
 	public void initialise() throws Exception {
+		try {
+			initialiseInternal();
+		} catch (Exception e) {
+			JOptionPane.showConfirmDialog(null, "Protege cannot start the repository. Exiting.", "Protege Repository error", JOptionPane.PLAIN_MESSAGE ,JOptionPane.ERROR_MESSAGE);
+			System.exit(-1);
+		}
+	}
+
+	public void initialiseInternal() throws Exception {
 		String hyperGraphLocation = HGOwlProperties.getInstance().getHgLocationFolderPath();
 		try {
 			File f = new File(hyperGraphLocation);
