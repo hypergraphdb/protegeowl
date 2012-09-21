@@ -109,6 +109,12 @@ import uk.ac.manchester.cs.owl.owlapi.OWLOntologyManagerImpl;
 public class HGOwlModelManagerImpl extends AbstractModelManager
         implements OWLModelManager, OWLEntityRendererListener, OWLOntologyChangeListener, OWLOntologyLoaderListener {
 
+	/**
+	 * If this is set to true, all modifications to ontologies will be channelled through the AWT Event Thread.  
+	 * This would cause deadlocks when activities modify the ontology through our PHGDBOntologyManager and the activities result is waited for by the Swing thread.
+	 */
+	public static boolean USE_SWING_INVOKE_AND_WAIT = false;
+	
     private static final Logger logger = Logger.getLogger(HGOwlModelManagerImpl.class);
 
     private HistoryManager historyManager;
@@ -214,7 +220,7 @@ public class HGOwlModelManagerImpl extends AbstractModelManager
         //manager = ProtegeOWLManager.createOWLOntologyManager();
         manager = PHGDBOWLManager.createOWLOntologyManager();
         manager.setUseWriteSafety(true);
-        manager.setUseSwingThread(true);
+        manager.setUseSwingThread(USE_SWING_INVOKE_AND_WAIT);
         manager.setSilentMissingImportsHandling(true);
         manager.addOntologyChangeListener(this);
         manager.addOntologyLoaderListener(this);
