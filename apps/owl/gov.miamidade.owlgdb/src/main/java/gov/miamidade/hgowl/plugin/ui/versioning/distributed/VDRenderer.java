@@ -40,7 +40,16 @@ public class VDRenderer {
 		if (vo == null) return "";
 		return render(vo.getWorkingSetData()) + " Head: " + render(vo.getHeadRevision(), !vo.getWorkingSetChanges().isEmpty());
 	}
-	
+
+	public static String renderWorkingSetOf(VersionedOntology vo) {
+		if (vo == null) return "";
+		String s = "" + vo.getWorkingSetChanges().getArity() + " changes ";
+		if (!vo.getWorkingSetConflicts().isEmpty()) {
+			s+= "(" + vo.getWorkingSetConflicts().size() + " conflicts)";
+		}
+		return s;
+	}
+
 	public static String render(OWLOntology onto) {
 		if (onto == null) return "";
 		return "" + onto.getOntologyID().getOntologyIRI().getFragment() + " (" + onto.getOntologyID().getOntologyIRI() + ")";

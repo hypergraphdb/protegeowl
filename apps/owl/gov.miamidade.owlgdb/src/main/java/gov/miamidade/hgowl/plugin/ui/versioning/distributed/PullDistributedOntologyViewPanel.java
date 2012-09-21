@@ -1,20 +1,19 @@
 package gov.miamidade.hgowl.plugin.ui.versioning.distributed;
 
-import org.hypergraphdb.app.owl.versioning.Revision;
-import org.hypergraphdb.app.owl.versioning.VersionedOntologyComparator.RevisionComparisonResult;
-import org.hypergraphdb.app.owl.versioning.VersionedOntologyComparator.VersionedOntologyComparisonResult;
-import org.hypergraphdb.app.owl.versioning.distributed.DistributedOntology;
-import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowseRepositoryActivity.BrowseEntry;
-import org.hypergraphdb.peer.HGPeerIdentity;
-import org.hypergraphdb.peer.HyperGraphPeer;
-import org.protege.editor.core.ui.util.JOptionPaneEx;
-import org.protege.editor.core.ui.workspace.Workspace;
-
-import javax.swing.*;
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.util.List;
+
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
+import org.hypergraphdb.app.owl.versioning.Revision;
+import org.hypergraphdb.app.owl.versioning.VersionedOntologyComparator.VersionedOntologyComparisonResult;
+import org.hypergraphdb.app.owl.versioning.distributed.DistributedOntology;
+import org.hypergraphdb.peer.HGPeerIdentity;
+import org.protege.editor.core.ui.util.JOptionPaneEx;
+import org.protege.editor.core.ui.workspace.Workspace;
 
 /**
  * PeerViewPanel shows a list of selected peers as HGPeerIdentities and allows the user to select and entry.
@@ -68,7 +67,8 @@ public class PullDistributedOntologyViewPanel extends JPanel {
 
     public static int showUpdateVersionedOntologyDialog(Workspace ws, VersionedOntologyComparisonResult result, DistributedOntology donto, String userId, HGPeerIdentity server) {
         PullDistributedOntologyViewPanel panel = new PullDistributedOntologyViewPanel(donto, result, server, userId);
-        int ret = JOptionPaneEx.showConfirmDialog(ws, "Team - Update " + donto.getWorkingSetData().getOntologyID() + " from " + userId, panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, panel.table);
+        int ret = JOptionPaneEx.showConfirmDialog(ws, "Team - Update " + donto.getWorkingSetData().getOntologyID() + " from " + userId, panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, 
+        		panel.table, new String[] {"Update...", "Cancel"}, "Update...");
         lastPullRevision = panel.table.getPullVOTableModel().getLastPullTargetRevision();
         return ret;
     }

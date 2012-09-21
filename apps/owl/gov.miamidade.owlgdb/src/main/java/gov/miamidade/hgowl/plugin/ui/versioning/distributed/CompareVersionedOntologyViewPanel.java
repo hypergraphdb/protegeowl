@@ -40,8 +40,11 @@ public class CompareVersionedOntologyViewPanel extends JPanel {
 		    +"<table width='100%' border='0'>"
 		    +"<tr><td align='right'><b>Ontology:</b></td><td>"+ VDRenderer.render(dOnto) + "</td></tr>"
 		    +"<tr><td align='right'><b>Server:</b></td><td>"+VDRenderer.render(server) + " " + userId + "</td></tr>"
-		    +"<tr><td align='right'><b>Head:</b></td><td>"+VDRenderer.render(dOnto.getVersionedOntology().getHeadRevision()) + "(local)"+ "</td></tr>"
-		    +"</table>";
+		    +"<tr><td align='right'><b>Head:</b></td><td>"+VDRenderer.render(dOnto.getVersionedOntology().getHeadRevision()) + "(local)"+ "</td></tr>";
+        if (!dOnto.getVersionedOntology().getWorkingSetChanges().isEmpty()) {
+		    message +="<tr><td align='right'><b>Pending:</b></td><td> Your local workingset has uncommitted changes (local)"+ "</td></tr>";
+        }
+		message += "</table>";
 		JPanel northPanel = new JPanel(new BorderLayout(5, 5));
 		northPanel.add(new JLabel(message), BorderLayout.NORTH);
         table = new CompareVOResultTable(result);
@@ -59,7 +62,7 @@ public class CompareVersionedOntologyViewPanel extends JPanel {
 
     public static void showCompareVersionedOntologyDialog(String title, Workspace ws, DistributedOntology dOnto, HGPeerIdentity server,  String userId, VersionedOntologyComparisonResult result) {
         CompareVersionedOntologyViewPanel panel = new CompareVersionedOntologyViewPanel(result, dOnto, server, userId);
-        JOptionPaneEx.showConfirmDialog(ws, title, panel, JOptionPane.PLAIN_MESSAGE,  JOptionPane.OK_CANCEL_OPTION, panel.table);
+        JOptionPaneEx.showConfirmDialog(ws, title, panel, JOptionPane.PLAIN_MESSAGE,  JOptionPane.PLAIN_MESSAGE, panel.table);
         selectedResult = panel.table.getSelectedEntry();
     }
     
