@@ -6,7 +6,6 @@ import gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDRenderer;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,6 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
@@ -80,18 +80,18 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 		    +"</table>";
 		JPanel northPanel = new JPanel(new BorderLayout(5, 5));
 		northPanel.add(new JLabel(message), BorderLayout.NORTH);
-		JPanel centerPanel = new JPanel(new GridLayout(2, 1, 5, 5));
+		JSplitPane centerPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		// TOP SHOWS REVISIONS
 		ontologyView = new VOntologyViewPanel(vo);
 		ontologyView.getTable().getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		ontologyView.getTable().getSelectionModel().addListSelectionListener(this);
-		centerPanel.add(ontologyView);
+		centerPanel.setLeftComponent(ontologyView);
 		
 		//BOTTOM SHOWS SELECTED CHANGESET
 		changeSetPanel = new ChangeSetTablePanel(vo.getWorkingSetData(), vo.getHyperGraph(), kit); //(new String[]{EMPTY_LIST_TEXT});
 		//centerPanel.add(new JScrollPane(changeSetList));
-		centerPanel.add(changeSetPanel);
-		
+		centerPanel.setRightComponent(changeSetPanel);
+		centerPanel.setDividerLocation(150);
 		btClose = new JButton("Close");
 		btClose.addActionListener(this);
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));

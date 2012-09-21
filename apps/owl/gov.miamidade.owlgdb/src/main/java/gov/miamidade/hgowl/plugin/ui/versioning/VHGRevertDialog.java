@@ -6,40 +6,27 @@ import gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDRenderer;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.util.ListIterator;
 import java.util.SortedSet;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListModel;
+import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.hypergraphdb.HyperGraph;
 import org.hypergraphdb.app.owl.versioning.ChangeSet;
 import org.hypergraphdb.app.owl.versioning.Revision;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
-import org.hypergraphdb.app.owl.versioning.change.VOWLChange;
-import org.hypergraphdb.app.owl.versioning.change.VOWLChangeFactory;
 import org.protege.editor.owl.OWLEditorKit;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyChange;
 
 /**
  * VHGCommitDialog shows all revisions of a given versioned ontology, allows the user to select a revisions 
@@ -95,25 +82,26 @@ public class VHGRevertDialog extends JDialog implements ActionListener, ListSele
 		    +"</table>";
 		JPanel northPanel = new JPanel(new BorderLayout(5, 5));
 		northPanel.add(new JLabel(message), BorderLayout.NORTH);
-		JPanel centerPanel = new JPanel(new GridLayout(2, 1, 5, 5));
+		JSplitPane centerPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		// TOP SHOWS REVISIONS
 		ontologyView = new VOntologyViewPanel(vo);
 		ontologyView.getTable().getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		ontologyView.getTable().getSelectionModel().addListSelectionListener(this);
-		centerPanel.add(ontologyView);
+		centerPanel.setLeftComponent(ontologyView);
 		
 		//BOTTOM SHOWS SELECTED CHANGESET
 		changeSetPanel = new ChangeSetTablePanel(vo.getWorkingSetData(), vo.getHyperGraph(), kit); //(new String[]{EMPTY_LIST_TEXT});
 		//centerPanel.add(new JScrollPane(changeSetList));
-		centerPanel.add(changeSetPanel);
+		centerPanel.setRightComponent(changeSetPanel);
+		centerPanel.setDividerLocation(150);
 		
 		btOK = new JButton("Revert ontology");
 		btOK.addActionListener(this);
 		btCancel = new JButton("Cancel");	
 		btCancel.addActionListener(this);
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		buttonPanel.add(btCancel);
 		buttonPanel.add(btOK);
+		buttonPanel.add(btCancel);
 		//
 		add(northPanel, BorderLayout.NORTH);
 		add(buttonPanel, BorderLayout.SOUTH);

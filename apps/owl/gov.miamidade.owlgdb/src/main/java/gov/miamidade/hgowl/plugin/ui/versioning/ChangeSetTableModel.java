@@ -1,9 +1,8 @@
 package gov.miamidade.hgowl.plugin.ui.versioning;
 
-import java.awt.Color;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
+import gov.miamidade.hgowl.plugin.ui.versioning.ChangeSetTable.ChangeDisplayMode;
 import gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDRenderer;
 
 import javax.swing.table.AbstractTableModel;
@@ -22,17 +21,17 @@ import org.semanticweb.owlapi.model.OWLOntologyChange;
  */
 public class ChangeSetTableModel extends AbstractTableModel {
 	//Col Number, Change, Functional
-
+	
 	private static final long serialVersionUID = -6611034383139157644L;
 
 	private ChangeSet changeSet;
 	private SortedSet<Integer> conflictIndices;
 	private OWLOntology onto;
 	private HyperGraph graph;
+	private ChangeDisplayMode mode; 
 	
 	public static final int CHANGENR_COLUMN_INDEX = 0;
-	public static final int CHANGE_RENDERED_COLUMN_INDEX = 1;
-	public static final int CHANGE_FUCNTIONAL_COLUMN_INDEX = 2;
+	public static final int CHANGE_COLUMN_INDEX = 1;
 
 	public ChangeSetTableModel(OWLOntology onto, HyperGraph graph) {
 		changeSet = null;
@@ -40,6 +39,21 @@ public class ChangeSetTableModel extends AbstractTableModel {
 		this.graph = graph;
 	}
 	
+	/**
+	 * @return the mode
+	 */
+	protected ChangeDisplayMode getMode() {
+		return mode;
+	}
+
+	/**
+	 * @param mode the mode to set
+	 */
+	protected void setMode(ChangeDisplayMode mode) {
+		this.mode = mode;
+        fireTableDataChanged();
+	}
+
 	@Override
 	public int getRowCount() {
 		if (changeSet != null) {
@@ -51,7 +65,7 @@ public class ChangeSetTableModel extends AbstractTableModel {
 
 	@Override
 	public int getColumnCount() {
-		return 3;
+		return 2;
 	}
 
     public void refresh(ChangeSet changeSet, SortedSet<Integer> conflictIndices) {
@@ -65,8 +79,6 @@ public class ChangeSetTableModel extends AbstractTableModel {
             return "Nr";
         } else if(column == 1) {
             return "Change";
-        } else if(column == 2) {
-            return "Functional";
         } else {
             return "";
         }
@@ -80,9 +92,11 @@ public class ChangeSetTableModel extends AbstractTableModel {
 	        if(columnIndex == 0) {
 	            return VDRenderer.render(changeIndex);
 	        } else if(columnIndex == 1) {
-	            return oc;
-	        } else if(columnIndex == 2) {
-	            return oc.toString();
+	        	if (mode.equals(ChangeDisplayMode.OWL)) {
+		            return oc;
+	        	} else {
+		            return oc.toString();
+	        	}
 	        } else { 
 	            throw new IllegalArgumentException();
 	        }
@@ -96,13 +110,10 @@ public class ChangeSetTableModel extends AbstractTableModel {
             return "";
         } else if(columnIndex == 1) {
             return "No changes to display";
-        } else if(columnIndex == 2) {
-            return "";
         } else { 
             throw new IllegalArgumentException();
         }
     }
-
     
     public String getTooltipAt(int rowIndex, int columnIndex) {
     	if (changeSet != null && conflictIndices != null) {
@@ -117,17 +128,12 @@ public class ChangeSetTableModel extends AbstractTableModel {
     	}
     }
 
-
-    public Color getCellBgColorAt(int rowIndex, int columnIndex) {
+    public boolean isConflict(int rowIndex, int columnIndex) {
     	if (changeSet != null && conflictIndices != null) {
 	    	int changeIndex = changeSet.getArity() - rowIndex - 1;
-	    	if (conflictIndices.contains(changeIndex)) {
-	    		return Color.red.brighter().brighter();
-	    	} else {
-	    		return Color.white;
-	    	}
+	    	return (conflictIndices.contains(changeIndex));
     	} else {
-    		return Color.white;
+    		return false;
     	}
     }
 }

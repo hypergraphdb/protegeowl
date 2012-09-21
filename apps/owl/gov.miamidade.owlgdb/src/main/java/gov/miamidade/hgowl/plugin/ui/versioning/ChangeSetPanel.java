@@ -1,7 +1,6 @@
 package gov.miamidade.hgowl.plugin.ui.versioning;
 
 import gov.miamidade.hgowl.plugin.ui.render.OWLChangeCellRenderer;
-import gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDRenderer;
 
 import java.awt.Color;
 import java.awt.GridLayout;

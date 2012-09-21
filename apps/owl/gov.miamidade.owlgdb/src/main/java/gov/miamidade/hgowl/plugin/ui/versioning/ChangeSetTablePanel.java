@@ -1,9 +1,12 @@
 package gov.miamidade.hgowl.plugin.ui.versioning;
 
+import gov.miamidade.hgowl.plugin.ui.versioning.ChangeSetTable.ChangeDisplayMode;
+
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.SortedSet;
 
 import javax.swing.Action;
@@ -14,6 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.TransferHandler;
@@ -36,6 +40,9 @@ public class ChangeSetTablePanel extends JPanel {
 	private ChangeSetTable changeSetTable; 
 	private ChangeSet changeSet;
 	private JLabel headerLabel;
+	private JLabel footerLabel = new JLabel("Select changes and press Ctrl-C to copy");
+	private JToggleButton displayModeBt = new JToggleButton("Render Functional");
+
 	JScrollPane scrollPane;
 	
 	public ChangeSetTablePanel(HGDBOntology onto, HyperGraph graph, OWLEditorKit kit) {
@@ -43,11 +50,23 @@ public class ChangeSetTablePanel extends JPanel {
 		changeSetTable = new ChangeSetTable(onto, graph, kit);
 		scrollPane = new JScrollPane(changeSetTable);
 		headerLabel = new JLabel();
-		//scrollPane.setPreferredSize(new Dimension(2000, 2000));
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		//scrollPanel.add(scrollPane);
+		displayModeBt.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (displayModeBt.getModel().isSelected()) {
+					changeSetTable.setMode(ChangeDisplayMode.FUNCTIONAL);
+				} else {
+					changeSetTable.setMode(ChangeDisplayMode.OWL);
+				}
+			}
+		});
+		JPanel footerPanel = new JPanel(new BorderLayout());
+		footerPanel.add(footerLabel,BorderLayout.EAST);
+		footerPanel.add(displayModeBt, BorderLayout.WEST);
 		this.add(headerLabel, BorderLayout.NORTH);
 		this.add(scrollPane, BorderLayout.CENTER);
+		this.add(footerPanel, BorderLayout.SOUTH);
 		enableClipBoardCopy(changeSetTable);
 		//this.add(new JLabel("<html><small>Use <i>Ctrl-C</i> to copy changes</small></html>"), BorderLayout.PAGE_END);
 	}
@@ -93,7 +112,7 @@ public class ChangeSetTablePanel extends JPanel {
 					int[]selectedRows = changeSetTable.getSelectedRows();
 					if (selectedRows != null) {
 						for (int selectedRow : selectedRows) {
-							Object o = changeSetTable.getModel().getValueAt(selectedRow, ChangeSetTableModel.CHANGE_RENDERED_COLUMN_INDEX);
+							Object o = changeSetTable.getModel().getValueAt(selectedRow, ChangeSetTableModel.CHANGE_COLUMN_INDEX);
 							transfer.append(o.toString() + "\r\n");
 						}
 					}
