@@ -158,7 +158,13 @@ public class VOntologyTableModel extends AbstractTableModel {
 				returnObject = "you";
 			}; break;
 			case 4: {
-				returnObject = "";
+				//Comment
+				if (versionedOntology.getWorkingSetConflicts().isEmpty()) {
+					returnObject = "";
+				} else {
+					returnObject = "<html><b>Contains " + versionedOntology.getWorkingSetConflicts().size() 
+						 + " conflicts that will be removed on commit.";   
+				}
 			}; break;
 			case 5: {
 				returnObject = cs.size();
