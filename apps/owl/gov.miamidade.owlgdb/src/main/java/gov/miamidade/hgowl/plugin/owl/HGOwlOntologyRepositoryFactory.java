@@ -29,6 +29,7 @@ public class HGOwlOntologyRepositoryFactory extends OntologyRepositoryFactory {
 		try {
 			initialiseInternal();
 		} catch (Exception e) {
+			e.printStackTrace();
 			JOptionPane.showConfirmDialog(null, "Protege cannot start the repository. Exiting.", "Protege Repository error", JOptionPane.PLAIN_MESSAGE ,JOptionPane.ERROR_MESSAGE);
 			System.exit(-1);
 		}

@@ -153,7 +153,7 @@ public class VDHGOwlOntologyRepository implements OntologyRepository {
             	} else {
                 	distributedInfo = "Local Versioning";
             	}
-            	headRevision = VDRenderer.render(vo.getHeadRevision());
+            	headRevision = VDRenderer.render(vo.getHeadRevision(), !vo.getWorkingSetChanges().isEmpty());
             } else {
             	distributedInfo = "Not Versioned";
             	headRevision = "";
