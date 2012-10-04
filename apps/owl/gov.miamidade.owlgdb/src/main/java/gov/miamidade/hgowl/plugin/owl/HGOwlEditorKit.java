@@ -530,11 +530,12 @@ public class HGOwlEditorKit extends OWLEditorKit {
         			} while(repo.existsOntologyByDocumentIRI(documentIri));
         			
         		} else {
-        			IRI defaultIri = ont.getOntologyID().getDefaultDocumentIRI();
-        			String defaultIriStr = defaultIri.toString();
-        			int schemaLength = defaultIri.getScheme().length();
-        			String hgdbIRIStr = "hgdb" + defaultIriStr.toString().substring(schemaLength);
-        			documentIri = IRI.create(hgdbIRIStr);
+//        			HGDBOntologyFormat.convertToHGDBDocumentIRI(ontologyIRI)
+//        			IRI defaultIri = ont.getOntologyID().getDefaultDocumentIRI();
+//        			String defaultIriStr = defaultIri.toString();
+//        			int schemaLength = defaultIri.getScheme().length();
+//        			String hgdbIRIStr = "hgdb" + defaultIriStr.toString().substring(schemaLength);
+        			documentIri = HGDBOntologyFormat.convertToHGDBDocumentIRI(ont.getOntologyID().getDefaultDocumentIRI());
             		//
             		// Check if exists by ID or Document IRI
             		//
