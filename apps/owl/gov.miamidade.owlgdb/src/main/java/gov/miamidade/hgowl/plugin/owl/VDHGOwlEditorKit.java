@@ -47,6 +47,7 @@ import org.protege.editor.core.OntologyRepository;
 import org.protege.editor.core.OntologyRepositoryManager;
 import org.protege.editor.owl.OWLEditorKitFactory;
 import org.protege.editor.owl.ui.view.AnonymousClassesView;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 
@@ -243,6 +244,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 		}
 		PullActivity pa = repository.pull(dOnto, serverPeer);
 		try {
+			//TODO BLOCK in NON AWT THREAD, let changes be applied in AWT.
 			ActivityResult paa = pa.getFuture().get(ACTIVITY_TIMEOUT_SECS, TimeUnit.SECONDS);
 			if (paa.getException() == null) {
 				JOptionPane.showMessageDialog(getWorkspace(),
@@ -401,6 +403,9 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 					}
 					// START PULL
 					PullActivity pa = repository.pullNew(remoteEntry.getUuid(), serverPeer);
+					//
+					//TODO BLOCK in NON AWT THREAD, let changes be applied in AWT.
+					//
 					ActivityResult paa = pa.getFuture().get(ACTIVITY_TIMEOUT_SECS, TimeUnit.SECONDS);
 					if (paa.getException() == null) {
 						JOptionPane.showMessageDialog(getWorkspace(),
@@ -409,8 +414,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 										+ "\n The new ontolgy will be loaded.",
 								"Hypergraph Team - Checkout - Complete", JOptionPane.INFORMATION_MESSAGE);
 						//Load this ontology as active
-						OWLOntology onto = repository.getHyperGraph().get(remoteEntry.getUuid());
-						OWLOntology loadedOnto = getModelManager().getOWLOntologyManager().loadOntology(onto.getOntologyID().getDefaultDocumentIRI());
+						OWLOntology loadedOnto = getModelManager().getOWLOntologyManager().loadOntology(IRI.create(remoteEntry.getOwlOntologyDocumentIRI()));
 						getModelManager().setActiveOntology(loadedOnto);
 					} else {
 						throw paa.getException();
@@ -465,6 +469,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 					boolean needsUndo = false;
 					try {
 						PushActivity pa = repository.push(activeOnto, server);
+						//Should be ok in AWT thread as no view updates are expected:
 						ActivityResult ar = pa.getFuture().get(ACTIVITY_TIMEOUT_SECS, TimeUnit.SECONDS);
 						if (ar.getException() != null) {
 							throw ar.getException();
@@ -617,6 +622,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 			if (areYouSure("Hyperaph Team - Update", "Are you sure to update?")) {
 				PullActivity pa = repository.pullUntilRevision(dOnto, serverPeer, lastPullRevision);
 				try {
+					//TODO BLOCK in NON AWT THREAD, let changes be applied in AWT.
 					ActivityResult paa = pa.getFuture().get(60, TimeUnit.SECONDS);
 					if (paa.getException() == null) {
 						JOptionPane.showMessageDialog(getWorkspace(),

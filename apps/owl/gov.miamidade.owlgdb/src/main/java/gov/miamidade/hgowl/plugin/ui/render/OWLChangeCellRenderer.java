@@ -16,6 +16,8 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 
+import org.hypergraphdb.app.owl.core.AddPrefixChange;
+import org.hypergraphdb.app.owl.core.RemovePrefixChange;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.OntologyAnnotationContainer;
 import org.protege.editor.owl.ui.renderer.OWLCellRenderer;
@@ -161,11 +163,13 @@ public class OWLChangeCellRenderer extends OWLCellRenderer {
 		if (objectToRender instanceof AddAxiom 
 				|| objectToRender instanceof AddImport
 				|| objectToRender instanceof AddOntologyAnnotation
+				|| objectToRender instanceof AddPrefixChange
 				) {
 			return iconAdd;
 		} else if(objectToRender instanceof RemoveAxiom
 			|| objectToRender instanceof RemoveImport
 			|| objectToRender instanceof RemoveOntologyAnnotation
+			|| objectToRender instanceof RemovePrefixChange
 			) {
 			return iconRemove;
 		} else {

@@ -7,10 +7,15 @@ import java.util.concurrent.Callable;
 import org.hypergraphdb.HyperGraph;
 import org.hypergraphdb.app.owl.HGDBApplication;
 import org.hypergraphdb.app.owl.HGDBOntology;
+import org.hypergraphdb.app.owl.HGDBOntologyFormat;
 import org.hypergraphdb.app.owl.HGDBOntologyManager;
 import org.hypergraphdb.app.owl.HGDBOntologyManagerImpl;
 import org.hypergraphdb.app.owl.HGDBOntologyRepository;
+import org.hypergraphdb.app.owl.core.AddPrefixChange;
 import org.hypergraphdb.app.owl.core.OWLDataFactoryHGDB;
+import org.hypergraphdb.app.owl.core.PrefixChange;
+import org.hypergraphdb.app.owl.core.PrefixChangeListener;
+import org.hypergraphdb.app.owl.core.RemovePrefixChange;
 import org.hypergraphdb.app.owl.exception.HGDBOntologyAlreadyExistsByDocumentIRIException;
 import org.hypergraphdb.app.owl.exception.HGDBOntologyAlreadyExistsByOntologyIDException;
 import org.hypergraphdb.app.owl.exception.HGDBOntologyAlreadyExistsByOntologyUUIDException;
@@ -23,6 +28,7 @@ import org.semanticweb.owlapi.io.FileDocumentSource;
 import org.semanticweb.owlapi.io.OWLParserException;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyChangeException;
+import org.semanticweb.owlapi.model.OWLOntologyFormat;
 import org.semanticweb.owlapi.model.UnloadableImportException;
 
 /**
@@ -33,7 +39,7 @@ import org.semanticweb.owlapi.model.UnloadableImportException;
  * 
  * @author Thomas Hilpold (GIC/Miami-Dade County)
  */
-public class PHGDBOntologyManagerImpl extends ProtegeOWLOntologyManager implements HGDBOntologyManager {
+public class PHGDBOntologyManagerImpl extends ProtegeOWLOntologyManager implements HGDBOntologyManager, PrefixChangeListener {
 
 	HGDBOntologyRepository ontologyRepository;
 	
@@ -102,5 +108,42 @@ public class PHGDBOntologyManagerImpl extends ProtegeOWLOntologyManager implemen
 	public int getCurrentTaskProgress() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+	
+	@Override
+    public void setOntologyFormat(OWLOntology ontology, OWLOntologyFormat format) {
+    	if (format instanceof HGDBOntologyFormat) {
+    		((HGDBOntologyFormat)format).addPrefixChangeListener(this);
+    	}
+    	super.setOntologyFormat(ontology, format);
+    }
+
+	/* (non-Javadoc)
+	 * @see org.hypergraphdb.app.owl.core.PrefixChangeListener#prefixChanged(org.hypergraphdb.app.owl.core.PrefixChange)
+	 */
+	@Override
+	public void prefixChanged(PrefixChange e) {
+		//We get notfied here if anybody modifies prefixes.
+		//We will have to look up the ontology and call for a change to be applied
+		HGDBOntology ho = getOntologyForFormat(e.getFormat());
+		if (e instanceof AddPrefixChange) {
+			applyChange(new AddPrefixChange(ho, e.getPrefixName(), e.getPrefix()));
+		} else if (e instanceof RemovePrefixChange) {
+			applyChange(new RemovePrefixChange(ho, e.getPrefixName(), e.getPrefix()));
+		} else {
+			throw new IllegalArgumentException("Unknown prefixchange: " + e + "" + e.getClass());
+		}
+	}
+	
+	public HGDBOntology getOntologyForFormat(HGDBOntologyFormat f) {
+		for (OWLOntology o : getOntologies()) {
+			if (o instanceof HGDBOntology) {
+				OWLOntologyFormat candidate = getOntologyFormat(o);
+				if (f == candidate) {
+					return (HGDBOntology)o;
+				}
+			}
+		}
+		return null;
 	}
 }
