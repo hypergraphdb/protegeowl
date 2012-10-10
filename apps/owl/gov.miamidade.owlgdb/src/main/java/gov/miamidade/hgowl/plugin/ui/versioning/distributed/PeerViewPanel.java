@@ -36,8 +36,8 @@ public class PeerViewPanel extends JPanel {
 
     private void createUI(VDHGDBOntologyRepository repo, ViewMode mode) {
         setLayout(new BorderLayout());
-        String showing = "Ontology servers only";
-		String message = "<html> <h2> Select Ontology Server for Checkout </h2> ";
+        //String showing = "Ontology servers only";
+		String message = "<html> <h2> Select Ontology Server </h2> ";
 //	    +"<table width='100%' border='0'>"
 //	    +"<tr><td align='right'><b>Showing:</b></td><td>"+ showing + "</td></tr>"
 //	    +"</table>";
