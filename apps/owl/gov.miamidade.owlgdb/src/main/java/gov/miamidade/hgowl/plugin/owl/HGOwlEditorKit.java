@@ -50,7 +50,8 @@ import org.semanticweb.owlapi.util.VersionInfo;
 import org.semanticweb.owlapi.vocab.PrefixOWLOntologyFormat;
 
 /**
- * HGOwlEditorKit
+ * HGOwlEditorKit contains UI functions for editing database-backed ontologies.
+ * 
  * Here, the crucial connection between Protege Editor and our OWL Api 
  * with Hypergraph backend is established (see initialize). 
  * The connection point to the Hypergraph OWL-API implementation is HGOWLModelManager.
@@ -217,18 +218,7 @@ public class HGOwlEditorKit extends OWLEditorKit {
     	if (DBG) System.out.println("HG HandleLoadFromRepositoryRequest");
     	boolean success;
         HGDBOntologyManager m = (HGDBOntologyManager) this.modelManager.getOWLOntologyManager();
-        //m.getOntologyRepository().printStatistics();
-        // Find Repository
-//2012.01.30 hilpold Bugfix versioned repo needs to be accomodated.       
-//        Collection<OntologyRepository> repositories = OntologyRepositoryManager.getManager().getOntologyRepositories();
         OntologyRepository repository = getProtegeRepository();
-//        for (OntologyRepository  cur: repositories) {
-//        	if (cur instanceof HGOwlOntologyRepository) {
-//        		//current implementation uses first one found
-//        		repository = cur;
-//        		break;
-//        	}
-//        }
         if (repository == null) throw new IllegalStateException("Cannot handle load from repository. No HGOwlOntologyRepository registered with Protege."); 
         // Open Repository open Dlg
         OntologyRepositoryEntry ontologyEntry = RepositoryViewPanel.showOpenDialog(repository);
@@ -416,31 +406,6 @@ public class HGOwlEditorKit extends OWLEditorKit {
     	} else {
     		super.handleSave();
     	}
-    	//OWLOntology ont = getModelManager().getActiveOntology();
-//    	OWLOntologyFormat format = getModelManager().getOWLOntologyManager().getOntologyFormat(ont);
-//    	// if the format is Database, do nothing because is is already saved
-//    	if(format instanceof OWLDBOntologyFormat){
-//    		return;
-//    	}
-//    	
-//        try {
-//            getModelManager().save();
-//            getWorkspace().save();
-//            for (URI uri : newPhysicalURIs) {
-//                addRecent(uri);
-//            }
-//            newPhysicalURIs.clear();
-//        }
-//        catch (OWLOntologyStorerNotFoundException e) {
-//            ont = getModelManager().getActiveOntology();
-//            format = getModelManager().getOWLOntologyManager().getOntologyFormat(ont);
-//            String message = "Could not save ontology in the specified format (" + format + ").\n" + "Please selected 'Save As' and select another format.";
-//            logger.warn(message);
-//            JOptionPane.showMessageDialog(getWorkspace(),
-//                                          message,
-//                                          "Could not save ontology",
-//                                          JOptionPane.ERROR_MESSAGE);
-//        }
     }
 
     
@@ -468,8 +433,8 @@ public class HGOwlEditorKit extends OWLEditorKit {
     protected boolean handleSaveAs(OWLOntology ont) throws Exception {
         PHGDBOntologyManagerImpl man = (PHGDBOntologyManagerImpl)getModelManager().getOWLOntologyManager();
         OWLOntologyFormat oldFormat = man.getOntologyFormat(ont);
-        IRI oldDocumentIRI = man.getOntologyDocumentIRI(ont);
-        HGDBOntologyRepository repo = man.getOntologyRepository();
+        //IRI oldDocumentIRI = man.getOntologyDocumentIRI(ont);
+        //HGDBOntologyRepository repo = man.getOntologyRepository();
         OWLOntologyFormat format = HGOntologyFormatPanel.showDialog(this,
                                                                   oldFormat,
                                                                   "Choose a format to use when saving the " + getModelManager().getRendering(ont) + " ontology");
@@ -621,51 +586,6 @@ public class HGOwlEditorKit extends OWLEditorKit {
         }
         return file;
     }
-
-//    public void handleSaveAs() throws Exception {
-//    	System.out.println("HG handleSaveAs ");
-//    	super.handleSaveAs();
-    	
-//        OWLOntologyManager man = getModelManager().getOWLOntologyManager();
-//        OWLOntology ont = getModelManager().getActiveOntology();
-//        OWLOntologyFormat format = DBOntologyFormatPanel.showDialog(this, man.getOntologyFormat(ont));
-//        if (format == null) {
-//            logger.warn("Please select a valid format");
-//            return;
-//        }
-//        if(format instanceof OWLDBOntologyFormat){
-//        	if(DatabaseDialogPanel.showDialog(this)){
-//        		Properties prop = getDBProperty();
-//        		((HGModelManagerImpl)modelManager).saveAsDB(prop);
-//        	}
-//        	
-//        	
-//        } else {
-//        	UIHelper helper = new UIHelper(this);
-//            File file = helper.saveOWLFile("Please select a location in which to save: " + getModelManager().getRendering(ont));
-//            if (file != null) {
-//                int extensionIndex = file.toString().lastIndexOf('.');
-//                if (extensionIndex == -1) {
-//                    file = new File(file.toString() + ".owl");
-//                }
-//                else if (extensionIndex != file.toString().length() - 4) {
-//                    file = new File(file.toString() + ".owl");
-//                }
-//            }
-//            if (file != null){
-//                man.setOntologyFormat(ont, format);
-//                IRI documentIRI = IRI.create(file.toURI());
-//                man.setOntologyDocumentIRI(ont, documentIRI);
-//                getModelManager().setDirty(ont);
-//                newPhysicalURIs.add(file.toURI());
-//                handleSave();
-//            }
-//            else{
-//                logger.warn("No valid file specified for the save as operation - quitting");
-//            }
-//        }
-        
-//    }
     
     public OWLOntology getActiveOntology() {
         HGOwlModelManagerImpl m = (HGOwlModelManagerImpl)getOWLModelManager();
@@ -678,7 +598,4 @@ public class HGOwlEditorKit extends OWLEditorKit {
         //m.get        
     }
 
-	/**
-	 * 
-	 */
 }

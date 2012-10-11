@@ -1,39 +1,29 @@
 package gov.miamidade.hgowl.plugin.owlapi.apibinding;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.concurrent.Callable;
 
-import org.hypergraphdb.HyperGraph;
 import org.hypergraphdb.app.owl.HGDBApplication;
 import org.hypergraphdb.app.owl.HGDBOntology;
 import org.hypergraphdb.app.owl.HGDBOntologyFormat;
 import org.hypergraphdb.app.owl.HGDBOntologyManager;
-import org.hypergraphdb.app.owl.HGDBOntologyManagerImpl;
 import org.hypergraphdb.app.owl.HGDBOntologyRepository;
 import org.hypergraphdb.app.owl.core.AddPrefixChange;
 import org.hypergraphdb.app.owl.core.OWLDataFactoryHGDB;
 import org.hypergraphdb.app.owl.core.PrefixChange;
 import org.hypergraphdb.app.owl.core.PrefixChangeListener;
 import org.hypergraphdb.app.owl.core.RemovePrefixChange;
-import org.hypergraphdb.app.owl.exception.HGDBOntologyAlreadyExistsByDocumentIRIException;
-import org.hypergraphdb.app.owl.exception.HGDBOntologyAlreadyExistsByOntologyIDException;
-import org.hypergraphdb.app.owl.exception.HGDBOntologyAlreadyExistsByOntologyUUIDException;
 import org.hypergraphdb.app.owl.versioning.VHGDBOntologyRepository;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
-import org.hypergraphdb.app.owl.versioning.distributed.activity.ActivityUtils;
 import org.protege.owlapi.model.ProtegeOWLOntologyManager;
-import org.semanticweb.owlapi.io.FileDocumentSource;
-import org.semanticweb.owlapi.io.OWLParserException;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyChangeException;
 import org.semanticweb.owlapi.model.OWLOntologyFormat;
-import org.semanticweb.owlapi.model.UnloadableImportException;
 
 /**
  * Manages multiple Ontologies. Based on OWL-API OWLOntologyManagerImpl and ProtegeOWLOntologyManager.
  * For use with Protege 4.1.
+ * 
+ * The implementation of this class must match HGDBOntologyManagerImpl.
  * 
  * PHGDBOntologyManagerImpl for protege integration.
  * 

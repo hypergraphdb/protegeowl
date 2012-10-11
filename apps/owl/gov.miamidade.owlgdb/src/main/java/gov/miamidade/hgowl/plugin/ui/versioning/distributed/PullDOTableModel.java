@@ -5,8 +5,6 @@ import org.hypergraphdb.app.owl.versioning.VersionedOntologyComparator.RevisionC
 import org.hypergraphdb.app.owl.versioning.VersionedOntologyComparator.RevisionComparisonResult;
 import org.hypergraphdb.app.owl.versioning.VersionedOntologyComparator.VersionedOntologyComparisonResult;
 
-import gov.miamidade.hgowl.plugin.ui.versioning.distributed.PeerViewPanel.ViewMode;
-
 import javax.swing.table.AbstractTableModel;
 
 import java.awt.Color;
@@ -14,7 +12,7 @@ import java.text.DateFormat;
 import java.util.List;
 
 /**
- * CompareVOTableModel.
+ * PullDOTableModel.
  * @author Thomas Hilpold (CIAO/Miami-Dade County)
  * @created Sep 11, 2012
  */
@@ -187,7 +185,7 @@ public class PullDOTableModel extends AbstractTableModel {
     	}
     }
 
-    public Class getColumnClass(int c) {
+    public Class<?> getColumnClass(int c) {
     	if (c == 4) return Boolean.class; 
     	else return super.getClass();
     }

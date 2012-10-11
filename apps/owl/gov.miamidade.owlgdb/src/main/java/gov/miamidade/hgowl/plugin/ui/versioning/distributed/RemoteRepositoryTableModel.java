@@ -1,16 +1,13 @@
 package gov.miamidade.hgowl.plugin.ui.versioning.distributed;
 
 import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowseRepositoryActivity.BrowseEntry;
-import org.hypergraphdb.peer.HGPeerIdentity;
-import org.hypergraphdb.peer.HyperGraphPeer;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
+ * RemoteRepositoryTableModel.
  * 
- * PeerTableModel.
  * @author Thomas Hilpold (CIAO/Miami-Dade County)
  * @created Mar 26, 2012
  */

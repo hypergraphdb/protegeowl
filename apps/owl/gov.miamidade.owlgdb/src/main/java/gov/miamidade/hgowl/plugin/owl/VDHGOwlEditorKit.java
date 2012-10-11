@@ -2,10 +2,7 @@ package gov.miamidade.hgowl.plugin.owl;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import javax.swing.JOptionPane;
 
@@ -13,7 +10,6 @@ import gov.miamidade.hgowl.plugin.HGOwlProperties;
 import gov.miamidade.hgowl.plugin.owl.model.HGOwlModelManagerImpl;
 import gov.miamidade.hgowl.plugin.owlapi.apibinding.PHGDBOntologyManagerImpl;
 import gov.miamidade.hgowl.plugin.ui.render.VDHGOwlIconProviderImpl;
-import gov.miamidade.hgowl.plugin.ui.render.VHGOwlIconProviderImpl;
 import gov.miamidade.hgowl.plugin.ui.versioning.VHGCommitDialog;
 import gov.miamidade.hgowl.plugin.ui.versioning.VHGHistoryDialog;
 import gov.miamidade.hgowl.plugin.ui.versioning.distributed.CommitDialog;
@@ -28,7 +24,6 @@ import org.hypergraphdb.app.owl.versioning.ChangeSet;
 import org.hypergraphdb.app.owl.versioning.Revision;
 import org.hypergraphdb.app.owl.versioning.VHGDBOntologyRepository;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
-import org.hypergraphdb.app.owl.versioning.VersionedOntologyComparator;
 import org.hypergraphdb.app.owl.versioning.VersionedOntologyComparator.VersionedOntologyComparisonResult;
 import org.hypergraphdb.app.owl.versioning.distributed.ClientCentralizedOntology;
 import org.hypergraphdb.app.owl.versioning.distributed.DistributedOntology;
@@ -36,23 +31,20 @@ import org.hypergraphdb.app.owl.versioning.distributed.PeerDistributedOntology;
 import org.hypergraphdb.app.owl.versioning.distributed.ServerCentralizedOntology;
 import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowseRepositoryActivity;
-import org.hypergraphdb.app.owl.versioning.distributed.activity.GetRemoteOntologyRevisionsActivity;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.PullActivity;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.PushActivity;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowseRepositoryActivity.BrowseEntry;
 import org.hypergraphdb.peer.HGPeerIdentity;
-import org.hypergraphdb.peer.PeerInterface;
 import org.hypergraphdb.peer.workflow.ActivityResult;
 import org.protege.editor.core.OntologyRepository;
 import org.protege.editor.core.OntologyRepositoryManager;
 import org.protege.editor.owl.OWLEditorKitFactory;
-import org.protege.editor.owl.ui.view.AnonymousClassesView;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 
 /**
- * VDHGOwlEditorKit.
+ * VDHGOwlEditorKit contains UI functions for editing distributed (shared) versioned ontologies.
  * 
  * @author Thomas Hilpold (CIAO/Miami-Dade County)
  * @created Mar 26, 2012

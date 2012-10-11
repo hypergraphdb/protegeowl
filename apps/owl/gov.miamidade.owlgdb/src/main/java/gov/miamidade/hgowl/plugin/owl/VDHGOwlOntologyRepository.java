@@ -4,7 +4,6 @@ import gov.miamidade.hgowl.plugin.owl.model.HGOntologyRepositoryEntry;
 import gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDRenderer;
 
 import java.net.URI;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,7 +26,7 @@ import org.semanticweb.owlapi.model.OWLOntologyIRIMapper;
 import org.semanticweb.owlapi.util.OntologyIRIShortFormProvider;
 
 /**
- * A protege repository implementation backed by a Hypergraph Ontology Repository instance.
+ * VDHGOwlOntologyRepository is a protege repository implementation backed by a Hypergraph Ontology Repository instance.
  * This enabled Protege to show Hypergraph ontologies at startup. 
  * 
  * @author Thomas Hilpold

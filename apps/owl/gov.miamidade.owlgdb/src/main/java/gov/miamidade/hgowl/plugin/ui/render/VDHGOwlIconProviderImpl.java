@@ -3,7 +3,6 @@ package gov.miamidade.hgowl.plugin.ui.render;
 import java.net.URL;
 
 import gov.miamidade.hgowl.plugin.owl.VDHGOwlEditorKit;
-import gov.miamidade.hgowl.plugin.owl.VHGOwlEditorKit;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -11,12 +10,11 @@ import javax.swing.ImageIcon;
 import org.hypergraphdb.app.owl.HGDBOntology;
 import org.hypergraphdb.app.owl.HGDBOntologyImpl;
 import org.protege.editor.owl.model.OWLModelManager;
-import org.protege.editor.owl.ui.renderer.OWLIconProviderImpl;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 /**
- * VHGOwlIconProviderImpl provies an Icon for versioned ontologies.
+ * VHGOwlIconProviderImpl provides an Icon for versioned and/or distibuted (shared) ontologies.
  * Delegates to superclass as much as possible. 
  * 
  * @author Thomas Hilpold (CIAO/Miami-Dade County)

@@ -2,19 +2,19 @@ package gov.miamidade.hgowl.plugin.ui.versioning.distributed;
 
 import org.hypergraphdb.app.owl.versioning.VersionedOntologyComparator;
 import org.hypergraphdb.app.owl.versioning.VersionedOntologyComparator.VersionedOntologyComparisonResult;
-import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowseRepositoryActivity.BrowseEntry;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 /**
- * Author: Matthew Horridge<br> The University Of Manchester<br> Information Management Group<br> Date:
- * 18-Oct-2008<br><br>
+ * PullDOResultTable.
+ * 
+ * @author Thomas Hilpold (CIAO/Miami-Dade County)
+ * @created Oct 11, 2012
  */
 public class PullDOResultTable extends JTable {
 	

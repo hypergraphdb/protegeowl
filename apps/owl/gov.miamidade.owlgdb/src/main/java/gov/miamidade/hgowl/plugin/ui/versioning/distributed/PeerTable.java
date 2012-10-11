@@ -2,7 +2,6 @@ package gov.miamidade.hgowl.plugin.ui.versioning.distributed;
 
 import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
 import org.hypergraphdb.peer.HGPeerIdentity;
-import org.hypergraphdb.peer.HyperGraphPeer;
 
 import gov.miamidade.hgowl.plugin.ui.versioning.distributed.PeerViewPanel.ViewMode;
 

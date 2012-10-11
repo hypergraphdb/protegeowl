@@ -4,7 +4,6 @@ import gov.miamidade.hgowl.plugin.owl.model.HGOntologyRepositoryEntry;
 import gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDRenderer;
 
 import java.net.URI;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;

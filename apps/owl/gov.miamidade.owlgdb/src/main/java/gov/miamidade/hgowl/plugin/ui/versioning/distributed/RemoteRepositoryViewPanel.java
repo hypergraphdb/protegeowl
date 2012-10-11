@@ -2,7 +2,6 @@ package gov.miamidade.hgowl.plugin.ui.versioning.distributed;
 
 import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowseRepositoryActivity.BrowseEntry;
 import org.hypergraphdb.peer.HGPeerIdentity;
-import org.hypergraphdb.peer.HyperGraphPeer;
 import org.protege.editor.core.ui.util.JOptionPaneEx;
 import org.protege.editor.core.ui.workspace.Workspace;
 
@@ -13,8 +12,7 @@ import java.awt.Dimension;
 import java.util.List;
 
 /**
- * PeerViewPanel shows a list of selected peers as HGPeerIdentities and allows the user to select and entry.
- * The user can also refresh the list (search again for peers), while the dialog is open.
+ * RemoteRepositoryViewPanel.
  *  
  * @author Thomas Hilpold (CIAO/Miami-Dade County)
  * @created Mar 26, 2012

@@ -1,16 +1,16 @@
 package gov.miamidade.hgowl.plugin.ui.versioning.distributed;
 
 import gov.miamidade.hgowl.plugin.owl.VDHGOwlEditorKit;
-import gov.miamidade.hgowl.plugin.owl.VHGOwlEditorKit;
 
 import java.awt.event.ActionEvent;
 
 import org.protege.editor.owl.ui.action.ProtegeOWLAction;
 
 /**
- * VHGAddActiveToVersionControlAction.
+ * VDHGUpdateActionCentralClient.
+ * 
  * @author Thomas Hilpold (CIAO/Miami-Dade County)
- * @created Oct 11, 2011
+ * @created Oct 11, 2012
  */
 public class VDHGUpdateActionCentralClient extends ProtegeOWLAction {
 

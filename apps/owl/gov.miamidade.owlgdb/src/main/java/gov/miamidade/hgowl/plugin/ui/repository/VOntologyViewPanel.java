@@ -1,7 +1,6 @@
 package gov.miamidade.hgowl.plugin.ui.repository;
 
 import gov.miamidade.hgowl.plugin.owl.model.HGOntologyRepositoryEntry;
-import gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDRenderer;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -18,6 +17,7 @@ import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 
 /**
  * VOntologyViewPanel.
+ * 
  * @author Thomas Hilpold (CIAO/Miami-Dade County)
  * @created Jan 30, 2012
  */

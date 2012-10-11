@@ -1,6 +1,5 @@
 package gov.miamidade.hgowl.plugin.ui.versioning.distributed;
 
-import gov.miamidade.hgowl.plugin.ui.versioning.ChangeSetPanel;
 import gov.miamidade.hgowl.plugin.ui.versioning.ChangeSetTablePanel;
 
 import java.awt.BorderLayout;
@@ -17,7 +16,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import org.hypergraphdb.app.owl.versioning.ChangeSet;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.hypergraphdb.app.owl.versioning.distributed.DistributedOntology;
 import org.hypergraphdb.peer.HGPeerIdentity;
@@ -54,7 +52,7 @@ public class CommitDialog extends JDialog implements ActionListener {
 		super(w);
 		setTitle(title);
 		VersionedOntology vo = dOnto.getVersionedOntology();
-		ChangeSet workingSetChanges  = vo.getWorkingSetChanges();
+		//ChangeSet workingSetChanges  = vo.getWorkingSetChanges();
 		String message = "<html> <h2> Commit Ontology Changes to Server " + userId + "</h2> "
 		    +"<table width='100%' border='0'>"
 		    +"<tr><td align='right'><b>Ontology:</b></td><td>"+ VDRenderer.render(dOnto) + "</td></tr>"

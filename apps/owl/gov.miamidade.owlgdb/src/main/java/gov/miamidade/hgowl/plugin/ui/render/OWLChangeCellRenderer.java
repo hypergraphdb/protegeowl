@@ -1,6 +1,5 @@
 package gov.miamidade.hgowl.plugin.ui.render;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.net.URL;
 
@@ -19,7 +18,6 @@ import javax.swing.tree.TreeCellRenderer;
 import org.hypergraphdb.app.owl.core.AddPrefixChange;
 import org.hypergraphdb.app.owl.core.RemovePrefixChange;
 import org.protege.editor.owl.OWLEditorKit;
-import org.protege.editor.owl.model.OntologyAnnotationContainer;
 import org.protege.editor.owl.ui.renderer.OWLCellRenderer;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.AddImport;
@@ -50,7 +48,7 @@ public class OWLChangeCellRenderer extends OWLCellRenderer {
 	private TableCellRenderer defaultTableCellRenderer = new DefaultTableCellRenderer();
 	private TreeCellRenderer defaultTreeCellRenderer = new DefaultTreeCellRenderer();
 	
-	private Color unselectedBackground;
+	//private Color unselectedBackground;
 	
 	/**
 	 * @param owlEditorKit

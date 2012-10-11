@@ -8,10 +8,13 @@ import org.protege.editor.owl.ui.action.ProtegeOWLAction;
 
 /**
  * VDHGCompareAction.
+ * 
  * @author Thomas Hilpold (CIAO/Miami-Dade County)
  * @created Aug 24, 2012
  */
 public class VDHGCompareAction extends ProtegeOWLAction {
+
+	private static final long serialVersionUID = 5308308961175612115L;
 
 	/* (non-Javadoc)
 	 * @see org.protege.editor.core.plugin.ProtegePluginInstance#initialise()

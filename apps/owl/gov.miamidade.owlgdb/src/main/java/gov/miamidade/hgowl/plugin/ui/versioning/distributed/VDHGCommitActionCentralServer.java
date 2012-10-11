@@ -7,11 +7,14 @@ import java.awt.event.ActionEvent;
 import org.protege.editor.owl.ui.action.ProtegeOWLAction;
 
 /**
- * VDHGCommitActionCentralClient.
+ * VDHGCommitActionCentralServer.
+ * 
  * @author Thomas Hilpold (CIAO/Miami-Dade County)
  * @created Aug 24, 2012
  */
 public class VDHGCommitActionCentralServer extends ProtegeOWLAction {
+
+	private static final long serialVersionUID = 4954340319870779130L;
 
 	/* (non-Javadoc)
 	 * @see org.protege.editor.core.plugin.ProtegePluginInstance#initialise()

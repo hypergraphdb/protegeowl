@@ -4,7 +4,6 @@ import gov.miamidade.hgowl.plugin.owl.model.HGOntologyRepositoryEntry;
 import gov.miamidade.hgowl.plugin.owl.model.HGOwlModelManagerImpl;
 import gov.miamidade.hgowl.plugin.owlapi.apibinding.PHGDBOntologyManagerImpl;
 import gov.miamidade.hgowl.plugin.ui.render.VHGOwlIconProviderImpl;
-import gov.miamidade.hgowl.plugin.ui.repository.VRepositoryViewPanel;
 import gov.miamidade.hgowl.plugin.ui.versioning.RollbackDialog;
 import gov.miamidade.hgowl.plugin.ui.versioning.VHGCommitDialog;
 import gov.miamidade.hgowl.plugin.ui.versioning.VHGHistoryDialog;
@@ -27,7 +26,8 @@ import javax.swing.JOptionPane;
 
 
 /**
- * VHGOwlEditorKit.
+ * VHGOwlEditorKit contains UI functions for editing versioned ontologies.
+ * 
  * @author Thomas Hilpold (CIAO/Miami-Dade County)
  * @created Jan 24, 2012
  */
