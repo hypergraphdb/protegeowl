@@ -1,20 +1,20 @@
 <?xml version = "1.0" encoding = "utf-8"?>
 <project name = "Miami Dade Hypergraph OWL Plugin" default = "install" basedir = ".">    
-
-   <!-- 
+  
+  <!-- 
         To run this build file set the environment variable
         PROTEGE_HOME to point to a protege distribution and type ant
         install or jar.
-     -->
+  -->
 
-   <property environment="env"/>
-   <property name = "protege.home"      location="${env.PROTEGE_HOME}"/>
-   <property file = "${protege.home}/build.properties"/>
-
-   <property file="local.properties"/>
-
-   <property file="version.properties"/>
-
+  <property environment="env"/>
+  <property name = "protege.home" location="${env.PROTEGE_HOME}"/>
+  <property file = "${protege.home}/build.properties"/>
+  
+  <property file="local.properties"/>
+  
+  <property file="version.properties"/>
+  
    <!-- 
         This setting defines the name of the plugin.
         This may be the only setting that the developer needs to
