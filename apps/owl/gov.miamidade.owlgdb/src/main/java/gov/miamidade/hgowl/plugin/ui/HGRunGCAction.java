@@ -57,11 +57,11 @@ public class HGRunGCAction extends ProtegeOWLAction {
 		HGDBOntologyManager om =  (HGDBOntologyManager) mm.getOWLOntologyManager();
 		if (mayRun()) {
 			if (showRunGCConfirmation()) {
-				mm.getHistoryManager().clear();
+				mm.getHistoryManager().getLoggedChanges().clear();
 				int mode = HGRunGCModeSelectionPanel.showDialog(getOWLEditorKit(), "Run Garbage Collector Mode");
 				//	this can take long:
 				if (mode >= 0) {
-					GarbageCollector gc = om.getOntologyRepository().getGarbageCollector();
+					GarbageCollector gc = new GarbageCollector(om.getOntologyRepository());
 					//GarbageCollectorStatistics stats = gc.runGarbageCollection(mode);
 					runGCThread(gc, mode);
 				} else {

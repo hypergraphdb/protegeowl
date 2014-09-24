@@ -8,7 +8,7 @@
   -->
 
   <property environment="env"/>
-  <property name = "protege.home" location="${env.PROTEGE_HOME}"/>
+  <property name = "protege.home" location="/opt/Protege_4.1"/>
   <property file = "${protege.home}/build.properties"/>
   
   <property file="local.properties"/>

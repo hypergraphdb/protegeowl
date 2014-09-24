@@ -45,7 +45,7 @@ public class VHGOwlEditorKit extends HGOwlEditorKit {
 	}
 	
 	protected void initializeIconProvider() {
-		getWorkspace().setOWLIconProvider(new VHGOwlIconProviderImpl(modelManager, this));
+		getWorkspace().setOWLIconProvider(new VHGOwlIconProviderImpl(getModelManager(), this));
 	}
 
     public boolean handleAddActiveToVersionControlRequest() throws Exception {
@@ -226,7 +226,7 @@ public class VHGOwlEditorKit extends HGOwlEditorKit {
 	            			//Update Protege
 	            			causeViewUpdate();
 	            			//Clear undo/redo history on revert
-	            			getModelManager().getHistoryManager().clear();
+	            			getModelManager().getHistoryManager().getLoggedChanges().clear();
 	            			success = true;
         				} else {
         					success = false;
@@ -278,7 +278,7 @@ public class VHGOwlEditorKit extends HGOwlEditorKit {
 			            			vo.revertHeadTo(selectedRevision, true);
 			            			causeViewUpdate();
 			            			//Clear undo/redo history on revert
-			            			getModelManager().getHistoryManager().clear();
+			            			getModelManager().getHistoryManager().getLoggedChanges().clear();
 			            			success = true;
 			            			if (vo.getWorkingSetConflicts().isEmpty()) {
 				                        JOptionPane.showMessageDialog(getWorkspace(),

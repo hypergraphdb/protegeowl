@@ -64,7 +64,7 @@ public class VHGOwlOntologyRepository implements OntologyRepository {
     }
 
     public String getLocation() {
-        return HGDBOntologyRepository.getHypergraphDBLocation();
+        return this.dbRepository.getHyperGraph().getLocation();
     }
 
     public void refresh() {

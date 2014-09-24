@@ -1,5 +1,7 @@
 package gov.miamidade.hgowl.plugin.owlapi.apibinding;
 
+import gov.miamidade.hgowl.plugin.HGOwlProperties;
+
 import org.coode.owlapi.functionalparser.OWLFunctionalSyntaxParserFactory;
 import org.coode.owlapi.functionalrenderer.OWLFunctionalSyntaxOntologyStorer;
 import org.coode.owlapi.latex.LatexOntologyStorer;
@@ -11,6 +13,7 @@ import org.coode.owlapi.owlxmlparser.OWLXMLParserFactory;
 import org.coode.owlapi.rdf.rdfxml.RDFXMLOntologyStorer;
 import org.coode.owlapi.rdfxml.parser.RDFXMLParserFactory;
 import org.coode.owlapi.turtle.TurtleOntologyStorer;
+import org.hypergraphdb.HyperGraph;
 import org.hypergraphdb.app.owl.HGDBOntologyFactory;
 import org.hypergraphdb.app.owl.HGDBStorer;
 import org.hypergraphdb.app.owl.core.OWLDataFactoryHGDB;
@@ -33,7 +36,9 @@ import de.uulm.ecs.ai.owlapi.krssrenderer.KRSS2OWLSyntaxOntologyStorer;
 public class PHGDBOWLManager {
 
 	public static PHGDBOntologyManagerImpl createOWLOntologyManager() {
-        return createOWLOntologyManager(OWLDataFactoryHGDB.getInstance());
+        String location = HGOwlProperties.getInstance().getHgLocationFolderPath();
+        HyperGraph graph = org.hypergraphdb.app.owl.util.ImplUtils.owldb(location);
+        return createOWLOntologyManager(OWLDataFactoryHGDB.get(graph));        		
     }
     
 	/**

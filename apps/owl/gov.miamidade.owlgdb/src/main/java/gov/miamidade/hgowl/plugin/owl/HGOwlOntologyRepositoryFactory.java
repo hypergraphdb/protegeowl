@@ -1,12 +1,11 @@
 package gov.miamidade.hgowl.plugin.owl;
 
+import gov.miamidade.hgowl.plugin.HGOwlProperties;
+
 import java.io.File;
 
 import javax.swing.JOptionPane;
 
-import gov.miamidade.hgowl.plugin.HGOwlProperties;
-
-import org.hypergraphdb.app.owl.HGDBApplication;
 import org.hypergraphdb.app.owl.HGDBOntologyRepository;
 import org.hypergraphdb.app.owl.versioning.VHGDBOntologyRepository;
 import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
@@ -27,6 +26,7 @@ public class HGOwlOntologyRepositoryFactory extends OntologyRepositoryFactory {
 	@Override
 	public void initialise() throws Exception {
 		try {
+		    System.out.println("Initialize HGOwlOntologyRepositoryFactory");
 			initialiseInternal();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -40,19 +40,20 @@ public class HGOwlOntologyRepositoryFactory extends OntologyRepositoryFactory {
 		try {
 			File f = new File(hyperGraphLocation);
 			f.mkdirs();
-			HGDBOntologyRepository.setHypergraphDBLocation(hyperGraphLocation);
+//			HGDBOntologyRepository.setHypergraphDBLocation(hyperGraphLocation);
 		} catch (RuntimeException e) {
-			System.err.println("EXCEPTION setting preferred Hypergraph location:" + e);
-			System.err.println("Default will be used:" + HGDBOntologyRepository.getHypergraphDBLocation());
+			System.err.println("EXCEPTION setting preferred Hypergraph location " + hyperGraphLocation + " : ");
+			e.printStackTrace(System.err);			
 		}
-		if (HGDBApplication.DISTRIBUTED) {
-			dbRepository = VDHGDBOntologyRepository.getInstance();
-			//TODO NEED TO SET manager
-		} else if (HGDBApplication.VERSIONING) {
-			dbRepository = VHGDBOntologyRepository.getInstance();
-		} else {
-			dbRepository = HGDBOntologyRepository.getInstance();
-		}
+//		if (HGDBApplication.DISTRIBUTED) {
+//			dbRepository = VDHGDBOntologyRepository.getInstance();
+//			//TODO NEED TO SET manager
+//		} else if (HGDBApplication.VERSIONING) {
+//			dbRepository = VHGDBOntologyRepository.getInstance();
+//		} else {
+//			dbRepository = HGDBOntologyRepository.getInstance();
+//		}
+		dbRepository = new VDHGDBOntologyRepository(hyperGraphLocation);
 	}
 
 	@Override

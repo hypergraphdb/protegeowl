@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 
-<plugin>
+<plugin id="hgdbprotege" name="HyperGraphDB Versioned Storage" version="1.7.0">
         
     <extension id="HGOwlEditorKitFactory"
                point="org.protege.editor.core.application.EditorKitFactory">
@@ -1484,11 +1484,11 @@
         <class value="org.protege.editor.owl.model.repository.TONESRepositoryFactory"/>
     </extension> -->
 
-
+<!--
 	<extension id="FolderRepository" point="org.protege.editor.owl.repository">
 		<class value="org.protege.editor.owl.model.library.folder.FolderGroupManager"/>
 	</extension>
-	
+	-->
 	<extension id="SingleUriEntry" point="org.protege.editor.owl.repository">
 		<class value="org.protege.editor.owl.model.library.UriEntryManager"/>
 	</extension>
@@ -1548,13 +1548,13 @@
 	    <class value="org.protege.editor.owl.ui.explanation.io.InconsistentOntologyManager"/>
 	    <editorKitId value="HGOwlEditorKit"/>
 	</extension>
-	
+	<!--
 	<extension id="BasicExplanation"
 			   point="org.protege.editor.owl.explanation">
         <name value="Basic Explanation"/>
         <class value="org.protege.editor.owl.ui.explanation.impl.BasicBlackboxExplanationService"/>
     </extension>
-
+-->
 
     <extension id="HeuristicInconsistentOntologyExplanation"
                point="org.protege.editor.owl.inconsistentOntologyExplanation">

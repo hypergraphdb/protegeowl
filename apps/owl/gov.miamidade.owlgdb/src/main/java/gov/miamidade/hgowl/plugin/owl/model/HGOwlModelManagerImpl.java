@@ -16,18 +16,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Level;
+//import org.apache.log4j.Logger;
 import org.coode.xml.XMLWriterPreferences;
 import org.hypergraphdb.app.owl.HGDBIRIMapper;
 import org.hypergraphdb.app.owl.HGDBOntology;
 import org.hypergraphdb.app.owl.HGDBOntologyRepository;
-import org.protege.editor.core.AbstractModelManager;
 import org.protege.editor.core.ProtegeApplication;
 import org.protege.editor.core.ui.error.ErrorLogPanel;
 import org.protege.editor.owl.model.MissingImportHandler;
 import org.protege.editor.owl.model.MissingImportHandlerImpl;
 import org.protege.editor.owl.model.OWLModelManager;
+import org.protege.editor.owl.model.OWLModelManagerImpl;
 import org.protege.editor.owl.model.SaveErrorHandler;
 import org.protege.editor.owl.model.XMLWriterPrefs;
 import org.protege.editor.owl.model.cache.OWLEntityRenderingCache;
@@ -71,6 +71,7 @@ import org.protege.editor.owl.ui.renderer.OWLObjectRenderer;
 import org.protege.editor.owl.ui.renderer.OWLObjectRendererImpl;
 import org.protege.editor.owl.ui.renderer.OWLRendererPreferences;
 import org.protege.editor.owl.ui.renderer.plugin.RendererPlugin;
+import org.protege.owlapi.model.ProtegeOWLOntologyManager;
 import org.protege.xmlcatalog.XMLCatalog;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -85,7 +86,6 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyFormat;
 import org.semanticweb.owlapi.model.OWLOntologyID;
 import org.semanticweb.owlapi.model.OWLOntologyLoaderListener;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.model.OWLRuntimeException;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
@@ -106,7 +106,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLOntologyManagerImpl;
  * UI components that are used to access the ontology.
  * @author Thomas Hilpold based on Matthew Horridge.
  */
-public class HGOwlModelManagerImpl extends AbstractModelManager
+public class HGOwlModelManagerImpl extends OWLModelManagerImpl
         implements OWLModelManager, OWLEntityRendererListener, OWLOntologyChangeListener, OWLOntologyLoaderListener {
 
 	/**
@@ -115,7 +115,7 @@ public class HGOwlModelManagerImpl extends AbstractModelManager
 	 */
 	public static boolean USE_SWING_INVOKE_AND_WAIT = false;
 	
-    private static final Logger logger = Logger.getLogger(HGOwlModelManagerImpl.class);
+//    private static final Logger logger = Logger.getLogger(HGOwlModelManagerImpl.class);
 
     private HistoryManager historyManager;
 
@@ -191,6 +191,51 @@ public class HGOwlModelManagerImpl extends AbstractModelManager
 
     private List<IOListener> ioListeners;
 
+    protected List<IOListener> getIoListeners()
+    {
+    	if (ioListeners == null)
+    		ioListeners = new ArrayList<IOListener>();
+    	return ioListeners;
+    }
+    
+    protected OWLObjectRenderingCache getOwlObjectRenderingCache()
+    {
+    	if (owlObjectRenderingCache == null)
+    		owlObjectRenderingCache = new OWLObjectRenderingCache(this);
+    	return owlObjectRenderingCache;
+    }
+    
+    protected OWLEntityRenderingCache getOwlEntityRenderingCache()
+    {
+    	if (owlEntityRenderingCache == null)
+    	{
+    		owlEntityRenderingCache = new OWLEntityRenderingCacheImpl();
+    		owlEntityRenderingCache.setOWLModelManager(this);
+    	}
+    	return owlEntityRenderingCache;
+    }
+    
+    protected ListenerManager<OWLOntologyChangeListener> getChangeListenerManager()
+    {
+    	if (changeListenerManager == null)
+    		changeListenerManager = new ListenerManager<OWLOntologyChangeListener>();
+    	return changeListenerManager;
+    }
+
+    protected ListenerManager<OWLModelManagerListener> getModelManagerListenerManager()
+    {
+    	if (modelManagerListenerManager == null)
+    		modelManagerListenerManager = new ListenerManager<OWLModelManagerListener>();
+    	return modelManagerListenerManager;
+    }
+    
+    protected List<OWLModelManagerListener> getModelManagerChangeListeners()
+    {
+    	if (modelManagerChangeListeners == null)
+    		modelManagerChangeListeners = new ArrayList<OWLModelManagerListener>();
+    	return modelManagerChangeListeners;
+    }    
+    
 //	public HGOwlModelManagerImpl() {		
 //		super();	
 //		//old manager
@@ -208,17 +253,17 @@ public class HGOwlModelManagerImpl extends AbstractModelManager
 //	}
 
     public HGOwlModelManagerImpl() {
-        super();
+//        super();
 
-        modelManagerListenerManager = new ListenerManager<OWLModelManagerListener>();
-        changeListenerManager = new ListenerManager<OWLOntologyChangeListener>();
         //
         //This is the reason why we had to copy the whole sourcecode from OWLModelManagerImpl: 
         //we wanted to use a subclass of ProtegeOWLManager that relies on our Hypergraph 
         //implementation of the OWL API.
         //
         //manager = ProtegeOWLManager.createOWLOntologyManager();
-        manager = PHGDBOWLManager.createOWLOntologyManager();
+        manager = getOWLOntologyManager(); //PHGDBOWLManager.createOWLOntologyManager();        
+
+        System.out.println("Created HGHGHGH MANAGER: " + manager);
         manager.setUseWriteSafety(true);
         manager.setUseSwingThread(USE_SWING_INVOKE_AND_WAIT);
         manager.setSilentMissingImportsHandling(true);
@@ -240,19 +285,9 @@ public class HGOwlModelManagerImpl extends AbstractModelManager
         dirtyOntologies = new HashSet<OWLOntology>();
         ontSelectionStrategies = new HashSet<OntologySelectionStrategy>();
 
-
-        modelManagerChangeListeners = new ArrayList<OWLModelManagerListener>();
-        ioListeners = new ArrayList<IOListener>();
-
-
         objectRenderer = new OWLObjectRendererImpl(this);
-        owlEntityRenderingCache = new OWLEntityRenderingCacheImpl();
-        owlEntityRenderingCache.setOWLModelManager(this);
-        owlObjectRenderingCache = new OWLObjectRenderingCache(this);
 
         owlExpressionCheckerFactory = new ManchesterOWLExpressionCheckerFactory(this);
-
-        activeOntologies = new HashSet<OWLOntology>();
         
         //needs to be initialized
         activeOntologiesStrategy = new ImportsClosureOntologySelectionStrategy(this);
@@ -277,8 +312,8 @@ public class HGOwlModelManagerImpl extends AbstractModelManager
 
         try {
             // Empty caches
-            owlEntityRenderingCache.dispose();
-            owlObjectRenderingCache.dispose();
+            getOwlEntityRenderingCache().dispose();
+            getOwlObjectRenderingCache().dispose();
 
             if (entityRenderer != null){
                 entityRenderer.dispose();
@@ -287,16 +322,16 @@ public class HGOwlModelManagerImpl extends AbstractModelManager
             owlReasonerManager.dispose();
         }
         catch (Exception e) {
-            logger.error(e.getMessage() + "\n", e);
+            e.printStackTrace(System.err); //logger.err(e.getMessage() + "\n", e);
         }
 
         // Name and shame plugins that do not (or can't be bothered to) clean up
         // their listeners!
-        modelManagerListenerManager.dumpWarningForAllListeners(logger, Level.ERROR,
-                                                               "(Listeners should be removed in the plugin dispose method!)");
-
-        changeListenerManager.dumpWarningForAllListeners(logger, Level.ERROR,
-                                                         "(Listeners should be removed in the plugin dispose method!)");
+//        modelManagerListenerManager.dumpWarningForAllListeners(logger, Level.ERROR,
+//                                                               "(Listeners should be removed in the plugin dispose method!)");
+//
+//        changeListenerManager.dumpWarningForAllListeners(logger, Level.ERROR,
+//                                                         "(Listeners should be removed in the plugin dispose method!)");
     }
 
 
@@ -305,7 +340,9 @@ public class HGOwlModelManagerImpl extends AbstractModelManager
     }
 
 
-    public OWLOntologyManager getOWLOntologyManager() {
+    public PHGDBOntologyManagerImpl getOWLOntologyManager() {
+        if (manager == null)
+            manager = PHGDBOWLManager.createOWLOntologyManager();       
         return manager;
     }
 
@@ -369,7 +406,8 @@ public class HGOwlModelManagerImpl extends AbstractModelManager
 
 
     public void startedLoadingOntology(LoadingStartedEvent event) {
-        logger.info("loading " + event.getOntologyID() + " from " + event.getDocumentIRI());
+        System.out.println("loading " + event.getOntologyID() + " from " + event.getDocumentIRI());
+        //logger.info("loading " + event.getOntologyID() + " from " + event.getDocumentIRI());
         fireBeforeLoadEvent(event.getOntologyID(), event.getDocumentIRI().toURI());
     }
 
@@ -455,7 +493,8 @@ public class HGOwlModelManagerImpl extends AbstractModelManager
         		}
         	}
         	catch (IllegalArgumentException iae) {
-        		logger.info("Cannot generate ontology catalog for ontology at " + physicalURI);
+        	    System.out.println("Cannot generate ontology catalog for ontology at " + physicalURI);
+        		//logger.info("Cannot generate ontology catalog for ontology at " + physicalURI);
         	}
         }
         fireEvent(EventType.ONTOLOGY_CREATED);
@@ -579,8 +618,9 @@ public class HGOwlModelManagerImpl extends AbstractModelManager
             catch (IOException e) {
                 throw new OWLOntologyStorageException("Error while saving ontology " + ont.getOntologyID() + " to " + physicalURI, e);
             }
-
-            logger.info("Saved " + getRendering(ont) + " to " + physicalURI);
+            
+            System.out.println("Saved " + getRendering(ont) + " to " + physicalURI);
+            //logger.info("Saved " + getRendering(ont) + " to " + physicalURI);
 
             dirtyOntologies.remove(ont);
 
@@ -678,6 +718,8 @@ public class HGOwlModelManagerImpl extends AbstractModelManager
 
 
     public Set<OWLOntology> getActiveOntologies() {
+    	if (activeOntologies == null)
+            activeOntologies = new HashSet<OWLOntology>();
         return activeOntologies;
     }
 
@@ -737,14 +779,16 @@ public class HGOwlModelManagerImpl extends AbstractModelManager
             }
         }
         this.activeOntology = activeOntology;
-        logger.info("Setting active ontology to " + activeOntology.getOntologyID());
+        System.out.println("Setting active ontology to " + activeOntology.getOntologyID());
+        //logger.info("Setting active ontology to " + activeOntology.getOntologyID());
         rebuildActiveOntologiesCache();
         // Rebuild entity indices
         entityRenderer.ontologiesChanged();
         rebuildEntityIndices();
         // Inform our listeners
         fireEvent(EventType.ACTIVE_ONTOLOGY_CHANGED);
-        logger.info("... active ontology changed");
+        System.out.println("... active ontology changed");
+        //logger.info("... active ontology changed");
     }
 
 
@@ -828,53 +872,62 @@ public class HGOwlModelManagerImpl extends AbstractModelManager
     }
 
 
+//    ArrayList mylisteners = new ArrayList();
+    
     public void addOntologyChangeListener(OWLOntologyChangeListener listener) {
-        manager.addOntologyChangeListener(listener);
-        changeListenerManager.recordListenerAdded(listener);
+        getOWLOntologyManager().addOntologyChangeListener(listener);
+//        if (listener == null)
+//            return;
+//        if (manager == null)
+//            mylisteners.add(listener);
+//        else
+//            manager.addOntologyChangeListener(listener);
+        getChangeListenerManager().recordListenerAdded(listener);
     }
 
 
     public void removeOntologyChangeListener(OWLOntologyChangeListener listener) {
         manager.removeOntologyChangeListener(listener);
-        changeListenerManager.recordListenerRemoved(listener);
+        getChangeListenerManager().recordListenerRemoved(listener);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
     public void addListener(OWLModelManagerListener listener) {
-        modelManagerChangeListeners.add(listener);
-        modelManagerListenerManager.recordListenerAdded(listener);
+    	getModelManagerChangeListeners().add(listener);
+        getModelManagerListenerManager().recordListenerAdded(listener);
     }
 
 
     public void removeListener(OWLModelManagerListener listener) {
-        modelManagerChangeListeners.remove(listener);
-        modelManagerListenerManager.recordListenerRemoved(listener);
+    	getModelManagerChangeListeners().remove(listener);
+        getModelManagerListenerManager().recordListenerRemoved(listener);
     }
 
 
     public void fireEvent(EventType type) {
         OWLModelManagerChangeEvent event = new OWLModelManagerChangeEvent(this, type);
-        for (OWLModelManagerListener listener : new ArrayList<OWLModelManagerListener>(modelManagerChangeListeners)) {
+        for (OWLModelManagerListener listener : new ArrayList<OWLModelManagerListener>(getModelManagerChangeListeners())) {
             try {
                 listener.handleChange(event);
             }
             catch (Throwable e) {
-                logger.warn("Exception thrown by listener: " + listener.getClass().getName() + ".  Detatching bad listener!");
+                System.err.println("Exception thrown by listener: " + listener.getClass().getName() + ".  Detatching bad listener!");
+                //logger.warn("Exception thrown by listener: " + listener.getClass().getName() + ".  Detatching bad listener!");
                 ProtegeApplication.getErrorLog().logError(e);
-                modelManagerChangeListeners.remove(listener);
+                getModelManagerChangeListeners().remove(listener);
             }
         }
     }
 
     public void addIOListener(IOListener listener) {
-        ioListeners.add(listener);
+        getIoListeners().add(listener);
     }
 
 
     public void removeIOListener(IOListener listener) {
-        ioListeners.remove(listener);
+        getIoListeners().remove(listener);
     }
 
 
@@ -894,13 +947,16 @@ public class HGOwlModelManagerImpl extends AbstractModelManager
                 loadRenderer();
             }
             catch (ClassNotFoundException e) {
-                logger.error(e.getMessage());
+                e.printStackTrace(System.err);
+                //logger.error(e.getMessage());
             }
             catch (InstantiationException e) {
-                logger.error(e.getMessage());
+                e.printStackTrace(System.err);
+                //logger.error(e.getMessage());
             }
             catch (IllegalAccessException e) {
-                logger.error(e.getMessage());
+                e.printStackTrace(System.err);
+                //logger.error(e.getMessage());
             }
             if (entityRenderer == null) {
             	entityRenderer = new OWLEntityRendererImpl();
@@ -920,11 +976,11 @@ public class HGOwlModelManagerImpl extends AbstractModelManager
             if (adcManager != null &&
                 object instanceof OWLClass &&
                 adcManager.isAnonymous((OWLClass)object)){
-                return owlObjectRenderingCache.getRendering(adcManager.getExpression((OWLClass)object), getOWLObjectRenderer());
+                return getOwlObjectRenderingCache().getRendering(adcManager.getExpression((OWLClass)object), getOWLObjectRenderer());
             }
             else{
                 getOWLEntityRenderer();
-                String rendering = owlEntityRenderingCache.getRendering((OWLEntity) object);
+                String rendering = getOwlEntityRenderingCache().getRendering((OWLEntity) object);
                 if(rendering != null) {
                     return rendering;
                 }
@@ -934,15 +990,15 @@ public class HGOwlModelManagerImpl extends AbstractModelManager
             }
         }
 
-        return owlObjectRenderingCache.getRendering(object, getOWLObjectRenderer());
+        return getOwlObjectRenderingCache().getRendering(object, getOWLObjectRenderer());
     }
 
 
     public void renderingChanged(OWLEntity entity, final OWLModelManagerEntityRenderer renderer) {
-        owlEntityRenderingCache.updateRendering(entity);
-        owlObjectRenderingCache.clear();
+        getOwlEntityRenderingCache().updateRendering(entity);
+        getOwlObjectRenderingCache().clear();
         // We should inform listeners
-        for (OWLModelManagerListener listener : new ArrayList<OWLModelManagerListener>(modelManagerChangeListeners)) {
+        for (OWLModelManagerListener listener : new ArrayList<OWLModelManagerListener>(getModelManagerChangeListeners())) {
             listener.handleChange(new OWLModelManagerChangeEvent(this, EventType.ENTITY_RENDERING_CHANGED));
         }
     }
@@ -1003,7 +1059,7 @@ public class HGOwlModelManagerImpl extends AbstractModelManager
 
     public OWLEntityFinder getOWLEntityFinder() {
         if (entityFinder == null){
-            entityFinder = new OWLEntityFinderImpl(this, owlEntityRenderingCache);
+            entityFinder = new OWLEntityFinderImpl(this, getOwlEntityRenderingCache());
         }
         return entityFinder;
     }
@@ -1020,11 +1076,13 @@ public class HGOwlModelManagerImpl extends AbstractModelManager
 
 
     private void rebuildEntityIndices() {
-        logger.info("Rebuilding entity indices...");
+        System.out.println("Rebuilding entity indices...");
+        //logger.info("Rebuilding entity indices...");
         long t0 = System.currentTimeMillis();
-        owlEntityRenderingCache.rebuild();
-        owlObjectRenderingCache.clear();
-        logger.info("... rebuilt in " + (System.currentTimeMillis() - t0) + " ms");
+        getOwlEntityRenderingCache().rebuild();
+        getOwlObjectRenderingCache().clear();
+        System.out.println("... rebuilt in " + (System.currentTimeMillis() - t0) + " ms");
+        //logger.info("... rebuilt in " + (System.currentTimeMillis() - t0) + " ms");
     }
 
     //////////////////////////////////////////////////////////////////////////////////////

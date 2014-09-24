@@ -24,18 +24,20 @@ public class HGOwlEditorKitFactory extends OWLEditorKitFactory  {
     public static final List<String> OWL_EXTENSIONS = Arrays.asList("hgdb", "HyperGraph");
 
 
-	public EditorKit createEditorKit() throws Exception {
-		if (HGDBApplication.DISTRIBUTED) {
-			if (!HGDBApplication.VERSIONING) throw new IllegalStateException("Use Versioning with Distributed.");
-			System.out.println("VDHG createEditorKit");
-			return new VDHGOwlEditorKit(this);
-		} else if (HGDBApplication.VERSIONING) {
-			System.out.println("VHG createEditorKit");
-			return new VHGOwlEditorKit(this);
-		} else {
-			System.out.println("HG createEditorKit");
-			return new HGOwlEditorKit(this);
-		}
+	public EditorKit createEditorKit() {
+	    System.out.println("THE HYPERGRAPHDB EDITOR KIIIIIT FACTORY!!!!!!!!!!!!!!!");
+//		if (HGDBApplication.DISTRIBUTED) {
+//			if (!HGDBApplication.VERSIONING) throw new IllegalStateException("Use Versioning with Distributed.");
+//			System.out.println("VDHG createEditorKit");
+//			return new VDHGOwlEditorKit(this);
+//		} else if (HGDBApplication.VERSIONING) {
+//			System.out.println("VHG createEditorKit");
+//			return new VHGOwlEditorKit(this);
+//		} else {
+//			System.out.println("HG createEditorKit");
+//			return new HGOwlEditorKit(this);
+//		}
+	    return new VDHGOwlEditorKit(this);
     }
     
     /**

@@ -72,7 +72,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 	}
 	
 	protected void initializeIconProvider() {
-		getWorkspace().setOWLIconProvider(new VDHGOwlIconProviderImpl(modelManager, this));
+		getWorkspace().setOWLIconProvider(new VDHGOwlIconProviderImpl(getModelManager(), this));
 	}
 
 	public void handleShowHistoryActiveDistributedRequest() {
@@ -321,13 +321,14 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit {
 		String hostname = HGOwlProperties.getInstance().getP2pServer();
 		String userName = HGOwlProperties.getInstance().getP2pUser();
 		String password = HGOwlProperties.getInstance().getP2pPass();
+		String room = HGOwlProperties.getInstance().getP2pRoom();
 		if (hostname == null || hostname.length() < 5 || userName.length() < 2) {
 			JOptionPane.showMessageDialog(getWorkspace(),
 					"Please configure P2P server, userName and password in Preferences.", "Hypergraph Team - Sign In - Error",
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-		boolean startOK = repository.startNetworking(userName, password, hostname);
+		boolean startOK = repository.startNetworking(userName, password, hostname, room);
 		if (startOK) {
 			JOptionPane.showMessageDialog(getWorkspace(), "Networking started as user " + userName + " at server "
 					+ hostname + ".", "Hypergraph Team - Signed In", JOptionPane.INFORMATION_MESSAGE);

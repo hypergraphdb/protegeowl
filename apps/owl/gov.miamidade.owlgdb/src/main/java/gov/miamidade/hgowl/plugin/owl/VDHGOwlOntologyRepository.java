@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.hypergraphdb.app.owl.HGDBOntology;
-import org.hypergraphdb.app.owl.HGDBOntologyRepository;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.hypergraphdb.app.owl.versioning.distributed.ClientCentralizedOntology;
 import org.hypergraphdb.app.owl.versioning.distributed.DistributedOntology;
@@ -72,7 +71,7 @@ public class VDHGOwlOntologyRepository implements OntologyRepository {
     }
 
     public String getLocation() {
-        return HGDBOntologyRepository.getHypergraphDBLocation();
+        return dbRepository.getHyperGraph().getLocation();
     }
 
     public void refresh() {

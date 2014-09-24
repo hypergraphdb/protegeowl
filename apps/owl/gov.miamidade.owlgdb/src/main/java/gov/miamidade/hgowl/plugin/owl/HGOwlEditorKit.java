@@ -1,6 +1,9 @@
 package gov.miamidade.hgowl.plugin.owl;
 
 import gov.miamidade.hgowl.plugin.owl.model.HGOntologyRepositoryEntry;
+
+
+
 import gov.miamidade.hgowl.plugin.owl.model.HGOwlModelManagerImpl;
 import gov.miamidade.hgowl.plugin.owlapi.apibinding.PHGDBOntologyManagerImpl;
 import gov.miamidade.hgowl.plugin.ui.CreateHGOntologyWizard;
@@ -8,40 +11,57 @@ import gov.miamidade.hgowl.plugin.ui.HGOntologyFormatPanel;
 import gov.miamidade.hgowl.plugin.ui.repository.RepositoryViewPanel;
 
 import java.io.File;
+import java.net.ProtocolException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.JOptionPane;
 
-import org.apache.log4j.Logger;
+
+
+
+
+
+
+//import org.apache.log4j.Logger;
 import org.hypergraphdb.app.owl.HGDBOntology;
 import org.hypergraphdb.app.owl.HGDBOntologyFormat;
 import org.hypergraphdb.app.owl.HGDBOntologyImpl;
 import org.hypergraphdb.app.owl.HGDBOntologyManager;
 import org.hypergraphdb.app.owl.HGDBOntologyRepository;
 import org.hypergraphdb.app.owl.exception.HGDBOntologyAlreadyExistsByDocumentIRIException;
+import org.osgi.framework.ServiceRegistration;
 import org.protege.editor.core.OntologyRepository;
 import org.protege.editor.core.OntologyRepositoryEntry;
 import org.protege.editor.core.OntologyRepositoryManager;
+import org.protege.editor.core.ProtegeApplication;
 import org.protege.editor.core.editorkit.EditorKit;
 import org.protege.editor.core.editorkit.EditorKitDescriptor;
+import org.protege.editor.core.ui.error.ErrorLogPanel;
 import org.protege.editor.core.ui.wizard.Wizard;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.OWLEditorKitFactory;
 import org.protege.editor.owl.ProtegeOWL;
 import org.protege.editor.owl.model.SaveErrorHandler;
+import org.protege.editor.owl.model.io.IOListenerPlugin;
+import org.protege.editor.owl.model.io.IOListenerPluginInstance;
+import org.protege.editor.owl.model.io.IOListenerPluginLoader;
+import org.protege.editor.owl.model.search.SearchMetadataImportManager;
 import org.protege.editor.owl.ui.SaveConfirmationPanel;
 import org.protege.editor.owl.ui.UIHelper;
 import org.protege.editor.owl.ui.error.OntologyLoadErrorHandlerUI;
 import org.protege.editor.owl.ui.explanation.ExplanationManager;
 import org.protege.editor.owl.ui.ontology.imports.missing.MissingImportHandlerUI;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyAlreadyExistsException;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLOntologyChangeListener;
 import org.semanticweb.owlapi.model.OWLOntologyDocumentAlreadyExistsException;
 import org.semanticweb.owlapi.model.OWLOntologyFormat;
 import org.semanticweb.owlapi.model.OWLOntologyID;
@@ -64,44 +84,107 @@ public class HGOwlEditorKit extends OWLEditorKit {
 
 	public static boolean DBG = false;
 	
-	private static final Logger logger = Logger.getLogger(HGOwlEditorKit.class);
+	//private static final Logger logger = Logger.getLogger(HGOwlEditorKit.class);
 
     public static final String ID = "HGOwlEditorKit";
+    
+    private ServiceRegistration registration;    
 
     public HGOwlEditorKit(OWLEditorKitFactory editorKitFactory) {
 		super(editorKitFactory);
 	}
-		
+
+    private HGOwlModelManagerImpl modelManager;
+    
     @SuppressWarnings("deprecation")
-	protected void initialise(){
-    	// DO NOT DO THIS: super.initialise();    	
-    	// THIS SETS OUR MODEL MANAGER
-    	HGOwlModelManagerImpl modelManager = new HGOwlModelManagerImpl();
-    	setOWLModelManager(modelManager);
-        logger.info("Using OWL API version " + VersionInfo.getVersionInfo().getVersion());
-        this.newPhysicalURIs = new HashSet<URI>();
+    protected void initialise() {
+        // DO NOT DO THIS: super.initialise();      
+        // THIS SETS OUR MODEL MANAGER
+        modelManager = new HGOwlModelManagerImpl();
+        System.out.println("Using OWL API version " + VersionInfo.getVersionInfo().getVersion());
+        //logger.info("Using OWL API version " + VersionInfo.getVersionInfo().getVersion());
         modelManager.setExplanationManager(new ExplanationManager(this));
         modelManager.setMissingImportHandler(new MissingImportHandlerUI(this));
         modelManager.setSaveErrorHandler(new SaveErrorHandler(){
             public void handleErrorSavingOntology(OWLOntology ont, URI physicalURIForOntology, OWLOntologyStorageException e) throws Exception {
-                handleSaveError(ont, physicalURIForOntology, e);
+                if (e.getCause() != null && e.getCause() instanceof ProtocolException) {
+                    hghandleSaveAs(ont);
+                }
+                else {
+                    throw e;
+                }                
             }
         });
-        loadErrorHandler = new OntologyLoadErrorHandlerUI(this);
+        modelManager.setLoadErrorHandler(new OntologyLoadErrorHandlerUI(this));
+        this.getWorkspace().getStatusArea();
+        setOWLModelManager(modelManager);
+        
+//        ontologyChangeListener = new OWLOntologyChangeListener() {
+//            public void ontologiesChanged(List<? extends OWLOntologyChange> owlOntologyChanges) throws OWLException {
+//                modifiedDocument = true;
+//            }
+//        };
+//        modelManager.addOntologyChangeListener(ontologyChangeListener);
+
+//        searchManager = new SearchManager(this, new SearchMetadataImportManager());
+        OntologyLoadErrorHandlerUI loadErrorHandler = new OntologyLoadErrorHandlerUI(this);
         modelManager.setLoadErrorHandler(loadErrorHandler);
-        loadIOListenerPlugins();
-        //TODO
-        //registration = ProtegeOWL.getBundleContext().registerService(EditorKit.class.getCanonicalName(), this, new Properties());
+        
+        IOListenerPluginLoader loader = new IOListenerPluginLoader(this);
+        for (IOListenerPlugin pl : loader.getPlugins()) {
+            try {
+                IOListenerPluginInstance instance = pl.newInstance();
+                getModelManager().addIOListener(instance);
+            }
+            catch (Throwable e) {
+                ProtegeApplication.getErrorLog().logError(e);
+            }
+        }
+        
+//        loadIOListenerPlugins();
         registration = ProtegeOWL.getBundleContext().registerService(EditorKit.class.getCanonicalName(), this, new Hashtable<String, Object>());
-        //2011.12.20 hilpold moved to HGOwlModelManager: modelManager.getOWLOntologyManager().addIRIMapper(new HGDBIRIMapper(modelManager));
+
+        getWorkspace().refreshComponents();
+        
     }
+    
+    @Override
+    public HGOwlModelManagerImpl getModelManager() {
+    	return modelManager;
+    }
+    
+//    public SearchManager getSearchManager() {
+//        return searchManager;
+//    }
+    
+    
+//    @SuppressWarnings("deprecation")
+//	protected void initialise() {
+//    	// DO NOT DO THIS: super.initialise();    	
+//    	// THIS SETS OUR MODEL MANAGER
+//    	HGOwlModelManagerImpl modelManager = new HGOwlModelManagerImpl();
+//    	setOWLModelManager(modelManager);
+//        logger.info("Using OWL API version " + VersionInfo.getVersionInfo().getVersion());
+//        this.newPhysicalURIs = new HashSet<URI>();
+//        modelManager.setExplanationManager(new ExplanationManager(this));
+//        modelManager.setMissingImportHandler(new MissingImportHandlerUI(this));
+//        modelManager.setSaveErrorHandler(new SaveErrorHandler(){
+//            public void handleErrorSavingOntology(OWLOntology ont, URI physicalURIForOntology, OWLOntologyStorageException e) throws Exception {
+//                handleSaveError(ont, physicalURIForOntology, e);
+//            }
+//        });
+//        loadErrorHandler = new OntologyLoadErrorHandlerUI(this);
+//        modelManager.setLoadErrorHandler(loadErrorHandler);
+//        loadIOListenerPlugins();
+//        //TODO
+//        //registration = ProtegeOWL.getBundleContext().registerService(EditorKit.class.getCanonicalName(), this, new Properties());
+//        registration = ProtegeOWL.getBundleContext().registerService(EditorKit.class.getCanonicalName(), this, new Hashtable<String, Object>());
+//        //2011.12.20 hilpold moved to HGOwlModelManager: modelManager.getOWLOntologyManager().addIRIMapper(new HGDBIRIMapper(modelManager));
+//    }
 
     protected void initialiseCompleted() {
         super.initialiseCompleted();
     }
-    
-    
-
 
 	/**
      * Gets the <code>EditorKit</code> Id.  This can be used to identify
@@ -186,7 +269,7 @@ public class HGOwlEditorKit extends OWLEditorKit {
     
     public boolean handleLoadRecentRequest(EditorKitDescriptor descriptor) throws Exception {
     	if (DBG) System.out.println("HG handleLoadRecentRequest");
-        HGDBOntologyManager m = (HGDBOntologyManager) this.modelManager.getOWLOntologyManager();
+        HGDBOntologyManager m = (HGDBOntologyManager) this.getModelManager().getOWLOntologyManager();
         m.getOntologyRepository().printStatistics();
         boolean retValue = super.handleLoadRecentRequest(descriptor );
         m.getOntologyRepository().printStatistics();
@@ -196,7 +279,7 @@ public class HGOwlEditorKit extends OWLEditorKit {
     public boolean handleLoadRequest() throws Exception {
     	if (DBG) System.out.println("HG HandleLoadRequest");
     	boolean success;
-        HGDBOntologyManager m = (HGDBOntologyManager) this.modelManager.getOWLOntologyManager();
+        HGDBOntologyManager m = (HGDBOntologyManager) this.getModelManager().getOWLOntologyManager();
         m.getOntologyRepository().printStatistics();
         Object[] possibleValues = { "Open From Hypergraph Repository", "Open From File"};
         Object selectedValue = JOptionPane.showInputDialog(getWorkspace(),
@@ -217,7 +300,7 @@ public class HGOwlEditorKit extends OWLEditorKit {
     public boolean handleLoadFromRepositoryRequest() throws Exception {
     	if (DBG) System.out.println("HG HandleLoadFromRepositoryRequest");
     	boolean success;
-        HGDBOntologyManager m = (HGDBOntologyManager) this.modelManager.getOWLOntologyManager();
+        HGDBOntologyManager m = (HGDBOntologyManager) this.getModelManager().getOWLOntologyManager();
         OntologyRepository repository = getProtegeRepository();
         if (repository == null) throw new IllegalStateException("Cannot handle load from repository. No HGOwlOntologyRepository registered with Protege."); 
         // Open Repository open Dlg
@@ -240,7 +323,7 @@ public class HGOwlEditorKit extends OWLEditorKit {
     public boolean handleDeleteFromRepositoryRequest() throws Exception {
     	if (DBG) System.out.println("HG HandleDeleteFromRepositoryRequest");
     	boolean success;
-        HGDBOntologyManager m = (HGDBOntologyManager) this.modelManager.getOWLOntologyManager();
+        HGDBOntologyManager m = (HGDBOntologyManager) this.getModelManager().getOWLOntologyManager();
         m.getOntologyRepository().printStatistics();
         // Find our Repository 
         OntologyRepository repository = getProtegeRepository();
@@ -381,7 +464,7 @@ public class HGOwlEditorKit extends OWLEditorKit {
 	}
 
 	public boolean handleLoadFrom(URI uri) throws Exception {    	
-        HGDBOntologyManager m = (HGDBOntologyManager) this.modelManager.getOWLOntologyManager();
+        HGDBOntologyManager m = (HGDBOntologyManager) this.getModelManager().getOWLOntologyManager();
         m.getOntologyRepository().printStatistics();
         boolean success = ((HGOwlModelManagerImpl) getModelManager()).loadOntologyFromPhysicalURI(uri);
         if (success){
@@ -398,7 +481,8 @@ public class HGOwlEditorKit extends OWLEditorKit {
     	if (ont instanceof HGDBOntologyImpl) {
             String message = "This ontology is database backed and does not need to be saved to the database again.\n" 
       	+ "All changes to it are instantly persisted in the Hypergraph Ontology Repository." ;
-            logger.warn(message);
+            System.err.println(message);
+            //logger.warn(message);
             JOptionPane.showMessageDialog(getWorkspace(),
                                           message,
                                           "Hypergraph Database Backed Ontology",
@@ -411,7 +495,7 @@ public class HGOwlEditorKit extends OWLEditorKit {
     
     public void handleSaveAs() throws Exception {
         OWLOntology ont = getModelManager().getActiveOntology();
-        if (handleSaveAs(ont)){
+        if (hghandleSaveAs(ont)){
         	ont = getModelManager().getActiveOntology();
             SaveConfirmationPanel.showDialog(this, Collections.singleton(ont));
         }
@@ -422,15 +506,17 @@ public class HGOwlEditorKit extends OWLEditorKit {
      * @param ont
      */
 	public boolean handleImportRequest(OWLOntology ont) throws Exception {
-		return handleSaveAs(ont, new HGDBOntologyFormat());
+		//throw new UnsupportedOperationException("Sorry!");
+		return hghandleSaveAs(ont, new HGDBOntologyFormat());
 	}      
+
 
     /**
      * This should only save the specified ontology
      * @param ont the ontology to save
      * @throws Exception
      */
-    protected boolean handleSaveAs(OWLOntology ont) throws Exception {
+    protected boolean hghandleSaveAs(OWLOntology ont) throws Exception {
         PHGDBOntologyManagerImpl man = (PHGDBOntologyManagerImpl)getModelManager().getOWLOntologyManager();
         OWLOntologyFormat oldFormat = man.getOntologyFormat(ont);
         //IRI oldDocumentIRI = man.getOntologyDocumentIRI(ont);
@@ -439,13 +525,14 @@ public class HGOwlEditorKit extends OWLEditorKit {
                                                                   oldFormat,
                                                                   "Choose a format to use when saving the " + getModelManager().getRendering(ont) + " ontology");
         if (format == null) {
-            logger.warn("Please select a valid format");
+            System.err.println("Please select a valid format");
+            //logger.warn("Please select a valid format");
             return false;
         }
-        return handleSaveAs(ont, format);
+        return hghandleSaveAs(ont, format);
     }
     
-    protected boolean handleSaveAs(OWLOntology ont, OWLOntologyFormat format) throws Exception {
+    protected boolean hghandleSaveAs(OWLOntology ont, OWLOntologyFormat format) throws Exception {
        PHGDBOntologyManagerImpl man = (PHGDBOntologyManagerImpl)getModelManager().getOWLOntologyManager();
        OWLOntologyFormat oldFormat = man.getOntologyFormat(ont);
        IRI oldDocumentIRI = man.getOntologyDocumentIRI(ont);
@@ -463,7 +550,8 @@ public class HGOwlEditorKit extends OWLEditorKit {
               String message = "This ontology is database backed and does not need to be saved to the database again.\n" 
         	+ "All changes to it are instantly persisted in the Hypergraph Ontology Repository.\n" 
             + "A copy operation to a different name in the repository is currently not supported." ;
-              logger.warn(message);
+              System.err.println(message);
+              //logger.warn(message);
               JOptionPane.showMessageDialog(getWorkspace(),
                                             message,
                                             "Hypergraph Database Backed Ontology",
@@ -477,12 +565,14 @@ public class HGOwlEditorKit extends OWLEditorKit {
                     	+ "This process is estimated to take one minute per 35000 Axioms. \n"
                     	+ ont.getOntologyID().toString() +  " has " + ont.getAxiomCount() +  " Axioms. \n"
                         + "Please be patient. A Success Dialog will pop up when the process is finished." ;
-                logger.info(message);
+                System.err.println(message);
+                //logger.info(message);
                 JOptionPane.showMessageDialog(getWorkspace(),
                                                         message,
                                                         "Hypergraph Database Import",
                                                         JOptionPane.INFORMATION_MESSAGE);
-        		logger.info("IMPORTING INTO HYPERGRAPH " + ont.getOntologyID());
+                System.out.println("IMPORTING INTO HYPERGRAPH " + ont.getOntologyID());
+        		//logger.info("IMPORTING INTO HYPERGRAPH " + ont.getOntologyID());
         		long startTime = System.currentTimeMillis();
         		man.setOntologyFormat(ont, format);
         		//TODO	OPEN A DIALOG FOR SELECTING A documentIRI
@@ -522,7 +612,8 @@ public class HGOwlEditorKit extends OWLEditorKit {
         				return false;
         			} //else continue import
         		}
-        		logger.info("Saving with documentIRI: " + documentIri);
+        		System.out.println("Saving with documentIRI: " + documentIri);
+        		//logger.info("Saving with documentIRI: " + documentIri);
    				//+ ont.getOntologyID().getOntologyIRI().getFragment()); 
     		
         		man.setOntologyDocumentIRI(ont, documentIri);
@@ -565,7 +656,8 @@ public class HGOwlEditorKit extends OWLEditorKit {
         		return true;
         	}
         	else{
-        		logger.warn("No valid file specified for the save as operation - quitting");
+        	    System.err.println("No valid file specified for the save as operation - quitting");
+        		//logger.warn("No valid file specified for the save as operation - quitting");
         		return false;
         	}
         }
@@ -591,11 +683,15 @@ public class HGOwlEditorKit extends OWLEditorKit {
         HGOwlModelManagerImpl m = (HGOwlModelManagerImpl)getOWLModelManager();
         return m.getActiveOntology();
     }
-
+    
+    @Override
     public void dispose() {
         super.dispose();
-        //HGOwlModelManagerImpl m = (HGOwlModelManagerImpl)getOWLModelManager();
-        //m.get        
+//        searchManager.dispose();        
+        if (registration != null) {
+            registration.unregister();
+            registration = null;
+        }        
     }
 
 }

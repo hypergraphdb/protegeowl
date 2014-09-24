@@ -60,7 +60,7 @@ public class HGOwlOntologyRepository implements OntologyRepository {
     }
 
     public String getLocation() {
-        return HGDBOntologyRepository.getHypergraphDBLocation();
+        return dbRepository.getHyperGraph().getLocation();
     }
 
     public void refresh() {

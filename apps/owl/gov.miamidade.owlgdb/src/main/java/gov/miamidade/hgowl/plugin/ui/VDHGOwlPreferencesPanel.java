@@ -202,6 +202,7 @@ public class VDHGOwlPreferencesPanel extends OWLPreferencesPanel {
     	private static final long serialVersionUID = -900161588154332409L;
 		private JTextField userField;
 		private JPasswordField passField;
+		private JTextField roomField;
 		private JTextField serverField;
 		private JCheckBox askForRemote;
 
@@ -219,13 +220,19 @@ public class VDHGOwlPreferencesPanel extends OWLPreferencesPanel {
                 Box panel = new Box(BoxLayout.PAGE_AXIS);
                 panel.setAlignmentX(LEFT_ALIGNMENT);
                 Box panel1 = new Box(BoxLayout.LINE_AXIS);
+                Box panelRoom = new Box(BoxLayout.LINE_AXIS);
                 Box panel2 = new Box(BoxLayout.LINE_AXIS);
                 Box panel3 = new Box(BoxLayout.LINE_AXIS);
                 Box panel4 = new Box(BoxLayout.LINE_AXIS);
                 userField = new JTextField(15);
-                userField.setText(HGOwlProperties.getInstance().getP2pUser());
+                userField.setText(HGOwlProperties.getInstance().getP2pUser());                
                 panel1.add(new JLabel("P2P User:"));
                 panel1.add(userField);
+                roomField = new JTextField(15);
+                roomField.setText(HGOwlProperties.getInstance().getP2pRoom());                
+                panelRoom.add(new JLabel("P2P Room:"));
+                panelRoom.add(roomField);
+                
                 passField = new JPasswordField(15);
                 passField.setText(HGOwlProperties.getInstance().getP2pPass());
                 panel2.add(new JLabel("P2P Pass:"));
@@ -239,6 +246,7 @@ public class VDHGOwlPreferencesPanel extends OWLPreferencesPanel {
                 // toplevel
                 panel.add(panel1);
                 panel.add(panel2);
+                panel.add(panelRoom);
                 panel.add(panel3);
                 panel.add(panel4);
                 return panel;
@@ -247,6 +255,7 @@ public class VDHGOwlPreferencesPanel extends OWLPreferencesPanel {
             public void applyChanges() {
             	//boolean success = false;
 	        	HGOwlProperties.getInstance().setP2pUser(userField.getText());
+	        	HGOwlProperties.getInstance().setP2pRoom(roomField.getText());
 	        	HGOwlProperties.getInstance().setP2pPass(new String(passField.getPassword()));
 	        	HGOwlProperties.getInstance().setP2pServer(serverField.getText());
 	        	HGOwlProperties.getInstance().setP2pAskForRemote(askForRemote.isSelected());

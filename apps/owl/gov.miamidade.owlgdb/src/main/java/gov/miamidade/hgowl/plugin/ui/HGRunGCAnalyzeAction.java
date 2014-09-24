@@ -64,7 +64,7 @@ public class HGRunGCAnalyzeAction extends ProtegeOWLAction {
 				int mode = HGRunGCModeSelectionPanel.showDialog(getOWLEditorKit(), "Run Garbage Analysis Mode");
 				//	this can take long:
 				if (mode >= 0) {
-					GarbageCollector gc = om.getOntologyRepository().getGarbageCollector();
+					GarbageCollector gc = new GarbageCollector(om.getOntologyRepository());
 					//GarbageCollectorStatistics stats = gc.runGarbageAnalysis(mode);
 					runAnalysisThread(gc, mode);
 					//System.out.println("Total GCd atoms: " + stats.getTotalAtoms());

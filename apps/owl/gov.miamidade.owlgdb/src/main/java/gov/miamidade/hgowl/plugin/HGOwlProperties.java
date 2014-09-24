@@ -27,6 +27,7 @@ public class HGOwlProperties {
 	    private static final boolean DEFAULT_P2P_ASK_FOR_REMOTE = true;
 	    
 	    // DISTRIBUTED START
+	    public static final String P2P_ROOM = "P2PRoomName";
 	    public static final String P2P_USER = "P2PUserName";
 	    public static final String P2P_PASSWORD = "P2PPassword";
 	    public static final String P2P_SERVER= "P2PServer";
@@ -38,6 +39,7 @@ public class HGOwlProperties {
 	    // DISTRIBUTED START
 	    private String p2pUser;
 	    private String p2pPass;
+	    private String p2pRoom;
 	    private String p2pServer;
 	    private boolean p2pAskForRemote; //ask for the remote target before each operation.
 	    // DISTRIBUTED END
@@ -62,6 +64,7 @@ public class HGOwlProperties {
 	        hgLocationFolderPath = getPreferences().getString(HYPERGRAPH_LOCATION_KEY, DEFAULT_HYPERGRAPH_LOCATION_FOLDER_PATH);
 	        showLegacyEditorKit= getPreferences().getBoolean(SHOW_LEGACY_KEY, DEFAULT_SHOW_LEGACY_EDITOR_KIT);
 	        //DISTRIBUTED
+	        p2pRoom = getPreferences().getString(P2P_ROOM, "");
 	        p2pUser = getPreferences().getString(P2P_USER, "");
 	        p2pPass = getPreferences().getString(P2P_PASSWORD, "");
 	        p2pServer = getPreferences().getString(P2P_SERVER, "");
@@ -72,6 +75,7 @@ public class HGOwlProperties {
 	        getPreferences().putString(HYPERGRAPH_LOCATION_KEY, hgLocationFolderPath);
 	        getPreferences().putBoolean(SHOW_LEGACY_KEY, showLegacyEditorKit);
 	        //DISTRIBUTED
+	        getPreferences().putString(P2P_ROOM, p2pRoom);
 	        getPreferences().putString(P2P_USER, p2pUser);
 	        getPreferences().putString(P2P_PASSWORD, p2pPass);
 	        getPreferences().putString(P2P_SERVER, p2pServer);
@@ -108,6 +112,21 @@ public class HGOwlProperties {
 			savePrefs();
 		}
 
+        /**
+         * @return the p2pUser
+         */
+        public String getP2pRoom() {
+            return p2pRoom;
+        }
+
+        /**
+         * @param p2pUser the p2pUser to set
+         */
+        public void setP2pRoom(String p2pRoom) {
+            this.p2pRoom = p2pRoom;
+            savePrefs();
+        }
+		
 		/**
 		 * @return the p2pUser
 		 */
