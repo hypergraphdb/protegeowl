@@ -24,13 +24,13 @@ Created-By: Apache Maven Bundle Plugin
 Bundle-RequiredExecutionEnvironment: J2SE-1.5,JavaSE-1.6
 Require-Bundle: org.protege.editor.owl,             org.protege.editor
  .core.application, 			  org.semanticweb.owl.owlapi
-Build-Jdk: 1.6.0_31
+Build-Jdk: 1.6.0_16
 Bundle-Version: 1.3.0.SNAPSHOT
-Bnd-LastModified: 1411362613738
+Bnd-LastModified: 1411697166394
 Bundle-ManifestVersion: 2
 Bundle-Description: A Protege plugin offering HyperGraphDB based back-
  end for OWL ontologies including versioning and collaboration tools.
-Bundle-SymbolicName: gov.miamidade.owlgdb;singleton:=true
+Embed-Dependency: log4j
 Import-Package: de.uulm.ecs.ai.owlapi.krssparser;version="3.4.2.2012_1
  2_05",de.uulm.ecs.ai.owlapi.krssrenderer;version="3.4.2.2012_12_05",j
  avax.management,javax.naming,javax.swing,javax.swing.border,javax.swi
@@ -85,5 +85,5 @@ Import-Package: de.uulm.ecs.ai.owlapi.krssparser;version="3.4.2.2012_1
  uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer;version="3.4.2.2012_
  12_05",uk.ac.manchester.cs.owl.owlapi.turtle.parser;version="3.4.2.20
  12_12_05"
-Embed-Dependency: log4j
+Bundle-SymbolicName: gov.miamidade.owlgdb;singleton:=true
 
