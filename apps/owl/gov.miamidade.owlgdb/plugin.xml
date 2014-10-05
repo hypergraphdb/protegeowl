@@ -2,13 +2,13 @@
 <?eclipse version="3.0"?>
 
 <plugin id="hgdbprotege" name="HyperGraphDB Versioned Storage" version="1.7.0">
-        
+
     <extension id="HGOwlEditorKitFactory"
                point="org.protege.editor.core.application.EditorKitFactory">
         <label value="Hypergraph Ontology"/>
         <class value="gov.miamidade.hgowl.plugin.owl.HGOwlEditorKitFactory"/>
     </extension>
-    
+
     <extension
           id="HGOwlOntologyRepository"
           point="org.protege.editor.core.application.OntologyRepositoryFactory">
