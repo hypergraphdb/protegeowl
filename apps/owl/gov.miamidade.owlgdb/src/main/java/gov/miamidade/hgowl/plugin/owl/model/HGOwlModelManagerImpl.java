@@ -268,7 +268,6 @@ public class HGOwlModelManagerImpl extends OWLModelManagerImpl implements OWLMod
 		// manager = ProtegeOWLManager.createOWLOntologyManager();
 		manager = getOWLOntologyManager(); // PHGDBOWLManager.createOWLOntologyManager();
 
-		System.out.println("Created HGHGHGH MANAGER: " + manager);
 		manager.setUseWriteSafety(true);
 		manager.setUseSwingThread(USE_SWING_INVOKE_AND_WAIT);
 		manager.setSilentMissingImportsHandling(true);
@@ -310,8 +309,7 @@ public class HGOwlModelManagerImpl extends OWLModelManagerImpl implements OWLMod
 
 	public void dispose()
 	{
-		super.dispose();
-
+//		super.dispose();
 		OntologySourcesManager sourcesMngr = get(OntologySourcesManager.ID);
 		removeIOListener(sourcesMngr);
 

@@ -119,7 +119,9 @@
 			<Bundle-Activator>gov.miamidade.hgowl.plugin.HGDBActivator</Bundle-Activator>            
 			<Bundle-RequiredExecutionEnvironment>J2SE-1.5,JavaSE-1.6</Bundle-RequiredExecutionEnvironment>            
             <Private-Package>gov.miamidade.hgowl.plugin.*</Private-Package>
-            <Import-Package>org.osgi.framework,!javax.jms.*,!javax.jmdns.*,!javax.mail.internet.*,!javax.mail.*,!org.apache.*,!com.*,!org.xml.*, !org.w3c.dom.*,!org.osgi.framework.*,*</Import-Package>            
+            <Import-Package>org.osgi.framework,!javax.jms.*,!javax.jmdns.*,!javax.mail.internet.*,
+            !javax.mail.*,!org.apache.*,!com.*,!org.xml.*, !org.w3c.dom.*,
+            !org.osgi.framework.*,!org.protege.editor.owl.model.search,*</Import-Package>            
             <Embed-Dependency>log4j</Embed-Dependency>
 			<Include-Resource>plugin.xml, {maven-resources}</Include-Resource>            
           </instructions>

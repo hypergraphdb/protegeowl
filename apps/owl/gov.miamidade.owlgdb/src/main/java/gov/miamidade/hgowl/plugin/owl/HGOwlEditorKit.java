@@ -44,8 +44,8 @@ import org.protege.editor.owl.model.SaveErrorHandler;
 import org.protege.editor.owl.model.io.IOListenerPlugin;
 import org.protege.editor.owl.model.io.IOListenerPluginInstance;
 import org.protege.editor.owl.model.io.IOListenerPluginLoader;
-import org.protege.editor.owl.model.search.SearchManager;
-import org.protege.editor.owl.model.search.SearchMetadataImportManager;
+//import org.protege.editor.owl.model.search.SearchManager;
+//import org.protege.editor.owl.model.search.SearchMetadataImportManager;
 import org.protege.editor.owl.ui.SaveConfirmationPanel;
 import org.protege.editor.owl.ui.UIHelper;
 import org.protege.editor.owl.ui.error.OntologyLoadErrorHandlerUI;
@@ -87,7 +87,7 @@ public class HGOwlEditorKit extends OWLEditorKit
 
 	private ServiceRegistration registration;
 
-	private SearchManager searchManager;
+//	private SearchManager searchManager;
 
 	public HGOwlEditorKit(OWLEditorKitFactory editorKitFactory)
 	{
@@ -126,7 +126,7 @@ public class HGOwlEditorKit extends OWLEditorKit
 		});
 		modelManager.setLoadErrorHandler(new OntologyLoadErrorHandlerUI(this));
 
-		searchManager = new SearchManager(this, new SearchMetadataImportManager());
+//		searchManager = new SearchManager(this, new SearchMetadataImportManager());
 
 		this.getWorkspace().getStatusArea();
 		setOWLModelManager(modelManager);
@@ -165,11 +165,11 @@ public class HGOwlEditorKit extends OWLEditorKit
 
 	}
 
-	@Override
-	public SearchManager getSearchManager()
-	{
-		return this.searchManager;
-	}
+//	@Override
+//	public SearchManager getSearchManager()
+//	{
+//		return this.searchManager;
+//	}
 
 	@Override
 	public HGOwlModelManagerImpl getModelManager()
@@ -818,7 +818,7 @@ public class HGOwlEditorKit extends OWLEditorKit
 		//
 		// start copy & paste of super.dispose()
 		getModelManager().removeOntologyChangeListener(ontologyChangeListener);
-		getSearchManager().dispose();
+//		getSearchManager().dispose();
 		getWorkspace().dispose();
 		try
 		{
