@@ -24,9 +24,9 @@ Created-By: Apache Maven Bundle Plugin
 Bundle-RequiredExecutionEnvironment: J2SE-1.5,JavaSE-1.6
 Require-Bundle: org.protege.editor.owl,             org.protege.editor
  .core.application, 			  org.semanticweb.owl.owlapi
-Build-Jdk: 1.6.0_31
+Build-Jdk: 1.6.0_32
 Bundle-Version: 1.3.0.SNAPSHOT
-Bnd-LastModified: 1412566450903
+Bnd-LastModified: 1416366688706
 Bundle-Activator: gov.miamidade.hgowl.plugin.HGDBActivator
 Bundle-ManifestVersion: 2
 Bundle-Description: A Protege plugin offering HyperGraphDB based back-
