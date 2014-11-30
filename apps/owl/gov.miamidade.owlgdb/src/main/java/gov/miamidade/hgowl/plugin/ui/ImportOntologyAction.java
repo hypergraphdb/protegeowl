@@ -40,7 +40,7 @@ public class ImportOntologyAction extends ProtegeOWLAction {
 		HGOwlEditorKit hgowlKit = (HGOwlEditorKit) getEditorKit();
 		OWLOntology activeOnto = hgowlKit.getOWLModelManager().getActiveOntology();
 		try {
-			hgowlKit.handleImportRequest(activeOnto);
+			hgowlKit.handleAnImportRequest(activeOnto);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

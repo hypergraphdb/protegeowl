@@ -227,12 +227,14 @@ public class HGOwlEditorKit extends OWLEditorKit
 	 */
 	public String getId()
 	{
-		return ID;
+		return "OWLEditorKit";
 	}
 
 	public boolean handleNewRequest() throws Exception
 	{
-		boolean handleNewSuccess = false;
+		if (5 > 4)
+			return super.handleNewRequest();
+		boolean handleNewSuccess = false;		
 		CreateHGOntologyWizard w = new CreateHGOntologyWizard(null, this);
 		int result = w.showModalDialog();
 		if (result == Wizard.FINISH_RETURN_CODE)
@@ -599,10 +601,11 @@ public class HGOwlEditorKit extends OWLEditorKit
 	 * 
 	 * @param ont
 	 */
-	public boolean handleImportRequest(OWLOntology ont) throws Exception
+	public boolean handleAnImportRequest(OWLOntology ont) throws Exception
 	{
 		// throw new UnsupportedOperationException("Sorry!");
 		return hghandleSaveAs(ont, new HGDBOntologyFormat());
+		//return false;
 	}
 
 	/**

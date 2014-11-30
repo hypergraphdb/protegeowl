@@ -45,13 +45,14 @@
 	  <groupId>org.hypergraphdb</groupId>
 	  <artifactId>hgdbowl</artifactId>
 	  <version>${project.version}</version>
-	</dependency>	
+	</dependency>
+	
 	<dependency>
 	  <groupId>org.osgi</groupId>
 	  <artifactId>org.osgi.core</artifactId>
 	  <version>4.3.0</version>
 	</dependency>
-<!--
+
 	<dependency>
 	  <groupId>edu.stanford.protege</groupId>
 	  <artifactId>protege-owlapi-extensions</artifactId>
@@ -63,17 +64,19 @@
 	  <artifactId>org.protege.xmlcatalog</artifactId>
 	  <version>1.0.4</version>
 	</dependency>
-	-->	
+		
 	<dependency>
 	  <groupId>edu.stanford.protege</groupId>
 	  <artifactId>org.protege.editor.core.application</artifactId>
 	  <version>4.3.0</version>
 	</dependency>
+	
 	<dependency>
 	  <groupId>edu.stanford.protege</groupId>
 	  <artifactId>org.protege.editor.owl</artifactId>
 	  <version>4.3.0</version>
 	</dependency>	
+	
 	<dependency>
 	  <groupId>log4j</groupId>
 	  <artifactId>log4j</artifactId>
@@ -110,31 +113,30 @@
         <configuration>
  		  <manifestLocation>META-INF</manifestLocation>        
           <instructions>
-            <Bundle-SymbolicName>gov.miamidade.owlgdb;singleton:=true</Bundle-SymbolicName>
+            <Bundle-SymbolicName>${groupId}-${artifactId};singleton:=true</Bundle-SymbolicName>
             <Bundle-Name>${project.name}</Bundle-Name>
-            <Require-Bundle>org.protege.editor.owl,
-             org.protege.editor.core.application,
- 			  org.semanticweb.owl.owlapi</Require-Bundle>
             <Bundle-Version>${project.version}</Bundle-Version>
-			<Bundle-Activator>gov.miamidade.hgowl.plugin.HGDBActivator</Bundle-Activator>            
-			<Bundle-RequiredExecutionEnvironment>J2SE-1.5,JavaSE-1.6</Bundle-RequiredExecutionEnvironment>            
-            <Private-Package>gov.miamidade.hgowl.plugin.*</Private-Package>
-            <Import-Package>org.osgi.framework,!javax.jms.*,!javax.jmdns.*,!javax.mail.internet.*,
-            !javax.mail.*,!org.apache.*,!com.*,!org.xml.*, !org.w3c.dom.*,
-            !org.osgi.framework.*,!org.protege.editor.owl.model.search,*</Import-Package>            
-            <Embed-Dependency>log4j</Embed-Dependency>
+            <Require-Bundle>org.protege.editor.owl,org.protege.editor.core.application,org.semanticweb.owl.owlapi,
+            org.hypergraphdb-hgdb,org.hypergraphdb-hgdbp2p,org.hypergraphdb.app.owl</Require-Bundle>
+			<Bundle-Activator>gov.miamidade.hgowl.plugin.HGDBActivator</Bundle-Activator>	
+            <Export-Package>gov.miamidade.hgowl.plugin*,
+ 					gov.miamidade.hgowl.plugin.owl.model,
+ 					gov.miamidade.hgowl.plugin.owlapi.apibinding</Export-Package>
+            <Import-Package>!gov.miamidade.hgowl.plugin.*, org.hypergraphdb.*,javax.swing.*,*;version=1.0.0</Import-Package>
+            <!--             
+            <Embed-Dependency>mjson*</Embed-Dependency>
+             -->
 			<Include-Resource>plugin.xml, {maven-resources}</Include-Resource>            
-          </instructions>
+          </instructions> 
 		  <executions>
 		    <execution>
-					<id>bundle-manifest</id>
-					<phase>install</phase>
-					<goals>    
-						<goal>manifest</goal>
-					</goals>   
+				<id>bundle-manifest</id>
+				<phase>package</phase>
+				<goals>    
+					<goal>manifest</goal>
+				</goals>   
 			</execution>
-		  </executions>
-						          
+		  </executions>						          
         </configuration>
       </plugin>      
     </plugins>

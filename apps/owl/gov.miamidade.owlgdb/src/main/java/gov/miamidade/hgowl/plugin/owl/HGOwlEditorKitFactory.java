@@ -26,24 +26,10 @@ public class HGOwlEditorKitFactory extends OWLEditorKitFactory
 
 	public static final String ID = "gov.miamidade.owlgdb.HGOwlEditorKitFactory";
 
-	public static final List<String> OWL_EXTENSIONS = Arrays.asList("hgdb",
-			"HyperGraph");
+	public static final List<String> OWL_EXTENSIONS = Arrays.asList("hgdb", "HyperGraph");
 
 	public EditorKit createEditorKit()
 	{
-//		System.out.println("THE HYPERGRAPHDB EDITOR KIIIIIT FACTORY!!!!!!!!!!!!!!!");
-		// if (HGDBApplication.DISTRIBUTED) {
-		// if (!HGDBApplication.VERSIONING) throw new
-		// IllegalStateException("Use Versioning with Distributed.");
-		// System.out.println("VDHG createEditorKit");
-		// return new VDHGOwlEditorKit(this);
-		// } else if (HGDBApplication.VERSIONING) {
-		// System.out.println("VHG createEditorKit");
-		// return new VHGOwlEditorKit(this);
-		// } else {
-		// System.out.println("HG createEditorKit");
-		// return new HGOwlEditorKit(this);
-		// }
 		return new VDHGOwlEditorKit(this);
 	}
 
@@ -65,38 +51,51 @@ public class HGOwlEditorKitFactory extends OWLEditorKitFactory
 		{
 			if (s.startsWith(ext))
 			{
-//				System.out.println("HGOWL canLoad: true " + s);
+				// System.out.println("HGOWL canLoad: true " + s);
 				return true;
 			}
 		}
-//		System.out.println("HGOWL canLoad: false: " + s);
+		// System.out.println("HGOWL canLoad: false: " + s);
 		return false;
 	}
 
 	public boolean isValidDescriptor(EditorKitDescriptor descriptor)
 	{
-        ProtegeManager pm = ProtegeManager.getInstance();
-        
-        // This is the worst hack in this whole plugin: we are removing 
-        // Protege's own OWLEditorKit plugin from the ProtegeManager singleton
-        // The ProtegeManager does a lookup for all editor kits and finds both
-        // Protege's and ours, but then picks one at random pretty much, while we
-        // actually want to superceed Protege's editor kit. So we need to disable it,
-        // which is impossible, so we remove it from this ProtegeManager's internal list.
-        // For that we need to use Java reflection to access a private variable.
-        // And we chose to do it in this particular location because that's the first
-        // execution point within our code base before that editorkit is actually opened. 
-        List<EditorKitFactoryPlugin> editorKitFactoryPlugins = pm.getEditorKitFactoryPlugins();
-        try
+		ProtegeManager pm = ProtegeManager.getInstance();
+
+		// This is the worst hack in this whole plugin: we are removing
+		// Protege's own OWLEditorKit plugin from the ProtegeManager singleton
+		// The ProtegeManager does a lookup for all editor kits and finds both
+		// Protege's and ours, but then picks one at random pretty much, while
+		// we
+		// actually want to superceed Protege's editor kit. So we need to
+		// disable it,
+		// which is impossible, so we remove it from this ProtegeManager's
+		// internal list.
+		// For that we need to use Java reflection to access a private variable.
+		// And we chose to do it in this particular location because that's the
+		// first
+		// execution point within our code base before that editorkit is
+		// actually opened.
+		List<EditorKitFactoryPlugin> editorKitFactoryPlugins = pm.getEditorKitFactoryPlugins();
+		try
 		{
 			Field factoriesField = ProtegeManager.class.getDeclaredField("editorKitFactoriesMap");
 			factoriesField.setAccessible(true);
-	        for (EditorKitFactoryPlugin p : editorKitFactoryPlugins)
-	        {
-//	        	System.out.println(p.getId());
-	        	if (!p.getId().contains("gov.miamidade"))
-	        		((Map)factoriesField.get(pm)).remove(p);
-	        }			
+			int index = -1;
+			for (int i = 0; i < editorKitFactoryPlugins.size(); i++)
+			{
+				EditorKitFactoryPlugin p = editorKitFactoryPlugins.get(i);
+				// System.out.println(p.getId());				
+				if (!p.getId().contains("HGOwlEditorKitFactory"))
+					index = i;
+					//((Map) factoriesField.get(pm)).remove(p);
+			}
+			if (index > 0)
+			{
+				EditorKitFactoryPlugin hgplugin = editorKitFactoryPlugins.remove(index);
+				editorKitFactoryPlugins.add(0, hgplugin);
+			}
 		}
 		catch (Exception e)
 		{
