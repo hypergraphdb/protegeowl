@@ -1,5 +1,7 @@
 package gov.miamidade.hgowl.plugin.owl;
 
+import gov.miamidade.hgowl.plugin.HGDBActivator;
+
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.Arrays;
@@ -61,47 +63,7 @@ public class HGOwlEditorKitFactory extends OWLEditorKitFactory
 
 	public boolean isValidDescriptor(EditorKitDescriptor descriptor)
 	{
-		ProtegeManager pm = ProtegeManager.getInstance();
-
-		// This is the worst hack in this whole plugin: we are removing
-		// Protege's own OWLEditorKit plugin from the ProtegeManager singleton
-		// The ProtegeManager does a lookup for all editor kits and finds both
-		// Protege's and ours, but then picks one at random pretty much, while
-		// we
-		// actually want to superceed Protege's editor kit. So we need to
-		// disable it,
-		// which is impossible, so we remove it from this ProtegeManager's
-		// internal list.
-		// For that we need to use Java reflection to access a private variable.
-		// And we chose to do it in this particular location because that's the
-		// first
-		// execution point within our code base before that editorkit is
-		// actually opened.
-		List<EditorKitFactoryPlugin> editorKitFactoryPlugins = pm.getEditorKitFactoryPlugins();
-		try
-		{
-			Field factoriesField = ProtegeManager.class.getDeclaredField("editorKitFactoriesMap");
-			factoriesField.setAccessible(true);
-			int index = -1;
-			for (int i = 0; i < editorKitFactoryPlugins.size(); i++)
-			{
-				EditorKitFactoryPlugin p = editorKitFactoryPlugins.get(i);
-				// System.out.println(p.getId());				
-				if (!p.getId().contains("HGOwlEditorKitFactory"))
-					index = i;
-					//((Map) factoriesField.get(pm)).remove(p);
-			}
-			if (index > 0)
-			{
-				EditorKitFactoryPlugin hgplugin = editorKitFactoryPlugins.remove(index);
-				editorKitFactoryPlugins.add(0, hgplugin);
-			}
-		}
-		catch (Exception e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		HGDBActivator.hgdbKitOnTop();
 		EditorKitManager em = ProtegeManager.getInstance().getEditorKitManager();
 		URI uri = descriptor.getURI(OWLEditorKit.URI_KEY);
 		if (uri == null || uri.getScheme() == null)
