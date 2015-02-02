@@ -11,6 +11,7 @@ import org.hypergraphdb.app.owl.core.OWLDataFactoryHGDB;
 import org.hypergraphdb.app.owl.core.PrefixChange;
 import org.hypergraphdb.app.owl.core.PrefixChangeListener;
 import org.hypergraphdb.app.owl.core.RemovePrefixChange;
+import org.hypergraphdb.app.owl.newver.VersionManager;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
 import org.protege.owlapi.model.ProtegeOWLOntologyManager;
@@ -31,7 +32,8 @@ public class PHGDBOntologyManagerImpl extends ProtegeOWLOntologyManager implemen
 {
 	private static final long serialVersionUID = 1L;
 	HGDBOntologyRepository ontologyRepository;
-
+	VersionManager versionManager;
+	
 	public PHGDBOntologyManagerImpl(OWLDataFactoryHGDB dataFactory)
 	{
 		super(dataFactory);
@@ -49,6 +51,7 @@ public class PHGDBOntologyManagerImpl extends ProtegeOWLOntologyManager implemen
 		// }
 		// dataFactory.setHyperGraph(ontologyRepository.getHyperGraph());
 		ontologyRepository = new VDHGDBOntologyRepository(dataFactory.getHyperGraph().getLocation());
+		versionManager = new VersionManager(ontologyRepository.getHyperGraph(), "");
 		((VDHGDBOntologyRepository) ontologyRepository).setOntologyManager(this);
 		this.addOntologyChangeListener(((VDHGDBOntologyRepository) ontologyRepository));
 
@@ -76,6 +79,11 @@ public class PHGDBOntologyManagerImpl extends ProtegeOWLOntologyManager implemen
 	public VersionedOntology importVersionedOntology(File vowlxmlFile) throws RuntimeException
 	{
 		throw new IllegalStateException("Not yet implemented.");
+	}
+
+	public VersionManager getVersionManager()
+	{
+		return versionManager;
 	}
 
 	/*
