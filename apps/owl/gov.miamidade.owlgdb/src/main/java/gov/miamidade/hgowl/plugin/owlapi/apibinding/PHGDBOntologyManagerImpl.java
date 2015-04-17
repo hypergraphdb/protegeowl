@@ -37,31 +37,12 @@ public class PHGDBOntologyManagerImpl extends ProtegeOWLOntologyManager implemen
 	public PHGDBOntologyManagerImpl(OWLDataFactoryHGDB dataFactory)
 	{
 		super(dataFactory);
-		// Make sure there is an application, a graph, et.c.
-		// if (HGDBApplication.DISTRIBUTED) {
-		// ontologyRepository = VDHGDBOntologyRepository.getInstance();
-		// ((VDHGDBOntologyRepository)ontologyRepository).setOntologyManager(this);
-		// this.addOntologyChangeListener(((VDHGDBOntologyRepository)ontologyRepository));
-		//
-		// } else if (HGDBApplication.VERSIONING) {
-		// ontologyRepository = VHGDBOntologyRepository.getInstance();
-		// this.addOntologyChangeListener(((VHGDBOntologyRepository)ontologyRepository));
-		// } else {
-		// ontologyRepository = HGDBOntologyRepository.getInstance();
-		// }
-		// dataFactory.setHyperGraph(ontologyRepository.getHyperGraph());
 		ontologyRepository = new VDHGDBOntologyRepository(dataFactory.getHyperGraph().getLocation());
 		versionManager = new VersionManager(ontologyRepository.getHyperGraph(), "");
 		((VDHGDBOntologyRepository) ontologyRepository).setOntologyManager(this);
 		this.addOntologyChangeListener(((VDHGDBOntologyRepository) ontologyRepository));
-
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.hypergraphdb.app.owl.HGDBOntologyManager#getOntologyRepository()
-	 */
 	@Override
 	public HGDBOntologyRepository getOntologyRepository()
 	{

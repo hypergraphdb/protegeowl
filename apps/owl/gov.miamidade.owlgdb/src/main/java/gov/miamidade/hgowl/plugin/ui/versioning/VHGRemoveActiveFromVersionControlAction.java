@@ -38,7 +38,8 @@ public class VHGRemoveActiveFromVersionControlAction extends ProtegeOWLAction {
 	public void actionPerformed(ActionEvent arg0) {
 		VHGOwlEditorKit vhgowlKit = (VHGOwlEditorKit) getEditorKit();
 		try {
-			vhgowlKit.handleRemoveActiveFromVersionControlRequest();
+			//vhgowlKit.handleRemoveActiveFromVersionControlRequest();
+			vhgowlKit.stopVersioningActive();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

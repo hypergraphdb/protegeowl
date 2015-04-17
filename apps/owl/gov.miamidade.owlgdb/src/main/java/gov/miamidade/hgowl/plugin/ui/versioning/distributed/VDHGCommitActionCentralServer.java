@@ -12,37 +12,51 @@ import org.protege.editor.owl.ui.action.ProtegeOWLAction;
  * @author Thomas Hilpold (CIAO/Miami-Dade County)
  * @created Aug 24, 2012
  */
-public class VDHGCommitActionCentralServer extends ProtegeOWLAction {
+public class VDHGCommitActionCentralServer extends ProtegeOWLAction
+{
 
 	private static final long serialVersionUID = 4954340319870779130L;
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.protege.editor.core.plugin.ProtegePluginInstance#initialise()
 	 */
 	@Override
-	public void initialise() throws Exception {
+	public void initialise() throws Exception
+	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.protege.editor.core.Disposable#dispose()
 	 */
 	@Override
-	public void dispose() throws Exception {
+	public void dispose() throws Exception
+	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	/* (non-Javadoc)
-	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	@Override
-	public void actionPerformed(ActionEvent e) {
+	public void actionPerformed(ActionEvent e)
+	{
 		VHGOwlEditorKit vhgowlKit = (VHGOwlEditorKit) getEditorKit();
-		try {
-			vhgowlKit.handleCommitActiveRequest();
-		} catch (Exception ex) {
+		try
+		{
+			vhgowlKit.commitActiveOntology();
+		}
+		catch (Exception ex)
+		{
 			ex.printStackTrace();
 		}
 	}

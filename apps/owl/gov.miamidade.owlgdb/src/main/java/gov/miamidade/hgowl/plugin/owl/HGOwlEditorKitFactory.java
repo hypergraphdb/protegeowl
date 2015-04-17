@@ -26,7 +26,7 @@ import org.protege.editor.owl.OWLEditorKitFactory;
 public class HGOwlEditorKitFactory extends OWLEditorKitFactory
 {
 
-	public static final String ID = "gov.miamidade.owlgdb.HGOwlEditorKitFactory";
+	public static final String ID = "org.hypergraphdb-hgdbprotege.HGOwlEditorKitFactory";
 
 	public static final List<String> OWL_EXTENSIONS = Arrays.asList("hgdb", "HyperGraph");
 

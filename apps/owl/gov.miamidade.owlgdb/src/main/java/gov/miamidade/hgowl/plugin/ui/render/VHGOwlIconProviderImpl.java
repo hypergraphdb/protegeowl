@@ -102,8 +102,10 @@ public class VHGOwlIconProviderImpl extends OWLIconProviderImpl
 	{
 		if (owlOntology instanceof HGDBOntologyImpl)
 		{
-			if (vhgEditorKit.getVersionedRepository().isVersionControlled(
-					owlOntology))
+//			if (vhgEditorKit.getVersionedRepository().isVersionControlled(
+//					owlOntology))
+			if (vhgEditorKit.versionManager().isVersioned(
+					((HGDBOntologyImpl)owlOntology).getAtomHandle()))
 			{
 				icon = ontologyDBV;
 			}

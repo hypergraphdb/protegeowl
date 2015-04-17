@@ -38,7 +38,8 @@ public class VHGAddActiveToVersionControlAction extends ProtegeOWLAction {
 	public void actionPerformed(ActionEvent arg0) {
 		VHGOwlEditorKit vhgowlKit = (VHGOwlEditorKit) getEditorKit();
 		try {
-			vhgowlKit.handleAddActiveToVersionControlRequest();
+			//vhgowlKit.handleAddActiveToVersionControlRequest();
+			vhgowlKit.startVersioningActive();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

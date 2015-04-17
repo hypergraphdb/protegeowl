@@ -85,10 +85,10 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 
 	public void handleShowHistoryActiveDistributedRequest()
 	{
-		DistributedOntology dOnto = getActiveOntologyAsDistributed();
-		VHGHistoryDialog.showDialog("Hypergraph Team - History of "
-				+ VDRenderer.render(dOnto), getWorkspace(),
-				dOnto.getVersionedOntology(), this);
+//		DistributedOntology dOnto = getActiveOntologyAsDistributed();
+//		VHGHistoryDialog.showDialog("Hypergraph Team - History of "
+//				+ VDRenderer.render(dOnto), getWorkspace(),
+//				dOnto.getVersionedOntology(), this);
 	}
 
 	public void handleShareActiveRequest()
@@ -408,61 +408,6 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 		}
 	}
 
-	// /**
-	// * This will be PULL NEW NOT PULL ANY!!
-	// */
-	// public void handlePullAnyRequest() {
-	// if (!ensureRemotePeerAccessible()) return;
-	// BrowseRepositoryActivity bra =
-	// repository.browseRemote(selectedRemotePeer);
-	// try {
-	// ActivityResult braa = bra.getFuture().get();
-	// BrowseEntry remoteEntry =
-	// RemoteRepositoryViewPanel.showBrowseEntrySelectionDialog(getWorkspace(),
-	// selectedRemotePeer, bra.getRepositoryBrowseEntries());
-	// if (remoteEntry != null && braa.getException() == null) {
-	// // USER CONFIRM
-	// int confirm = JOptionPane.showConfirmDialog(getWorkspace(), "Pulling " +
-	// remoteEntry.toString()
-	// + "\n from " + selectedRemotePeer + "\n Press ok to start.",
-	// "P2P Pull Any",
-	// JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
-	// if (confirm != JOptionPane.OK_OPTION) {
-	// // user cancelled.
-	// return;
-	// }
-	// // START PULL
-	// PullActivity pa = repository.pullNew(remoteEntry.getUuid(),
-	// selectedRemotePeer);
-	// ActivityResult paa = pa.getFuture().get();
-	// if (paa.getException() == null) {
-	// JOptionPane.showMessageDialog(getWorkspace(),
-	// "Pulling " + remoteEntry.toString() + "\n from " + selectedRemotePeer
-	// + "\n completed with the following message: " + pa.getCompletedMessage(),
-	// "P2P Pull Any Complete", JOptionPane.INFORMATION_MESSAGE);
-	// // TODO if active was pulled:
-	// // refresh all.
-	// try {
-	// this.getOWLModelManager().reload(
-	// repository.getVersionControlledOntology(remoteEntry.getUuid()).getWorkingSetData());
-	// } catch (OWLOntologyCreationException e) {
-	// e.printStackTrace();
-	// }
-	// } else {
-	// throw paa.getException();
-	// }
-	// } else {
-	// JOptionPane.showMessageDialog(getWorkspace(),
-	// "No remote ontology selected ", "P2P Pull Aborted",
-	// JOptionPane.INFORMATION_MESSAGE);
-	// }
-	// } catch (Throwable e) {
-	// JOptionPane.showMessageDialog(getWorkspace(), e.toString() + " - " +
-	// e.getMessage(), "P2P Pull Error",
-	// JOptionPane.ERROR_MESSAGE);
-	// }
-	// }
-
 	public void handleStartNetworkingRequest()
 	{
 		// ask for username and password
@@ -490,8 +435,10 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 							JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-		boolean startOK = repository.startNetworking(userName, password,
-				hostname, room);
+		boolean startOK = repository.startNetworking(userName, 
+													 password,
+													 hostname, 
+													 room);
 		if (startOK)
 		{
 			JOptionPane.showMessageDialog(getWorkspace(),
@@ -689,48 +636,48 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 			// COMMIT WHAT WHO INCREMENT OK CANCEL
 			String title = "Hypergraph Team - Commit "
 					+ VDRenderer.render(activeOnto);
-			CommitDialog dlg = CommitDialog.showDialog(title, getWorkspace(),
-					activeOnto, server, userId, this);
-			if (dlg.isCommitOK())
-			{
-				// Check if allowed
-				if (checkCommitPushAllowed(activeOnto, server))
-				{
-					// DO IT LOCALLY
-					vo.commit(getSystemUserName(), Revision.REVISION_INCREMENT,
-							dlg.getCommitComment());
-					// Push it to server
-					boolean needsUndo = false;
-					try
-					{
-						PushActivity pa = repository.push(activeOnto, server);
-						// Should be ok in AWT thread as no view updates are
-						// expected:
-						ActivityResult ar = pa.getFuture().get(
-								ACTIVITY_TIMEOUT_SECS, TimeUnit.SECONDS);
-						if (ar.getException() != null)
-						{
-							throw ar.getException();
-						}
-						JOptionPane
-								.showMessageDialog(
-										getWorkspace(),
-										"All changes were committed and uploaded to the server.",
-										"Hypergraph Team - Commit - Commit completed",
-										JOptionPane.INFORMATION_MESSAGE);
-					}
-					catch (Throwable t)
-					{
-						needsUndo = true;
-						showException(t, "System error while pushing ontology");
-					}
-					finally
-					{
-						if (needsUndo)
-							vo.undoCommit();
-					}
-				} // else error was already shown to user.
-			}
+//			CommitDialog dlg = CommitDialog.showDialog(title, getWorkspace(),
+//					activeOnto, server, userId, this);
+//			if (dlg.isCommitOK())
+//			{
+//				// Check if allowed
+//				if (checkCommitPushAllowed(activeOnto, server))
+//				{
+//					// DO IT LOCALLY
+//					vo.commit(getSystemUserName(), Revision.REVISION_INCREMENT,
+//							dlg.getCommitComment());
+//					// Push it to server
+//					boolean needsUndo = false;
+//					try
+//					{
+//						PushActivity pa = repository.push(activeOnto, server);
+//						// Should be ok in AWT thread as no view updates are
+//						// expected:
+//						ActivityResult ar = pa.getFuture().get(
+//								ACTIVITY_TIMEOUT_SECS, TimeUnit.SECONDS);
+//						if (ar.getException() != null)
+//						{
+//							throw ar.getException();
+//						}
+//						JOptionPane
+//								.showMessageDialog(
+//										getWorkspace(),
+//										"All changes were committed and uploaded to the server.",
+//										"Hypergraph Team - Commit - Commit completed",
+//										JOptionPane.INFORMATION_MESSAGE);
+//					}
+//					catch (Throwable t)
+//					{
+//						needsUndo = true;
+//						showException(t, "System error while pushing ontology");
+//					}
+//					finally
+//					{
+//						if (needsUndo)
+//							vo.undoCommit();
+//					}
+//				} // else error was already shown to user.
+//			}
 		}
 	}
 
@@ -876,7 +823,8 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 	public VHGCommitDialog showUserCommitDialog(VersionedOntology vo,
 			OWLOntology onto)
 	{
-		return VHGCommitDialog.showDialog(getWorkspace(), vo, onto);
+		// TODO
+		return null;//VHGCommitDialog.showDialog(getWorkspace(), vo, onto);
 	}
 
 	public void handleUpdateActiveClientOntologyRequest()
@@ -1128,8 +1076,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 	public VDHGDBOntologyRepository getDistributedRepository()
 	{
 		HGOwlModelManagerImpl hmm = (HGOwlModelManagerImpl) getOWLModelManager();
-		PHGDBOntologyManagerImpl hom = (PHGDBOntologyManagerImpl) hmm
-				.getOWLOntologyManager();
+		PHGDBOntologyManagerImpl hom = (PHGDBOntologyManagerImpl) hmm.getOWLOntologyManager();
 		return (VDHGDBOntologyRepository) hom.getOntologyRepository();
 	}
 
@@ -1139,22 +1086,23 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 	public VersionedOntology getActiveAsVersionedOntology()
 	{
 		VersionedOntology vo = null;
-		HGOwlModelManagerImpl hmm = (HGOwlModelManagerImpl) getOWLModelManager();
-		OWLOntology activeOnto = hmm.getActiveOntology();
-		VHGDBOntologyRepository vor = getVersionedRepository();
-		if (vor.isVersionControlled(activeOnto))
-		{
-			vo = vor.getVersionControlledOntology(activeOnto);
-		}
-		else
-		{
-			System.out.println("Active ontology not version controlled.");
-			JOptionPane.showMessageDialog(
-					getWorkspace(),
-					"Active ontology not version controlled: \r\n"
-							+ activeOnto.getOntologyID(),
-					"P2P Active not versioned", JOptionPane.WARNING_MESSAGE);
-		}
+		// TODO
+//		HGOwlModelManagerImpl hmm = (HGOwlModelManagerImpl) getOWLModelManager();
+//		OWLOntology activeOnto = hmm.getActiveOntology();
+//		VHGDBOntologyRepository vor = getVersionedRepository();
+//		if (vor.isVersionControlled(activeOnto))
+//		{
+//			vo = vor.getVersionControlledOntology(activeOnto);
+//		}
+//		else
+//		{
+//			System.out.println("Active ontology not version controlled.");
+//			JOptionPane.showMessageDialog(
+//					getWorkspace(),
+//					"Active ontology not version controlled: \r\n"
+//							+ activeOnto.getOntologyID(),
+//					"P2P Active not versioned", JOptionPane.WARNING_MESSAGE);
+//		}
 		return vo;
 	}
 

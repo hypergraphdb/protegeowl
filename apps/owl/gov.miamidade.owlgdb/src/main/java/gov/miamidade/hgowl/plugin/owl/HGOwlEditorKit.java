@@ -170,7 +170,7 @@ public class HGOwlEditorKit extends OWLEditorKit
 //	{
 //		return this.searchManager;
 //	}
-
+	
 	@Override
 	public HGOwlModelManagerImpl getModelManager()
 	{

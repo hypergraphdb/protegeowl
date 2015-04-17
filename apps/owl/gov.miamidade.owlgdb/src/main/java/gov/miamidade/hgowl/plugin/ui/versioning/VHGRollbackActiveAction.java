@@ -38,7 +38,7 @@ public class VHGRollbackActiveAction extends ProtegeOWLAction {
 	public void actionPerformed(ActionEvent arg0) {
 		VHGOwlEditorKit vhgowlKit = (VHGOwlEditorKit) getEditorKit();
 		try {
-			vhgowlKit.handleRollbackActiveRequest();
+			vhgowlKit.undoLocalChanges(); //handleRollbackActiveRequest();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

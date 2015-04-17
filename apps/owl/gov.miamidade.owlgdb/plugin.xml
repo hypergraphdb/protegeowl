@@ -102,5 +102,15 @@
         </dynamic>
 	    <editorKitId value="OWLEditorKit"/>
     </extension>    
-
+<!--
+ 	<extension id="openfromURI"
+               point="org.protege.editor.core.application.EditorKitMenuAction">
+        <name value="Open from URL..."/>
+        <class value="org.protege.editor.owl.ui.action.OpenFromURLAction"/>
+        <toolTip value="Open an ontology from a URL"/>
+        <path value="org.protege.editor.core.application.menu.FileMenu/SlotAA-G"/>
+        <editorKitId value="HGOwlEditorKit"/>
+        <accelerator value="shift O"/>
+    </extension>
+       -->
 </plugin>    
