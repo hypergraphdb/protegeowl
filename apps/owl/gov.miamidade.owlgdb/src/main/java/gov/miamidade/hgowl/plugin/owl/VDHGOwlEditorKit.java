@@ -435,10 +435,12 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 							JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-		boolean startOK = repository.startNetworking(userName, 
-													 password,
-													 hostname, 
-													 room);
+		boolean startOK = repository.startNetworking();
+		
+//		startNetworking(userName, 
+//													 password,
+//													 hostname, 
+//													 room);
 		if (startOK)
 		{
 			JOptionPane.showMessageDialog(getWorkspace(),

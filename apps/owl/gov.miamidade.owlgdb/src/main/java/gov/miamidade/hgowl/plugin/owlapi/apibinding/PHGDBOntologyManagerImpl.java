@@ -37,7 +37,7 @@ public class PHGDBOntologyManagerImpl extends ProtegeOWLOntologyManager implemen
 	public PHGDBOntologyManagerImpl(OWLDataFactoryHGDB dataFactory)
 	{
 		super(dataFactory);
-		ontologyRepository = new VDHGDBOntologyRepository(dataFactory.getHyperGraph().getLocation());
+		//ontologyRepository = new VDHGDBOntologyRepository(dataFactory.getHyperGraph().getLocation());
 		versionManager = new VersionManager(ontologyRepository.getHyperGraph(), "");
 		((VDHGDBOntologyRepository) ontologyRepository).setOntologyManager(this);
 		this.addOntologyChangeListener(((VDHGDBOntologyRepository) ontologyRepository));
