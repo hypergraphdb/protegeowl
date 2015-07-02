@@ -34,6 +34,7 @@ import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowseRepository
 import org.hypergraphdb.app.owl.versioning.distributed.activity.PullActivity;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.PushActivity;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowseRepositoryActivity.BrowseEntry;
+import org.hypergraphdb.app.owl.versioning.distributed.activity.VersionUpdateActivity;
 import org.hypergraphdb.peer.HGPeerIdentity;
 import org.hypergraphdb.peer.workflow.ActivityResult;
 import org.protege.editor.core.OntologyRepository;
@@ -543,7 +544,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 						return;
 					}
 					// START PULL
-					PullActivity pa = repository.pullNew(remoteEntry.getUuid(),
+					VersionUpdateActivity pa = repository.pullNew(remoteEntry.getUuid(),
 							serverPeer);
 					//
 					// TODO BLOCK in NON AWT THREAD, let changes be applied in
