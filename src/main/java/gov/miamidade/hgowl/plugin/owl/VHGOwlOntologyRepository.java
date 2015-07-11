@@ -1,5 +1,7 @@
 package gov.miamidade.hgowl.plugin.owl;
 
+import gov.miamidade.hgowl.plugin.HGOwlProperties;
+
 import gov.miamidade.hgowl.plugin.owl.model.HGOntologyRepositoryEntry;
 import gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDRenderer;
 
@@ -7,11 +9,12 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.hypergraphdb.app.owl.HGDBOntology;
-import org.hypergraphdb.app.owl.HGDBOntologyRepository;
 import org.hypergraphdb.app.owl.versioning.VHGDBOntologyRepository;
+import org.hypergraphdb.app.owl.versioning.VersionManager;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.protege.editor.core.OntologyRepository;
 import org.protege.editor.core.OntologyRepositoryEntry;
@@ -47,7 +50,7 @@ public class VHGOwlOntologyRepository implements OntologyRepository
 	private String repositoryName;
 
 	private VHGDBOntologyRepository dbRepository;
-
+	private VersionManager versionManager;
 	private List<VHGDBRepositoryEntry> entries;
 
 	private OWLOntologyIRIMapper iriMapper;
@@ -56,6 +59,8 @@ public class VHGOwlOntologyRepository implements OntologyRepository
 	{
 		this.repositoryName = repositoryName;
 		this.dbRepository = dbRepository;
+		this.versionManager = new VersionManager(dbRepository.getHyperGraph(), 
+				 HGOwlProperties.getInstance().getP2pUser());		
 		entries = new ArrayList<VHGDBRepositoryEntry>();
 		iriMapper = new RepositoryIRIMapper();
 	}
@@ -147,13 +152,13 @@ public class VHGOwlOntologyRepository implements OntologyRepository
 			OntologyIRIShortFormProvider sfp = new OntologyIRIShortFormProvider();
 			shortName = sfp.getShortForm(o);
 			physicalURI = URI.create(o.getDocumentIRI().toString());
-			if (dbRepository.isVersionControlled(o))
+			if (versionManager.isVersioned(o.getAtomHandle()))
 			{
 				VersionedOntology vo = dbRepository.getVersionControlledOntology(o);
-				headRevision = "" + vo.getHeadRevision().getRevision();
-				lastCommitTime = VDRenderer.render(vo.getHeadRevision().getTimeStamp());
+				headRevision = "" + vo.revision().toString();
+				lastCommitTime = VDRenderer.render(new Date(vo.revision().timestamp()));
 				// Format.getDateTimeInstance().format(vo.getWorkingSetChanges().getCreatedDate());
-				uncommittedChanges = "" + vo.getWorkingSetChanges().size();
+				uncommittedChanges = "" + vo.changes().size();
 			}
 			else
 			{

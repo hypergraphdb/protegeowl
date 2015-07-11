@@ -14,7 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import org.hypergraphdb.app.owl.newver.VersionedOntology;
+import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.protege.editor.owl.OWLEditorKit;
 
 /**
@@ -50,8 +50,7 @@ public class RollbackDialog extends JDialog implements ActionListener
 		setTitle(title);
 		String message = "<html> <h2> Rollback Pending Ontology Changes </h2> " + "<table width='100%' border='0'>"
 				+ "<tr><td align='right'><b>Ontology:</b></td><td>" + vo + "</td></tr>"
-				+ "<tr><td align='right'><b>Head:</b></td><td>" + vo.revision() + "(local)"
-				+ "</td></tr>" + "</table>";
+				+ "<tr><td align='right'><b>Head:</b></td><td>" + vo.revision() + "(local)" + "</td></tr>" + "</table>";
 		JPanel northPanel = new JPanel(new BorderLayout(5, 5));
 		northPanel.add(new JLabel(message), BorderLayout.NORTH);
 		btOK = new JButton("Rollback");
@@ -63,7 +62,11 @@ public class RollbackDialog extends JDialog implements ActionListener
 		buttonPanel.add(btCancel);
 		//
 		changeSetPanel = new ChangeSetTablePanel(vo.ontology(), vo.graph(), kit);
-		changeSetPanel.setChangeSet(vo.changes(), new TreeSet<Integer>() /*vo.getWorkingSetConflicts()*/, "Rollback");
+		changeSetPanel.setChangeSet(vo.changes(), new TreeSet<Integer>() /*
+																		 * vo.
+																		 * getWorkingSetConflicts
+																		 * ()
+																		 */, "Rollback");
 		// renderChangeset((DefaultListModel)changeSetList.getModel(),
 		// workingSetChanges, vo.getHyperGraph(), vo.getWorkingSetData());
 		this.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);

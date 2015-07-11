@@ -16,8 +16,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import org.hypergraphdb.app.owl.newver.Revision;
-import org.hypergraphdb.app.owl.newver.VersionedOntology;
+import org.hypergraphdb.app.owl.versioning.Revision;
+import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 
 /**
  * VHGCommitDialog.
@@ -56,8 +56,8 @@ public class VHGCommitDialog extends JDialog implements ActionListener
 		int pendingChanges = vo.changes().size();
 		String message = "Do you want to commit " + pendingChanges + " change" + ((pendingChanges > 1) ? "s" : "") + ":\n"
 				+ "    Last Revision    : " + headRevision + "\n" + "    Created          : "
-				+ DateFormat.getDateTimeInstance().format(new Date(headRevision.getTimestamp())) + "\n" + "    By               : "
-				+ headRevision.getUser() + "\n" + "    Ontology ID : "
+				+ DateFormat.getDateTimeInstance().format(new Date(headRevision.timestamp())) + "\n" + "    By               : "
+				+ headRevision.user() + "\n" + "    Ontology ID : "
 				+ headRevision.versioned().getPersistent() + "\n \n";
 		JPanel centerPanel = new JPanel(new BorderLayout(5, 5));
 		message = "<html><pre><b>" + message + "</b></pre></html>";

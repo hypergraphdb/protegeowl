@@ -13,7 +13,7 @@
     <bundle.symbolicName>gov.miamidade.owlgdb;singleton:=true</bundle.symbolicName>
     <bundle.namespace>gov.miamidade.owlgdb</bundle.namespace>        
   </properties>  
-  <packaging>${packageit}</packaging>
+  <packaging>bundle</packaging>
   <artifactId>hgdbprotege</artifactId>
   <name>HyperGraphDB OWL Protege Plugin</name>
   <description>A Protege plugin offering HyperGraphDB based back-end for OWL ontologies including versioning and collaboration tools.</description>
@@ -122,7 +122,7 @@
             <Export-Package>gov.miamidade.hgowl.plugin*,
  					gov.miamidade.hgowl.plugin.owl.model,
  					gov.miamidade.hgowl.plugin.owlapi.apibinding</Export-Package>
-            <Import-Package>!gov.miamidade.hgowl.plugin.*, org.hypergraphdb.*,javax.swing.*,*;version=1.0.0</Import-Package>
+            <Import-Package>!gov.miamidade.hgowl.plugin.*, org.hypergraphdb.*,javax.swing.*;resolution:=optional,*;version=1.0.0</Import-Package>
             <!--             
             <Embed-Dependency>mjson*</Embed-Dependency>
              -->

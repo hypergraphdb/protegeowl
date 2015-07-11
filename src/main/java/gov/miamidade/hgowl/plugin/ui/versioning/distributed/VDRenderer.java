@@ -46,18 +46,19 @@ public class VDRenderer
 	{
 		if (vo == null)
 			return "";
-		return render(vo.getWorkingSetData()) + " Head: " + render(vo.getHeadRevision(), !vo.getWorkingSetChanges().isEmpty());
+		return render(vo.getRevisionData(vo.getCurrentRevision())) + " Head: " + 
+						render(vo.revision(), !vo.changes().isEmpty());
 	}
 
 	public static String renderWorkingSetOf(VersionedOntology vo)
 	{
 		if (vo == null)
 			return "";
-		String s = "" + vo.getWorkingSetChanges().getArity() + " changes ";
-		if (!vo.getWorkingSetConflicts().isEmpty())
-		{
-			s += "(" + vo.getWorkingSetConflicts().size() + " conflicts)";
-		}
+		String s = "" + vo.changes().getArity() + " changes ";
+//		if (!vo.getWorkingSetConflicts().isEmpty())
+//		{
+//			s += "(" + vo.getWorkingSetConflicts().size() + " conflicts)";
+//		}
 		return s;
 	}
 
@@ -72,7 +73,7 @@ public class VDRenderer
 	{
 		if (rev == null)
 			return "";
-		return "" + rev.getRevision() + " " + render(rev.getTimeStamp()) + " by " + rev.getUser();
+		return "" + rev.toString() + " " + render(new Date(rev.timestamp())) + " by " + rev.user();
 	}
 
 	public static String render(Revision head, boolean isWorkingSetChanges)
@@ -80,7 +81,7 @@ public class VDRenderer
 		if (head == null)
 			return "";
 		String pending = isWorkingSetChanges ? "* " : " ";
-		return "" + head.getRevision() + pending + render(head.getTimeStamp()) + " by " + head.getUser();
+		return "" + head.toString() + pending + render(new Date(head.timestamp())) + " by " + head.user();
 	}
 
 	public static String render(HGPeerIdentity pi)

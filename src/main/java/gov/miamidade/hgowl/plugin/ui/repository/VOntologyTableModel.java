@@ -5,9 +5,9 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.hypergraphdb.app.owl.newver.ChangeSet;
-import org.hypergraphdb.app.owl.newver.Revision;
-import org.hypergraphdb.app.owl.newver.VersionedOntology;
+import org.hypergraphdb.app.owl.versioning.ChangeSet;
+import org.hypergraphdb.app.owl.versioning.Revision;
+import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 
 /**
  * VOntologyTableModel.
@@ -115,9 +115,9 @@ public class VOntologyTableModel extends AbstractTableModel
 		{
 			case 0: return (revisionIndex == revisions.size() - 1) ? "HEAD":"";
 			case 1: return "local label?"; // rev.getRevision();
-			case 2: return new java.util.Date(rev.getTimestamp());
-			case 3: return rev.getUser();
-			case 4: return rev.getComment() == null ? "" : rev.getComment();
+			case 2: return new java.util.Date(rev.timestamp());
+			case 3: return rev.user();
+			case 4: return rev.comment() == null ? "" : rev.comment();
 			case 5: return cs.size();
 			default:return "unknown col index";
 		}
@@ -157,9 +157,9 @@ public class VOntologyTableModel extends AbstractTableModel
 		{
 			case 0:return "INIT";
 			case 1:return "local label?";//rev.getRevision();
-			case 2:return new java.util.Date(rev.getTimestamp());
-			case 3:return rev.getUser();
-			case 4:return rev.getComment() == null ? "" : rev.getComment();
+			case 2:return new java.util.Date(rev.timestamp());
+			case 3:return rev.user();
+			case 4:return rev.comment() == null ? "" : rev.comment();
 			case 5:return "";
 			default:return "unknown col index";
 		}

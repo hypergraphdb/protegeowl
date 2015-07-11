@@ -53,9 +53,9 @@ public class PeerTableModel extends AbstractTableModel {
     public void refresh() {
 		Set<HGPeerIdentity> visiblePeers;
     	if (viewMode.equals(ViewMode.ALL_PEERS)) {
-    		visiblePeers = repository.getPeers();
-    	} else if (viewMode.equals(ViewMode.ONTOLOGY_SERVERS)) {
-    		visiblePeers = repository.getOntologyServers();
+    		visiblePeers = repository.getPeer().getConnectedPeers();
+//    	} else if (viewMode.equals(ViewMode.ONTOLOGY_SERVERS)) {
+//    		visiblePeers = repository.getOntologyServers();
     	} else {
     		throw new IllegalStateException("The viewMode was not recognized: " + viewMode);
     	}

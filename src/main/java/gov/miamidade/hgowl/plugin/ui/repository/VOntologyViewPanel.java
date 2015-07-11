@@ -3,6 +3,7 @@ package gov.miamidade.hgowl.plugin.ui.repository;
 import gov.miamidade.hgowl.plugin.owl.model.HGOntologyRepositoryEntry;
 
 
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -14,7 +15,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import org.hypergraphdb.app.owl.newver.VersionedOntology;
+import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 
 /**
  * VOntologyViewPanel.

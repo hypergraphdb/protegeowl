@@ -1,7 +1,7 @@
 package gov.miamidade.hgowl.plugin.ui.versioning.distributed;
 
-import org.hypergraphdb.app.owl.versioning.VersionedOntologyComparator;
-import org.hypergraphdb.app.owl.versioning.VersionedOntologyComparator.VersionedOntologyComparisonResult;
+import gov.miamidade.hgowl.plugin.obsolete.VersionedOntologyComparator;
+import gov.miamidade.hgowl.plugin.obsolete.VersionedOntologyComparator.VersionedOntologyComparisonResult;
 
 import java.awt.Color;
 import java.awt.Component;

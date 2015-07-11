@@ -25,9 +25,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.hypergraphdb.app.owl.newver.ChangeSet;
-import org.hypergraphdb.app.owl.newver.Revision;
-import org.hypergraphdb.app.owl.newver.VersionedOntology;
+import org.hypergraphdb.app.owl.versioning.ChangeSet;
+import org.hypergraphdb.app.owl.versioning.Revision;
+import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.protege.editor.owl.OWLEditorKit;
 
 /**
@@ -45,7 +45,7 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 	public static final String EMPTY_LIST_TEXT = "Please select a revision above.";
 
 	private static final long serialVersionUID = -284973463639671572L;
-	private VersionedOntology versionedOntology;
+//	private VersionedOntology versionedOntology;
 	private VOntologyViewPanel ontologyView;
 	private ChangeSetTablePanel changeSetPanel;
 	private JButton btClose;
@@ -86,7 +86,7 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 				closeDialog();
 			}
 		});
-		versionedOntology = vo;
+//		versionedOntology = vo;
 		setLayout(new BorderLayout());
 		String message = "<html> <h2> Local History of Ontology </h2> " + "<table width='100%' border='0'>"
 				+ "<tr><td align='right'><b>Ontology:</b></td><td>" + vo + "</td></tr>"
@@ -135,7 +135,7 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 	{
 		this.setVisible(false);
 		this.dispose();
-		versionedOntology = null;
+//		versionedOntology = null;
 	}
 
 	/**
@@ -163,17 +163,17 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 			{
 				Revision selectedRev = revisions.get(selectedRevisionIndex);
 				selectedCS = changeSets.get(selectedRevisionIndex - 1);
-				firstItemString = "<html>Showing Changes that were commited by <b>" + selectedRev.getUser() + "</b> at "
-						+ VDRenderer.render(new java.util.Date(selectedRev.getTimestamp())) + 
+				firstItemString = "<html>Showing Changes that were commited by <b>" + selectedRev.user() + "</b> at "
+						+ VDRenderer.render(new java.util.Date(selectedRev.timestamp())) + 
 						" for revision " + selectedRev + "</html>";
-				firstItemString += "<br> with comment <b>" + selectedRev.getComment() + "</b>";
+				firstItemString += "<br> with comment <b>" + selectedRev.comment() + "</b>";
 				// renderChangeset(lm, selectedCS);
 			}
 			else if (selectedRevisionIndex == 0)
 			{
 				Revision selectedRev = revisions.get(selectedRevisionIndex);
-				firstItemString = ("<html> Initial revision that was created by <b>" + selectedRev.getUser() + "</b> at "
-						+ VDRenderer.render(new java.util.Date(selectedRev.getTimestamp())) + "</html>");
+				firstItemString = ("<html> Initial revision that was created by <b>" + selectedRev.user() + "</b> at "
+						+ VDRenderer.render(new java.util.Date(selectedRev.timestamp())) + "</html>");
 				// lm.addElement("<html>with comment <b>" +
 				// selectedRev.getRevisionComment() + "</b> </html>");
 				// lm.addElement("<html>No changes to show.</html>");

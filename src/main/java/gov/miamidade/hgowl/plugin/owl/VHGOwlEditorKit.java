@@ -14,8 +14,8 @@ import javax.swing.JOptionPane;
 
 import org.hypergraphdb.HGHandle;
 import org.hypergraphdb.app.owl.HGDBOntology;
-import org.hypergraphdb.app.owl.newver.VersionManager;
-import org.hypergraphdb.app.owl.newver.VersionedOntology;
+import org.hypergraphdb.app.owl.versioning.VersionManager;
+import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.protege.editor.core.OntologyRepository;
 import org.protege.editor.core.OntologyRepositoryEntry;
 import org.protege.editor.core.OntologyRepositoryManager;

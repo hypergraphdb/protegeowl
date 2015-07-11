@@ -8,8 +8,8 @@ import gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDRenderer;
 import javax.swing.table.AbstractTableModel;
 
 import org.hypergraphdb.HyperGraph;
-import org.hypergraphdb.app.owl.newver.ChangeSet;
-import org.hypergraphdb.app.owl.newver.VersionedOntology;
+import org.hypergraphdb.app.owl.versioning.ChangeSet;
+import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.hypergraphdb.app.owl.versioning.change.VOWLChange;
 import org.hypergraphdb.app.owl.versioning.change.VOWLChangeFactory;
 import org.semanticweb.owlapi.model.OWLOntology;

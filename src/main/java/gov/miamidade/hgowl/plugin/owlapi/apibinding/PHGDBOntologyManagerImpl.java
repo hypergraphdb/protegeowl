@@ -11,8 +11,9 @@ import org.hypergraphdb.app.owl.core.OWLDataFactoryHGDB;
 import org.hypergraphdb.app.owl.core.PrefixChange;
 import org.hypergraphdb.app.owl.core.PrefixChangeListener;
 import org.hypergraphdb.app.owl.core.RemovePrefixChange;
-import org.hypergraphdb.app.owl.newver.VersionManager;
+import org.hypergraphdb.app.owl.versioning.VersionManager;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
+import org.hypergraphdb.app.owl.versioning.VersioningChangeListener;
 import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
 import org.protege.owlapi.model.ProtegeOWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -40,7 +41,7 @@ public class PHGDBOntologyManagerImpl extends ProtegeOWLOntologyManager implemen
 		//ontologyRepository = new VDHGDBOntologyRepository(dataFactory.getHyperGraph().getLocation());
 		versionManager = new VersionManager(ontologyRepository.getHyperGraph(), "");
 		((VDHGDBOntologyRepository) ontologyRepository).setOntologyManager(this);
-		this.addOntologyChangeListener(((VDHGDBOntologyRepository) ontologyRepository));
+		this.addOntologyChangeListener(new VersioningChangeListener(versionManager));
 	}
 
 	@Override
