@@ -1,29 +1,23 @@
 package gov.miamidade.hgowl.plugin.owl;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
-
-import javax.swing.JOptionPane;
-
 import gov.miamidade.hgowl.plugin.HGOwlProperties;
 import gov.miamidade.hgowl.plugin.obsolete.VersionedOntologyComparator.VersionedOntologyComparisonResult;
 import gov.miamidade.hgowl.plugin.owl.model.HGOwlModelManagerImpl;
 import gov.miamidade.hgowl.plugin.owlapi.apibinding.PHGDBOntologyManagerImpl;
 import gov.miamidade.hgowl.plugin.ui.render.VDHGOwlIconProviderImpl;
 import gov.miamidade.hgowl.plugin.ui.versioning.VHGCommitDialog;
-import gov.miamidade.hgowl.plugin.ui.versioning.VHGHistoryDialog;
-import gov.miamidade.hgowl.plugin.ui.versioning.distributed.CommitDialog;
-import gov.miamidade.hgowl.plugin.ui.versioning.distributed.CompareVersionedOntologyViewPanel;
 import gov.miamidade.hgowl.plugin.ui.versioning.distributed.PeerViewPanel;
-import gov.miamidade.hgowl.plugin.ui.versioning.distributed.PullDistributedOntologyViewPanel;
 import gov.miamidade.hgowl.plugin.ui.versioning.distributed.RemoteRepositoryViewPanel;
 import gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDRenderer;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
+import javax.swing.JOptionPane;
+
 import org.hypergraphdb.app.owl.HGDBOntology;
 import org.hypergraphdb.app.owl.versioning.ChangeSet;
-import org.hypergraphdb.app.owl.versioning.Revision;
-import org.hypergraphdb.app.owl.versioning.VHGDBOntologyRepository;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.hypergraphdb.app.owl.versioning.distributed.ClientCentralizedOntology;
 import org.hypergraphdb.app.owl.versioning.distributed.DistributedOntology;
@@ -31,9 +25,8 @@ import org.hypergraphdb.app.owl.versioning.distributed.PeerDistributedOntology;
 import org.hypergraphdb.app.owl.versioning.distributed.ServerCentralizedOntology;
 import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowseRepositoryActivity;
-import org.hypergraphdb.app.owl.versioning.distributed.activity.PullActivity;
-import org.hypergraphdb.app.owl.versioning.distributed.activity.PushActivity;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowseRepositoryActivity.BrowseEntry;
+import org.hypergraphdb.app.owl.versioning.distributed.activity.PushActivity;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.VersionUpdateActivity;
 import org.hypergraphdb.peer.HGPeerIdentity;
 import org.hypergraphdb.peer.workflow.ActivityResult;
@@ -42,7 +35,6 @@ import org.protege.editor.core.OntologyRepositoryManager;
 import org.protege.editor.owl.OWLEditorKitFactory;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 
 /**
  * VDHGOwlEditorKit contains UI functions for editing distributed (shared)
@@ -58,7 +50,10 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 
 	public enum OntologyDistributionState
 	{
-		ONTO_NOT_SHARED, ONTO_SHARED_DISTRIBUTED, ONTO_SHARED_CENTRAL_CLIENT, ONTO_SHARED_CENTRAL_SERVER,
+		ONTO_NOT_SHARED, 
+		ONTO_SHARED_DISTRIBUTED, 
+		ONTO_SHARED_CENTRAL_CLIENT, 
+		ONTO_SHARED_CENTRAL_SERVER,
 	}
 
 	VDHGDBOntologyRepository repository;
@@ -246,7 +241,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 			// user cancelled.
 			return;
 		}
-		repository.cancelSharing(activeOntology);
+		//repository.cancelSharing(activeOntology);
 		JOptionPane
 				.showMessageDialog(
 						getWorkspace(),

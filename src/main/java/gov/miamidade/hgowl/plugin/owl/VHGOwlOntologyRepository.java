@@ -1,7 +1,6 @@
 package gov.miamidade.hgowl.plugin.owl;
 
 import gov.miamidade.hgowl.plugin.HGOwlProperties;
-
 import gov.miamidade.hgowl.plugin.owl.model.HGOntologyRepositoryEntry;
 import gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDRenderer;
 
@@ -13,9 +12,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.hypergraphdb.app.owl.HGDBOntology;
-import org.hypergraphdb.app.owl.versioning.VHGDBOntologyRepository;
 import org.hypergraphdb.app.owl.versioning.VersionManager;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
+import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
 import org.protege.editor.core.OntologyRepository;
 import org.protege.editor.core.OntologyRepositoryEntry;
 import org.protege.editor.core.editorkit.EditorKit;
@@ -49,18 +48,18 @@ public class VHGOwlOntologyRepository implements OntologyRepository
 
 	private String repositoryName;
 
-	private VHGDBOntologyRepository dbRepository;
+	private VDHGDBOntologyRepository dbRepository;
 	private VersionManager versionManager;
 	private List<VHGDBRepositoryEntry> entries;
 
 	private OWLOntologyIRIMapper iriMapper;
 
-	public VHGOwlOntologyRepository(String repositoryName, VHGDBOntologyRepository dbRepository)
+	public VHGOwlOntologyRepository(String repositoryName, VDHGDBOntologyRepository dbRepository)
 	{
 		this.repositoryName = repositoryName;
 		this.dbRepository = dbRepository;
 		this.versionManager = new VersionManager(dbRepository.getHyperGraph(), 
-				 HGOwlProperties.getInstance().getP2pUser());		
+				 								 HGOwlProperties.getInstance().getP2pUser());		
 		entries = new ArrayList<VHGDBRepositoryEntry>();
 		iriMapper = new RepositoryIRIMapper();
 	}
@@ -154,7 +153,7 @@ public class VHGOwlOntologyRepository implements OntologyRepository
 			physicalURI = URI.create(o.getDocumentIRI().toString());
 			if (versionManager.isVersioned(o.getAtomHandle()))
 			{
-				VersionedOntology vo = dbRepository.getVersionControlledOntology(o);
+				VersionedOntology vo = versionManager.versioned(o.getAtomHandle());
 				headRevision = "" + vo.revision().toString();
 				lastCommitTime = VDRenderer.render(new Date(vo.revision().timestamp()));
 				// Format.getDateTimeInstance().format(vo.getWorkingSetChanges().getCreatedDate());

@@ -158,7 +158,7 @@ public class VDHGOwlOntologyRepository implements OntologyRepository
 			physicalURI = URI.create(o.getDocumentIRI().toString());
 			if (versionManager.isVersioned(o.getAtomHandle()))
 			{
-				VersionedOntology vo = dbRepository.getVersionControlledOntology(o);
+				VersionedOntology vo = versionManager.versioned(o.getAtomHandle());
 				DistributedOntology dOnto = dbRepository.getDistributedOntology(o);
 				if (dOnto != null)
 				{

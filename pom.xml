@@ -113,7 +113,7 @@
         <configuration>
  		  <manifestLocation>META-INF</manifestLocation>        
           <instructions>
-            <Bundle-SymbolicName>${groupId}-${artifactId};singleton:=true</Bundle-SymbolicName>
+            <Bundle-SymbolicName>${project.groupId}-${project.artifactId};singleton:=true</Bundle-SymbolicName>
             <Bundle-Name>${project.name}</Bundle-Name>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Require-Bundle>org.protege.editor.owl,org.protege.editor.core.application,org.semanticweb.owl.owlapi,
@@ -122,10 +122,9 @@
             <Export-Package>gov.miamidade.hgowl.plugin*,
  					gov.miamidade.hgowl.plugin.owl.model,
  					gov.miamidade.hgowl.plugin.owlapi.apibinding</Export-Package>
-            <Import-Package>!gov.miamidade.hgowl.plugin.*, org.hypergraphdb.*,javax.swing.*;resolution:=optional,*;version=1.0.0</Import-Package>
-            <!--             
-            <Embed-Dependency>mjson*</Embed-Dependency>
-             -->
+            <Import-Package>!gov.miamidade.hgowl.plugin.*, 
+                            org.hypergraphdb.*,
+                            javax.swing.*;resolution:=optional,*;version=1.0.0</Import-Package>
 			<Include-Resource>plugin.xml, {maven-resources}</Include-Resource>            
           </instructions> 
 		  <executions>

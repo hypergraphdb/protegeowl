@@ -7,7 +7,6 @@ import java.io.File;
 import javax.swing.JOptionPane;
 
 import org.hypergraphdb.app.owl.HGDBOntologyRepository;
-import org.hypergraphdb.app.owl.versioning.VHGDBOntologyRepository;
 import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
 import org.protege.editor.core.OntologyRepository;
 import org.protege.editor.core.OntologyRepositoryFactory;
@@ -73,10 +72,6 @@ public class HGOwlOntologyRepositoryFactory extends OntologyRepositoryFactory
 		if (dbRepository instanceof VDHGDBOntologyRepository)
 		{
 			r = new VDHGOwlOntologyRepository("Hypergraph - Team ", (VDHGDBOntologyRepository) dbRepository);
-		}
-		else if (dbRepository instanceof VHGDBOntologyRepository)
-		{
-			r = new VHGOwlOntologyRepository("Hypergraph - Versioning", (VHGDBOntologyRepository) dbRepository);
 		}
 		else
 		{
