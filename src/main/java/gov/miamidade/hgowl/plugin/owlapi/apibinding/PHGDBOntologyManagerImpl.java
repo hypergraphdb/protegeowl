@@ -1,12 +1,8 @@
 package gov.miamidade.hgowl.plugin.owlapi.apibinding;
 
-import gov.miamidade.hgowl.plugin.HGOwlProperties;
-import gov.miamidade.hgowl.plugin.MaybeRef;
+import gov.miamidade.hgowl.plugin.Singles;
 
 import java.io.File;
-import java.util.concurrent.Callable;
-
-import javax.swing.JOptionPane;
 
 import org.hypergraphdb.app.owl.HGDBOntology;
 import org.hypergraphdb.app.owl.HGDBOntologyFormat;
@@ -17,13 +13,10 @@ import org.hypergraphdb.app.owl.core.OWLDataFactoryHGDB;
 import org.hypergraphdb.app.owl.core.PrefixChange;
 import org.hypergraphdb.app.owl.core.PrefixChangeListener;
 import org.hypergraphdb.app.owl.core.RemovePrefixChange;
-import org.hypergraphdb.app.owl.util.ImplUtils;
 import org.hypergraphdb.app.owl.versioning.VersionManager;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.hypergraphdb.app.owl.versioning.VersioningChangeListener;
 import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
-import org.hypergraphdb.peer.HyperGraphPeer;
-import org.hypergraphdb.util.Ref;
 import org.protege.owlapi.model.ProtegeOWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyFormat;
@@ -41,38 +34,15 @@ import org.semanticweb.owlapi.model.OWLOntologyFormat;
 public class PHGDBOntologyManagerImpl extends ProtegeOWLOntologyManager implements HGDBOntologyManager, PrefixChangeListener
 {
 	private static final long serialVersionUID = 1L;
-	HGDBOntologyRepository ontologyRepository;
+	VDHGDBOntologyRepository ontologyRepository;
 	VersionManager versionManager;
 	
-	Ref<HyperGraphPeer> peerFactory = new Ref<HyperGraphPeer>()
-	{
-		public HyperGraphPeer get()
-		{
-			HGOwlProperties props = HGOwlProperties.getInstance();
-			String connectionString = "hgpeer://" + props.getP2pUser() + ":" + 
-					props.getP2pPass() +  "@" + props.getP2pServer() + "#" + props.getP2pRoom();
-			return ImplUtils.peer(connectionString);
-		}
-	};
-	
-	Callable<Boolean> onFailedPeer = new Callable<Boolean>()
-	{
-		public Boolean call()
-		{
-			JOptionPane.showMessageDialog(
-					null,
-					"Please configure P2P server, userName and password in Preferences.",
-					"Hypergraph Team - Sign In - Error",
-					JOptionPane.ERROR_MESSAGE);			
-			return false;
-		}
-	};
+
 	
 	public PHGDBOntologyManagerImpl(OWLDataFactoryHGDB dataFactory)
 	{
 		super(dataFactory);
-		ontologyRepository = new VDHGDBOntologyRepository(dataFactory.getHyperGraph().getLocation(),
-				new MaybeRef<HyperGraphPeer>(peerFactory, onFailedPeer));
+		ontologyRepository = Singles.vdRepo();
 		versionManager = ontologyRepository.getVersionManager();		
 		this.addOntologyChangeListener(new VersioningChangeListener(versionManager));
 	}
@@ -82,15 +52,7 @@ public class PHGDBOntologyManagerImpl extends ProtegeOWLOntologyManager implemen
 	{
 		return ontologyRepository;
 	}
-
-	/**
-	 * Imports a full versionedOntology from a VOWLXMLFormat file. Throws one
-	 * of: OWLOntologyChangeException, UnloadableImportException,
-	 * HGDBOntologyAlreadyExistsByDocumentIRIException,
-	 * HGDBOntologyAlreadyExistsByOntologyIDException,
-	 * HGDBOntologyAlreadyExistsByOntologyUUIDException, OWLParserException,
-	 * IOException wrapped as cause of a RuntimeException.
-	 */
+	
 	public VersionedOntology importVersionedOntology(File vowlxmlFile) throws RuntimeException
 	{
 		throw new IllegalStateException("Not yet implemented.");

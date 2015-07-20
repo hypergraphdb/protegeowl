@@ -1,11 +1,9 @@
 package gov.miamidade.hgowl.plugin.ui.repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.hypergraphdb.app.owl.versioning.ChangeSet;
 import org.hypergraphdb.app.owl.versioning.Revision;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 
@@ -21,28 +19,32 @@ public class VOntologyTableModel extends AbstractTableModel
 	private static final long serialVersionUID = -218142221144608713L;
 
 	VersionedOntology versionedOntology;
-	List<ChangeSet<VersionedOntology>> changesets;
 	List<Revision> revisions;
 
+	public static enum Column 
+	{
+		Master("Master"), 
+		Revision("Revision"), 
+		TimeStamp("Time Stamp"), 
+		User("User"), 
+		Comment("Comment"), 
+		ChangeCount("#Changes");
+		String label;
+		Column(String label) { this.label = label; }
+		public String toString() { return label; }
+	}
+	
 	public VOntologyTableModel(VersionedOntology vo)
 	{
 		this.versionedOntology = vo;
 		refresh();
-		// Master / Revision / Timestamp / user / #ofTotalChanges
 	}
 
 	public void refresh()
 	{
-		// TODO - we should try to avoid loading all revisions and change sets all the time.
-		revisions = new ArrayList<Revision>(); 
-		changesets = new ArrayList<ChangeSet<VersionedOntology>>();
+		revisions = versionedOntology.revisions(); 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.swing.table.TableModel#getColumnCount()
-	 */
 	@Override
 	public int getColumnCount()
 	{
@@ -51,23 +53,12 @@ public class VOntologyTableModel extends AbstractTableModel
 
 	public String getColumnName(int column)
 	{
-		switch (column)
-		{
-			case 0: return "Master";
-			case 1: return "Revision";
-			case 2: return "Time Stamp";
-			case 3: return "User";
-			case 4: return "Comment";
-			case 5: return "#Changes";
-			default: return "UNKNOWN COL: " + column;
-		}
+		if (column >= Column.values().length)
+			return "UNKNOWN COL: " + column;
+		else
+			return Column.values()[column].toString();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.swing.table.TableModel#getRowCount()
-	 */
 	@Override
 	public int getRowCount()
 	{
@@ -75,11 +66,6 @@ public class VOntologyTableModel extends AbstractTableModel
 		return revisions.size() + 1;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.swing.table.TableModel#getValueAt(int, int)
-	 */
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex)
 	{
@@ -107,10 +93,10 @@ public class VOntologyTableModel extends AbstractTableModel
 	{
 		if (revisionIndex < 1 || revisionIndex >= revisions.size())
 		{
-			throw new IllegalArgumentException("Revision index not a committed revision, was: " + revisionIndex);
+			throw new IllegalArgumentException("Revision index not a committed revision, was: " + 
+							revisionIndex);
 		}
 		Revision rev = revisions.get(revisionIndex);
-		ChangeSet<VersionedOntology> cs = changesets.get(revisionIndex - 1);
 		switch (columnIndex)
 		{
 			case 0: return (revisionIndex == revisions.size() - 1) ? "HEAD":"";
@@ -118,34 +104,20 @@ public class VOntologyTableModel extends AbstractTableModel
 			case 2: return new java.util.Date(rev.timestamp());
 			case 3: return rev.user();
 			case 4: return rev.comment() == null ? "" : rev.comment();
-			case 5: return cs.size();
+			case 5: return versionedOntology.changes(rev).size();
 			default:return "unknown col index";
 		}
 	}
 
 	public Object getValueForUncommittedAt(int columnIndex)
 	{
-		ChangeSet<VersionedOntology> cs = changesets.get(changesets.size() - 1);
 		switch (columnIndex)
 		{
 			case 0:return "UNCOMMITTED";
 			case 1:case 2: return "";
 			case 3:return "you";
-			case 4:return "conflicts?";  
-					/*
-					(versionedOntology.getWorkingSetConflicts().isEmpty())
-			{
-				returnObject = "";
-			}
-			else
-			{
-				returnObject = "<html><b>Contains " + versionedOntology.getWorkingSetConflicts().size()
-						+ " conflicts that will be removed on commit.";
-			}
-		}
-			;
-			break; */
-			case 5:return cs.size();
+			case 4:return ""; // comments  
+			case 5:return versionedOntology.changes().size();
 			default:return "unknown col index";
 		}
 	}

@@ -1014,8 +1014,9 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 
 	public boolean isNetworking()
 	{
-		return repository.getPeer() != null
-				&& repository.getPeer().getPeerInterface().isConnected();
+		return repository.getPeer() != null &&
+			   repository.getPeer().getPeerInterface() != null &&  
+			   repository.getPeer().getPeerInterface().isConnected();
 	}
 
 	public HGPeerIdentity selectRemotePeer(String title)

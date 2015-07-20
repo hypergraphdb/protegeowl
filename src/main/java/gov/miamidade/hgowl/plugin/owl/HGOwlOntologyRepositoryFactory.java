@@ -1,6 +1,7 @@
 package gov.miamidade.hgowl.plugin.owl;
 
 import gov.miamidade.hgowl.plugin.HGOwlProperties;
+import gov.miamidade.hgowl.plugin.Singles;
 
 import java.io.File;
 
@@ -53,7 +54,7 @@ public class HGOwlOntologyRepositoryFactory extends OntologyRepositoryFactory
 			System.err.println("EXCEPTION setting preferred Hypergraph location " + hyperGraphLocation + " : ");
 			e.printStackTrace(System.err);
 		}
-		dbRepository = new HGDBOntologyRepository(hyperGraphLocation);
+		dbRepository = Singles.vdRepo();
 	}
 
 	@Override

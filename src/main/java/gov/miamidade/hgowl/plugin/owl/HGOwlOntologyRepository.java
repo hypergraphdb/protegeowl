@@ -20,192 +20,236 @@ import org.semanticweb.owlapi.model.OWLOntologyIRIMapper;
 import org.semanticweb.owlapi.util.OntologyIRIShortFormProvider;
 
 /**
- * A protege repository implementation backed by a Hypergraph Ontology Repository instance.
- * This enabled Protege to show Hypergraph ontologies at startup. 
+ * A protege repository implementation backed by a Hypergraph Ontology
+ * Repository instance. This enabled Protege to show Hypergraph ontologies at
+ * startup.
  * 
  * @author Thomas Hilpold
  */
-public class HGOwlOntologyRepository implements OntologyRepository {
+public class HGOwlOntologyRepository implements OntologyRepository
+{
 
 	public static final String VERSION_URI = "Version URI";
-	
+
 	public static final String PHYSICAL_URI = "Physical URI";
 
 	public static final String AXIOM_COUNT = "Nr Axioms";
-	
+
 	public static final String ATOM_COUNT = "Nr HGDB Atoms";
-	
-	public static final List<Object> METADATA_KEYS = Arrays.asList(new Object[]{VERSION_URI, PHYSICAL_URI, AXIOM_COUNT, ATOM_COUNT});
-	
-    private String repositoryName;
 
-    private HGDBOntologyRepository dbRepository;
+	public static final List<Object> METADATA_KEYS = Arrays.asList(new Object[] { VERSION_URI, PHYSICAL_URI, AXIOM_COUNT,
+			ATOM_COUNT });
 
-    private List<HGDBRepositoryEntry> entries;
+	private String repositoryName;
 
-    private OWLOntologyIRIMapper iriMapper;
+	private HGDBOntologyRepository dbRepository;
 
-    public HGOwlOntologyRepository(String repositoryName, HGDBOntologyRepository dbRepository) {
-        this.repositoryName = repositoryName;
-        this.dbRepository = dbRepository;
-        entries = new ArrayList<HGDBRepositoryEntry>();
-        iriMapper = new RepositoryIRIMapper();
-    }
+	private List<HGDBRepositoryEntry> entries;
 
-    public void initialise() throws Exception {
-    }
+	private OWLOntologyIRIMapper iriMapper;
 
-    public String getName() {
-        return repositoryName;
-    }
+	public HGOwlOntologyRepository(String repositoryName, HGDBOntologyRepository dbRepository)
+	{
+		this.repositoryName = repositoryName;
+		this.dbRepository = dbRepository;
+		entries = new ArrayList<HGDBRepositoryEntry>();
+		iriMapper = new RepositoryIRIMapper();
+	}
 
-    public String getLocation() {
-        return dbRepository.getHyperGraph().getLocation();
-    }
+	public void initialise() throws Exception
+	{
+	}
 
-    public void refresh() {
-        fillRepository();
-    }
+	public String getName()
+	{
+		return repositoryName;
+	}
 
-    public Collection<OntologyRepositoryEntry> getEntries() {
-        List<OntologyRepositoryEntry> ret = new ArrayList<OntologyRepositoryEntry>();
-        ret.addAll(entries);
-        return ret;
-    }
+	public String getLocation()
+	{
+		return dbRepository.getHyperGraph().getLocation();
+	}
 
-    public List<Object> getMetaDataKeys() {
-        return METADATA_KEYS;
-    }
+	public void refresh()
+	{
+		fillRepository();
+	}
 
-    public void dispose() throws Exception {
-    	dbRepository.dispose();
-    }
+	public Collection<OntologyRepositoryEntry> getEntries()
+	{
+		List<OntologyRepositoryEntry> ret = new ArrayList<OntologyRepositoryEntry>();
+		ret.addAll(entries);
+		return ret;
+	}
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    //  Implementation details
+	public List<Object> getMetaDataKeys()
+	{
+		return METADATA_KEYS;
+	}
 
-    private void fillRepository() {
-        entries.clear();
-        List<HGDBOntology>  l = dbRepository.getOntologies();
-        for(HGDBOntology o : l) {
-            entries.add(new HGDBRepositoryEntry(o));
-        }
-    }
+	public void dispose() throws Exception
+	{
+		dbRepository.dispose();
+	}
 
-    public class HGDBRepositoryEntry implements HGOntologyRepositoryEntry {
+	// ///////////////////////////////////////////////////////////////////////////////////////////////
+	//
+	// Implementation details
 
-        private String shortName;
+	private void fillRepository()
+	{
+		entries.clear();
+		List<HGDBOntology> l = dbRepository.getOntologies();
+		for (HGDBOntology o : l)
+		{
+			entries.add(new HGDBRepositoryEntry(o));
+		}
+	}
 
-        private URI ontologyURI;
+	public class HGDBRepositoryEntry implements HGOntologyRepositoryEntry
+	{
 
-        private URI ontologyVersionURI = null;
+		private String shortName;
 
-        private URI physicalURI;
+		private URI ontologyURI;
 
-        private OWLOntologyID ontologyID;
+		private URI ontologyVersionURI = null;
 
-        private int nrOfAxioms;
+		private URI physicalURI;
+
+		private OWLOntologyID ontologyID;
+
+		private int nrOfAxioms;
 
 		private int nrOfAtoms;
-		
+
 		private HGDBOntology ontology;
 
-        public HGDBRepositoryEntry(HGDBOntology o) {
-        	ontologyID = o.getOntologyID();
-            this.shortName = ontologyID.getOntologyIRI().getFragment();
-            this.ontologyURI = URI.create(ontologyID.getOntologyIRI().toString());
-            if (ontologyID.getVersionIRI() != null) {
-            	this.ontologyVersionURI = URI.create(o.getOntologyID().getVersionIRI().toString());
-            }
-            OntologyIRIShortFormProvider sfp = new OntologyIRIShortFormProvider();
-            shortName = sfp.getShortForm(o);
-            physicalURI = URI.create(o.getDocumentIRI().toString());
-            nrOfAxioms = o.getAxiomCount();
-            nrOfAtoms = (int)o.count(hg.all());
-            ontology = o;
-            
-        }
+		public HGDBRepositoryEntry(HGDBOntology o)
+		{
+			ontologyID = o.getOntologyID();
+			this.shortName = ontologyID.getOntologyIRI().getFragment();
+			this.ontologyURI = URI.create(ontologyID.getOntologyIRI().toString());
+			if (ontologyID.getVersionIRI() != null)
+			{
+				this.ontologyVersionURI = URI.create(o.getOntologyID().getVersionIRI().toString());
+			}
+			OntologyIRIShortFormProvider sfp = new OntologyIRIShortFormProvider();
+			shortName = sfp.getShortForm(o);
+			physicalURI = URI.create(o.getDocumentIRI().toString());
+			nrOfAxioms = o.getAxiomCount();
+			nrOfAtoms = (int) o.count(hg.all());
+			ontology = o;
 
-        public String getOntologyShortName() {
-            return shortName;
-        }
+		}
 
-        public URI getOntologyURI() {
-            return ontologyURI;
-        }
+		public String getOntologyShortName()
+		{
+			return shortName;
+		}
 
-        /**
+		public URI getOntologyURI()
+		{
+			return ontologyURI;
+		}
+
+		/**
 		 * @return the ontologyVersionURI or null if none.
 		 */
-		public URI getOntologyVersionURI() {
+		public URI getOntologyVersionURI()
+		{
 			return ontologyVersionURI;
 		}
 
-		public URI getPhysicalURI() {
-            return physicalURI;
-        }
+		public URI getPhysicalURI()
+		{
+			return physicalURI;
+		}
 
-        public OWLOntologyID getOntologyID() {
-            return ontologyID;
-        }
+		public OWLOntologyID getOntologyID()
+		{
+			return ontologyID;
+		}
 
-		public int getNrOfAxioms() {
+		public int getNrOfAxioms()
+		{
 			return nrOfAxioms;
 		}
 
 		/**
 		 * @return the nrOfAtoms that are in the ontology subgraph.
 		 */
-		public int getNrOfAtoms() {
+		public int getNrOfAtoms()
+		{
 			return nrOfAtoms;
 		}
 
-        public String getEditorKitId() {
-            return HGOwlEditorKitFactory.ID;
-        }
+		public String getEditorKitId()
+		{
+			return HGOwlEditorKitFactory.ID;
+		}
 
-        public String getMetaData(Object key) {
-        	if (key.equals(VERSION_URI)) {
-        		return "" + getOntologyVersionURI();
-        	} else if (key.equals(PHYSICAL_URI)) {
-        		return "" + getPhysicalURI();
-        	} else if (key.equals(AXIOM_COUNT)) {
-        		return "" + getNrOfAxioms();
-        	} else if (key.equals(ATOM_COUNT)) {
-        		return "" + getNrOfAtoms();
-        	} else {
-        		throw new IllegalArgumentException("Key unknown.");
-        	}
-        }
+		public String getMetaData(Object key)
+		{
+			if (key.equals(VERSION_URI))
+			{
+				return "" + getOntologyVersionURI();
+			}
+			else if (key.equals(PHYSICAL_URI))
+			{
+				return "" + getPhysicalURI();
+			}
+			else if (key.equals(AXIOM_COUNT))
+			{
+				return "" + getNrOfAxioms();
+			}
+			else if (key.equals(ATOM_COUNT))
+			{
+				return "" + getNrOfAtoms();
+			}
+			else
+			{
+				throw new IllegalArgumentException("Key unknown.");
+			}
+		}
 
-        public void configureEditorKit(EditorKit editorKit) {
-            ((HGOwlEditorKit) editorKit).getOWLModelManager().getOWLOntologyManager().addIRIMapper(iriMapper);
-        }
+		public void configureEditorKit(EditorKit editorKit)
+		{
+			((HGOwlEditorKit) editorKit).getOWLModelManager().getOWLOntologyManager().addIRIMapper(iriMapper);
+		}
 
-        public void restoreEditorKit(EditorKit editorKit) {
-            ((HGOwlEditorKit) editorKit).getOWLModelManager().getOWLOntologyManager().removeIRIMapper(iriMapper);
+		public void restoreEditorKit(EditorKit editorKit)
+		{
+			((HGOwlEditorKit) editorKit).getOWLModelManager().getOWLOntologyManager().removeIRIMapper(iriMapper);
 
-        }
+		}
 
-		/* (non-Javadoc)
-		 * @see gov.miamidade.hgowl.plugin.owl.model.HGOntologyRepositoryEntry#getOntology()
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see gov.miamidade.hgowl.plugin.owl.model.HGOntologyRepositoryEntry#
+		 * getOntology()
 		 */
 		@Override
-		public HGDBOntology getOntology() {
+		public HGDBOntology getOntology()
+		{
 			return ontology;
 		}
-    }
+	}
 
-    private class RepositoryIRIMapper implements OWLOntologyIRIMapper {
+	private class RepositoryIRIMapper implements OWLOntologyIRIMapper
+	{
 
-        public IRI getDocumentIRI(IRI iri) {
-            for(HGDBRepositoryEntry entry : entries) {
-                if(entry.getOntologyURI().equals(iri.toURI())) {
-                    return IRI.create(entry.getPhysicalURI());
-                }
-            }
-            return null;
-        }
-    }
+		public IRI getDocumentIRI(IRI iri)
+		{
+			for (HGDBRepositoryEntry entry : entries)
+			{
+				if (entry.getOntologyURI().equals(iri.toURI()))
+				{
+					return IRI.create(entry.getPhysicalURI());
+				}
+			}
+			return null;
+		}
+	}
 }

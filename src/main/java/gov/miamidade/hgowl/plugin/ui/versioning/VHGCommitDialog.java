@@ -54,7 +54,8 @@ public class VHGCommitDialog extends JDialog implements ActionListener
 		// Create Message:
 		Revision headRevision = vo.revision();		
 		int pendingChanges = vo.changes().size();
-		String message = "Do you want to commit " + pendingChanges + " change" + ((pendingChanges > 1) ? "s" : "") + ":\n"
+		String message = 
+				"Do you want to commit " + pendingChanges + " change" + ((pendingChanges > 1) ? "s" : "") + ":\n"
 				+ "    Last Revision    : " + headRevision + "\n" + "    Created          : "
 				+ DateFormat.getDateTimeInstance().format(new Date(headRevision.timestamp())) + "\n" + "    By               : "
 				+ headRevision.user() + "\n" + "    Ontology ID : "
@@ -62,11 +63,12 @@ public class VHGCommitDialog extends JDialog implements ActionListener
 		JPanel centerPanel = new JPanel(new BorderLayout(5, 5));
 		message = "<html><pre><b>" + message + "</b></pre></html>";
 		centerPanel.add(new JLabel(message), BorderLayout.NORTH);
-		JPanel enterPanel = new JPanel();
-		enterPanel.add(new JLabel("Enter Commit Comment: "), BorderLayout.WEST);
+		JPanel enterPanel = new JPanel(new BorderLayout());
+		enterPanel.add(new JLabel("Enter Commit Comment: "), BorderLayout.NORTH);
 		tfUserComment = new JTextField(30);
-		enterPanel.add(tfUserComment, BorderLayout.EAST);
+		enterPanel.add(tfUserComment, BorderLayout.SOUTH);
 		centerPanel.add(enterPanel, BorderLayout.SOUTH);
+		
 		btOK = new JButton("Commit");
 		btOK.addActionListener(this);
 		btCancel = new JButton("Cancel");

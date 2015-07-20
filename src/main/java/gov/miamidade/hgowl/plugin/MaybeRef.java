@@ -44,7 +44,7 @@ public class MaybeRef<T> implements Ref<T>
 					if (onfailure == null)
 					{
 						failure = ex;
-						throw ex;
+						throw new RuntimeException(ex);
 					}
 					else try 
 					{ 

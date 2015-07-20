@@ -124,6 +124,7 @@
  					gov.miamidade.hgowl.plugin.owlapi.apibinding</Export-Package>
             <Import-Package>!gov.miamidade.hgowl.plugin.*, 
                             org.hypergraphdb.*,
+                            mjson.*;resolution:=optional, 
                             javax.swing.*;resolution:=optional,*;version=1.0.0</Import-Package>
 			<Include-Resource>plugin.xml, {maven-resources}</Include-Resource>            
           </instructions> 

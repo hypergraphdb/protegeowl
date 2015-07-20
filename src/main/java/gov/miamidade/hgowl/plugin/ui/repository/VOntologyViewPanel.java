@@ -87,18 +87,4 @@ public class VOntologyViewPanel extends JPanel
 	{
 		return tableModel;
 	}
-
-	// public static OntologyRepositoryEntry showDeleteDialog(OntologyRepository
-	// repository) {
-	// repository.refresh();
-	// RepositoryViewPanel panel = new RepositoryViewPanel(repository);
-	// int ret = JOptionPaneEx.showConfirmDialog(null, "Delete Ontology from " +
-	// repository.getName(), panel, JOptionPane.WARNING_MESSAGE,
-	// JOptionPane.OK_CANCEL_OPTION, panel.table);
-	// if(ret == JOptionPane.OK_OPTION) {
-	// return panel.table.getSelectedEntry();
-	// }
-	// return null;
-	// }
-
 }

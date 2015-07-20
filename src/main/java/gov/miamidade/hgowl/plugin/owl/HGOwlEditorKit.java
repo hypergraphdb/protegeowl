@@ -77,17 +77,11 @@ import org.semanticweb.owlapi.vocab.PrefixOWLOntologyFormat;
  */
 public class HGOwlEditorKit extends OWLEditorKit
 {
-
 	public static boolean DBG = false;
-
-	// private static final Logger logger =
-	// Logger.getLogger(HGOwlEditorKit.class);
 
 	public static final String ID = "HGOwlEditorKit";
 
 	private ServiceRegistration registration;
-
-//	private SearchManager searchManager;
 
 	public HGOwlEditorKit(OWLEditorKitFactory editorKitFactory)
 	{
@@ -164,54 +158,12 @@ public class HGOwlEditorKit extends OWLEditorKit
 		getWorkspace().refreshComponents();
 
 	}
-
-//	@Override
-//	public SearchManager getSearchManager()
-//	{
-//		return this.searchManager;
-//	}
 	
 	@Override
 	public HGOwlModelManagerImpl getModelManager()
 	{
 		return modelManager;
 	}
-
-	// public SearchManager getSearchManager() {
-	// return searchManager;
-	// }
-
-	// @SuppressWarnings("deprecation")
-	// protected void initialise() {
-	// // DO NOT DO THIS: super.initialise();
-	// // THIS SETS OUR MODEL MANAGER
-	// HGOwlModelManagerImpl modelManager = new HGOwlModelManagerImpl();
-	// setOWLModelManager(modelManager);
-	// logger.info("Using OWL API version " +
-	// VersionInfo.getVersionInfo().getVersion());
-	// this.newPhysicalURIs = new HashSet<URI>();
-	// modelManager.setExplanationManager(new ExplanationManager(this));
-	// modelManager.setMissingImportHandler(new MissingImportHandlerUI(this));
-	// modelManager.setSaveErrorHandler(new SaveErrorHandler(){
-	// public void handleErrorSavingOntology(OWLOntology ont, URI
-	// physicalURIForOntology, OWLOntologyStorageException e) throws Exception {
-	// handleSaveError(ont, physicalURIForOntology, e);
-	// }
-	// });
-	// loadErrorHandler = new OntologyLoadErrorHandlerUI(this);
-	// modelManager.setLoadErrorHandler(loadErrorHandler);
-	// loadIOListenerPlugins();
-	// //TODO
-	// //registration =
-	// ProtegeOWL.getBundleContext().registerService(EditorKit.class.getCanonicalName(),
-	// this, new Properties());
-	// registration =
-	// ProtegeOWL.getBundleContext().registerService(EditorKit.class.getCanonicalName(),
-	// this, new Hashtable<String, Object>());
-	// //2011.12.20 hilpold moved to HGOwlModelManager:
-	// modelManager.getOWLOntologyManager().addIRIMapper(new
-	// HGDBIRIMapper(modelManager));
-	// }
 
 	protected void initialiseCompleted()
 	{

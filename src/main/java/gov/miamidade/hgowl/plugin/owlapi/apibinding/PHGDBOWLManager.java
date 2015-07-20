@@ -30,55 +30,60 @@ import de.uulm.ecs.ai.owlapi.krssrenderer.KRSS2OWLSyntaxOntologyStorer;
 
 /**
  * HGDBOWLManager.
+ * 
  * @author Thomas Hilpold (CIAO/Miami-Dade County)
  * @created Jan 18, 2012
  */
-public class PHGDBOWLManager {
+public class PHGDBOWLManager
+{
+	public static PHGDBOntologyManagerImpl createOWLOntologyManager()
+	{
+		String location = HGOwlProperties.getInstance().getHgLocationFolderPath();
+		HyperGraph graph = org.hypergraphdb.app.owl.util.ImplUtils.owldb(location);
+		return createOWLOntologyManager(OWLDataFactoryHGDB.get(graph));
+	}
 
-	public static PHGDBOntologyManagerImpl createOWLOntologyManager() {
-        String location = HGOwlProperties.getInstance().getHgLocationFolderPath();
-        HyperGraph graph = org.hypergraphdb.app.owl.util.ImplUtils.owldb(location);
-        return createOWLOntologyManager(OWLDataFactoryHGDB.get(graph));        		
-    }
-    
 	/**
 	 * Create the ontology manager and add ontology factories, mappers and
 	 * storers.
 	 * 
-	 * @param dataFactory The data factory to use
+	 * @param dataFactory
+	 *            The data factory to use
 	 * @return <code>OWLDBOntologyManager</code>
 	 */
-	public static PHGDBOntologyManagerImpl createOWLOntologyManager (final OWLDataFactoryHGDB dataFactory) {
+	public static PHGDBOntologyManagerImpl createOWLOntologyManager(final OWLDataFactoryHGDB dataFactory)
+	{
 		final PHGDBOntologyManagerImpl ontologyManager = new PHGDBOntologyManagerImpl(dataFactory);
-		ontologyManager.addOntologyStorer (new RDFXMLOntologyStorer());
-		ontologyManager.addOntologyStorer (new OWLXMLOntologyStorer());
-		ontologyManager.addOntologyStorer (new OWLFunctionalSyntaxOntologyStorer());
-		ontologyManager.addOntologyStorer (new ManchesterOWLSyntaxOntologyStorer());
-		ontologyManager.addOntologyStorer (new OBOFlatFileOntologyStorer());
-		ontologyManager.addOntologyStorer (new KRSS2OWLSyntaxOntologyStorer());
-		ontologyManager.addOntologyStorer (new TurtleOntologyStorer());
-		ontologyManager.addOntologyStorer (new LatexOntologyStorer());
-		ontologyManager.addOntologyStorer (new HGDBStorer());
-		ontologyManager.addOntologyStorer (new VOWLXMLOntologyStorer());
+		ontologyManager.addOntologyStorer(new RDFXMLOntologyStorer());
+		ontologyManager.addOntologyStorer(new OWLXMLOntologyStorer());
+		ontologyManager.addOntologyStorer(new OWLFunctionalSyntaxOntologyStorer());
+		ontologyManager.addOntologyStorer(new ManchesterOWLSyntaxOntologyStorer());
+		ontologyManager.addOntologyStorer(new OBOFlatFileOntologyStorer());
+		ontologyManager.addOntologyStorer(new KRSS2OWLSyntaxOntologyStorer());
+		ontologyManager.addOntologyStorer(new TurtleOntologyStorer());
+		ontologyManager.addOntologyStorer(new LatexOntologyStorer());
+		ontologyManager.addOntologyStorer(new HGDBStorer());
+		ontologyManager.addOntologyStorer(new VOWLXMLOntologyStorer());
 
-		ontologyManager.addIRIMapper (new NonMappingOntologyIRIMapper());
+		ontologyManager.addIRIMapper(new NonMappingOntologyIRIMapper());
 
-		ontologyManager.addOntologyFactory (new EmptyInMemOWLOntologyFactory());
-		ontologyManager.addOntologyFactory (new ParsableOWLOntologyFactory());
-		ontologyManager.addOntologyFactory (new HGDBOntologyFactory());
+		ontologyManager.addOntologyFactory(new EmptyInMemOWLOntologyFactory());
+		ontologyManager.addOntologyFactory(new ParsableOWLOntologyFactory());
+		ontologyManager.addOntologyFactory(new HGDBOntologyFactory());
 		return ontologyManager;
-	}	
-	
-    static {
-		//2011.11.29 Parsers to load from files:		
-        // Register useful parsers
-        OWLParserFactoryRegistry registry = OWLParserFactoryRegistry.getInstance();
-        registry.registerParserFactory(new ManchesterOWLSyntaxParserFactory());
-        registry.registerParserFactory(new KRSS2OWLParserFactory());
-        registry.registerParserFactory(new OBOParserFactory());
-        registry.registerParserFactory(new TurtleOntologyParserFactory());
-        registry.registerParserFactory(new OWLFunctionalSyntaxParserFactory());
-        registry.registerParserFactory(new OWLXMLParserFactory());
-        registry.registerParserFactory(new RDFXMLParserFactory());
-    }
+	}
+
+	static
+	{
+		// 2011.11.29 Parsers to load from files:
+		// Register useful parsers
+		OWLParserFactoryRegistry registry = OWLParserFactoryRegistry.getInstance();
+		registry.registerParserFactory(new ManchesterOWLSyntaxParserFactory());
+		registry.registerParserFactory(new KRSS2OWLParserFactory());
+		registry.registerParserFactory(new OBOParserFactory());
+		registry.registerParserFactory(new TurtleOntologyParserFactory());
+		registry.registerParserFactory(new OWLFunctionalSyntaxParserFactory());
+		registry.registerParserFactory(new OWLXMLParserFactory());
+		registry.registerParserFactory(new RDFXMLParserFactory());
+	}
 }

@@ -236,24 +236,6 @@ public class HGOwlModelManagerImpl extends OWLModelManagerImpl implements OWLMod
 		return modelManagerChangeListeners;
 	}
 
-	// public HGOwlModelManagerImpl() {
-	// super();
-	// //old manager
-	// //hilpold check if that or even more cleanup is necessary
-	// manager = super.getOWLOntologyManager();
-	// manager.removeOntologyChangeListener(this);
-	// manager.removeOntologyLoaderListener(this);
-	// //this.
-	// //new manager
-	// manager =
-	// HGOWLManager.createOWLOntologyManager(OWLDataFactoryImpl.getInstance());
-	// //HGManager.createOWLOntologyManager(OWLDataFactoryImpl.getInstance());
-	// manager.addOntologyChangeListener(this);
-	// manager.addOntologyLoaderListener(this);
-	//
-	// super.setOWL
-	// }
-
 	public HGOwlModelManagerImpl()
 	{
 		// super();
@@ -350,7 +332,9 @@ public class HGOwlModelManagerImpl extends OWLModelManagerImpl implements OWLMod
 	public PHGDBOntologyManagerImpl getOWLOntologyManager()
 	{
 		if (manager == null)
+		{
 			manager = PHGDBOWLManager.createOWLOntologyManager();
+		}
 		return manager;
 	}
 
