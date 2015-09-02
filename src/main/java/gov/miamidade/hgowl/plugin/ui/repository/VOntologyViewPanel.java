@@ -4,9 +4,12 @@ import gov.miamidade.hgowl.plugin.owl.model.HGOntologyRepositoryEntry;
 
 
 
+
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -15,6 +18,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.hypergraphdb.app.owl.versioning.Revision;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 
 /**
@@ -33,16 +37,16 @@ public class VOntologyViewPanel extends JPanel
 
 	private JTable table;
 
-	public VOntologyViewPanel(VersionedOntology vOnto)
+	public VOntologyViewPanel(VersionedOntology vOnto, List<Revision> revisions)
 	{
 		this.versionedOntology = vOnto;
-		createUI();
+		createUI(revisions);
 	}
 
-	private void createUI()
+	private void createUI(List<Revision> revisions)
 	{
 		setLayout(new BorderLayout());
-		tableModel = new VOntologyTableModel(versionedOntology);
+		tableModel = new VOntologyTableModel(versionedOntology, revisions);
 		table = new JTable(tableModel);
 		// 0.Master 1.Revision 2.TimeStamp 3.User 4.Comment 5.#Changes (after
 		// revision)
@@ -73,7 +77,7 @@ public class VOntologyViewPanel extends JPanel
 
 	public static HGOntologyRepositoryEntry showRevisionDialog(String title, Component parent, VersionedOntology vo)
 	{
-		VOntologyViewPanel panel = new VOntologyViewPanel(vo);
+		VOntologyViewPanel panel = new VOntologyViewPanel(vo, vo.revisions());
 		JOptionPane.showMessageDialog(parent, panel, title, JOptionPane.PLAIN_MESSAGE);
 		return null;
 	}

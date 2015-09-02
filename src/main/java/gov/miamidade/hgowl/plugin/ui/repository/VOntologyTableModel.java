@@ -1,5 +1,7 @@
 package gov.miamidade.hgowl.plugin.ui.repository;
 
+import gov.miamidade.hgowl.plugin.ui.versioning.VU;
+
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
@@ -34,15 +36,10 @@ public class VOntologyTableModel extends AbstractTableModel
 		public String toString() { return label; }
 	}
 	
-	public VOntologyTableModel(VersionedOntology vo)
+	public VOntologyTableModel(VersionedOntology vo, List<Revision> revisions)
 	{
 		this.versionedOntology = vo;
-		refresh();
-	}
-
-	public void refresh()
-	{
-		revisions = versionedOntology.revisions(); 
+		this.revisions = revisions;
 	}
 
 	@Override
@@ -100,11 +97,11 @@ public class VOntologyTableModel extends AbstractTableModel
 		switch (columnIndex)
 		{
 			case 0: return (revisionIndex == revisions.size() - 1) ? "HEAD":"";
-			case 1: return "local label?"; // rev.getRevision();
+			case 1: return rev.getAtomHandle();
 			case 2: return new java.util.Date(rev.timestamp());
 			case 3: return rev.user();
 			case 4: return rev.comment() == null ? "" : rev.comment();
-			case 5: return versionedOntology.changes(rev).size();
+			case 5: return VU.flattenChanges(versionedOntology.changes(rev)).size();
 			default:return "unknown col index";
 		}
 	}

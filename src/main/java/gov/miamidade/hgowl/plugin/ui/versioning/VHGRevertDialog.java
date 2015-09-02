@@ -12,6 +12,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -54,10 +56,11 @@ public class VHGRevertDialog extends JDialog implements ActionListener, ListSele
 	private JButton btCancel;
 
 	private boolean userConfirmedRevert;
-
+	private VersionedOntology versionedOntology;
+	
 	// TODO...it's not a linear list anymore, maybe do a topological ordering
-	java.util.List<Revision> revisions = new ArrayList<Revision>(); //versionedOntology.getRevisions();
-	java.util.List<ChangeSet<VersionedOntology>> changeSets = new ArrayList<ChangeSet<VersionedOntology>>();// versionedOntology.getChangeSets();
+	List<Revision> revisions = null;
+	List<ChangeSet<VersionedOntology>> changeSets = new ArrayList<ChangeSet<VersionedOntology>>();// versionedOntology.getChangeSets();
 	
 	public static VHGRevertDialog showDialog(String title, Component parent, VersionedOntology vo, OWLEditorKit kit)
 	{
@@ -88,7 +91,7 @@ public class VHGRevertDialog extends JDialog implements ActionListener, ListSele
 				closeDialog();
 			}
 		});
-//		versionedOntology = vo;
+		versionedOntology = vo;
 		setLayout(new BorderLayout());
 		String message = "<html> <h2> Revert Ontology to older revision </h2> " + "<table width='100%' border='0'>"
 				+ "<tr><td align='right'><b>Ontology:</b></td><td>" + vo + "</td></tr>"
@@ -99,7 +102,8 @@ public class VHGRevertDialog extends JDialog implements ActionListener, ListSele
 		northPanel.add(new JLabel(message), BorderLayout.NORTH);
 		JSplitPane centerPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		// TOP SHOWS REVISIONS
-		ontologyView = new VOntologyViewPanel(vo);
+		revisions = vo.revisions();
+		ontologyView = new VOntologyViewPanel(vo, revisions);
 		ontologyView.getTable().getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		ontologyView.getTable().getSelectionModel().addListSelectionListener(this);
 		centerPanel.setLeftComponent(ontologyView);
@@ -162,7 +166,7 @@ public class VHGRevertDialog extends JDialog implements ActionListener, ListSele
 	public void updateChangeSetList(int selectedRevisionIndex)
 	{
 		String firstItemString = null;
-		ChangeSet<VersionedOntology> selectedCS = null;
+		List<ChangeSet<VersionedOntology>>  selectedCS = null;
 		SortedSet<Integer> selectedCSConflicts = null;
 
 		if (selectedRevisionIndex != -1)
@@ -171,14 +175,14 @@ public class VHGRevertDialog extends JDialog implements ActionListener, ListSele
 			{
 				// Pending changes in local workingset
 				firstItemString = "<html>Showing <b>uncommitted</b> Changes that were made by <b>you</b> </html>";
-				selectedCS = changeSets.get(selectedRevisionIndex - 1);
+				selectedCS = Collections.singletonList(versionedOntology.changes());
 				selectedCSConflicts = new TreeSet<Integer>();//versionedOntology.getWorkingSetConflicts();
 				// renderChangeset(lm, selectedCS);
 			}
 			else if (selectedRevisionIndex > 0)
 			{
 				Revision selectedRev = revisions.get(selectedRevisionIndex);
-				selectedCS = changeSets.get(selectedRevisionIndex - 1);
+				selectedCS = versionedOntology.changes(selectedRev);
 				firstItemString = "<html>Showing Changes that were commited by <b>" + selectedRev.user() + "</b> at "
 						+ VDRenderer.render(new java.util.Date(selectedRev.timestamp())) + 
 						" for revision " + selectedRev + "</html>";
@@ -205,7 +209,7 @@ public class VHGRevertDialog extends JDialog implements ActionListener, ListSele
 			// Empty list, nothing selected
 			firstItemString = EMPTY_LIST_TEXT;
 		}
-		changeSetPanel.setChangeSet(selectedCS, selectedCSConflicts, firstItemString);
+		changeSetPanel.setChangeSet(VU.flattenChanges(selectedCS), selectedCSConflicts, firstItemString);
 	}
 
 	@Override

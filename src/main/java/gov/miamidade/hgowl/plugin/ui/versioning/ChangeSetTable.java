@@ -4,6 +4,7 @@ import gov.miamidade.hgowl.plugin.ui.render.OWLChangeCellRenderer;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.util.List;
 import java.util.SortedSet;
 
 import javax.swing.JComponent;
@@ -13,8 +14,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
 import org.hypergraphdb.HyperGraph;
-import org.hypergraphdb.app.owl.versioning.ChangeSet;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
+import org.hypergraphdb.app.owl.versioning.change.VChange;
 import org.protege.editor.owl.OWLEditorKit;
 import org.semanticweb.owlapi.model.OWLOntology;
 
@@ -52,13 +53,13 @@ public class ChangeSetTable extends JTable
 		getColumnModel().getColumn(ChangeSetTableModel.CHANGENR_COLUMN_INDEX).setMaxWidth(60);
 	}
 
-	public void setChangeSet(ChangeSet<VersionedOntology> changeSet, SortedSet<Integer> conflicts)
+	public void setChangeSet(List<VChange<VersionedOntology>> changeSet, SortedSet<Integer> conflicts)
 	{
 		changeSetTableModel.refresh(changeSet, conflicts);
 		repaint();
 	}
 
-	public void setChangeSet(ChangeSet<VersionedOntology> changeSet)
+	public void setChangeSet(List<VChange<VersionedOntology>> changeSet)
 	{
 		changeSetTableModel.refresh(changeSet, null);
 		repaint();

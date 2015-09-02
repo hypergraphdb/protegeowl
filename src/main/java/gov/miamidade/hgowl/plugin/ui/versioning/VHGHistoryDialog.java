@@ -11,7 +11,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -50,9 +51,10 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 	private ChangeSetTablePanel changeSetPanel;
 	private JButton btClose;
 
+	private VersionedOntology versionedOntology;
+	
 	// TODO...it's not a linear list anymore, maybe do a topological ordering
-	java.util.List<Revision> revisions = new ArrayList<Revision>(); //versionedOntology.getRevisions();
-	java.util.List<ChangeSet<VersionedOntology>> changeSets = new ArrayList<ChangeSet<VersionedOntology>>();// versionedOntology.getChangeSets();
+	List<Revision> revisions = null;
 	
 	// private DateFormat dateF = DateFormat.getDateTimeInstance();
 
@@ -71,22 +73,16 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 	public VHGHistoryDialog(Window w, VersionedOntology vo, OWLEditorKit kit)
 	{
 		super(w);
-		w.addWindowListener(new WindowAdapter()
-		{
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see
-			 * java.awt.event.WindowAdapter#windowClosing(java.awt.event.WindowEvent
-			 * )
-			 */
-			@Override
-			public void windowClosing(WindowEvent e)
+		if (w != null)
+			w.addWindowListener(new WindowAdapter()
 			{
-				closeDialog();
-			}
-		});
-//		versionedOntology = vo;
+				@Override
+				public void windowClosing(WindowEvent e)
+				{
+					closeDialog();
+				}
+			});
+		this.versionedOntology = vo;
 		setLayout(new BorderLayout());
 		String message = "<html> <h2> Local History of Ontology </h2> " + "<table width='100%' border='0'>"
 				+ "<tr><td align='right'><b>Ontology:</b></td><td>" + vo + "</td></tr>"
@@ -97,7 +93,8 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 		northPanel.add(new JLabel(message), BorderLayout.NORTH);
 		JSplitPane centerPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		// TOP SHOWS REVISIONS
-		ontologyView = new VOntologyViewPanel(vo);
+		revisions = vo.revisions();
+		ontologyView = new VOntologyViewPanel(vo, revisions);
 		ontologyView.getTable().getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		ontologyView.getTable().getSelectionModel().addListSelectionListener(this);
 		centerPanel.setLeftComponent(ontologyView);
@@ -145,7 +142,7 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 	public void updateChangeSetList(int selectedRevisionIndex)
 	{
 		String firstItemString = null;
-		ChangeSet<VersionedOntology> selectedCS = null;
+		List<ChangeSet<VersionedOntology>> selectedCS = null;
 		SortedSet<Integer> selectedCSConflicts = null;
 
 		if (selectedRevisionIndex != -1)
@@ -154,7 +151,7 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 			{
 				// Pending changes in local workingset
 				firstItemString = "<html>Showing <b>uncommitted</b> Changes that were made by <b>you</b> </html>";
-				selectedCS = changeSets.get(selectedRevisionIndex - 1);
+				selectedCS = Collections.singletonList(versionedOntology.changes()); 
 				// TODO...
 				selectedCSConflicts = new TreeSet<Integer>();//versionedOntology.getWorkingSetConflicts();
 				// renderChangeset(lm, selectedCS);
@@ -162,7 +159,7 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 			else if (selectedRevisionIndex > 0)
 			{
 				Revision selectedRev = revisions.get(selectedRevisionIndex);
-				selectedCS = changeSets.get(selectedRevisionIndex - 1);
+				selectedCS = versionedOntology.changes(selectedRev);
 				firstItemString = "<html>Showing Changes that were commited by <b>" + selectedRev.user() + "</b> at "
 						+ VDRenderer.render(new java.util.Date(selectedRev.timestamp())) + 
 						" for revision " + selectedRev + "</html>";
@@ -189,7 +186,7 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 			// Empty list, nothing selected
 			firstItemString = EMPTY_LIST_TEXT;
 		}
-		changeSetPanel.setChangeSet(selectedCS, selectedCSConflicts, firstItemString);
+		changeSetPanel.setChangeSet(VU.flattenChanges(selectedCS), selectedCSConflicts, firstItemString);
 	}
 
 	/*
@@ -202,24 +199,31 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 	@Override
 	public void valueChanged(ListSelectionEvent e)
 	{
-		if (e.getValueIsAdjusting())
-			return;
-		else
+		try
 		{
-			// Row 0 shows pending changes selects latest changeset.
-			int selectedRevisionIndex = revisions.size() - ontologyView.getTable().getSelectedRow();
-			// System.out.println("SELECTED: " + selectedRevisionIndex);
-			if (selectedRevisionIndex >= 0 && selectedRevisionIndex <= revisions.size())
-			{
-				//
-				// Revision selectedRevision =
-				// versionedOntology.getRevisions().get(selectedRevisionIndex);
-				updateChangeSetList(selectedRevisionIndex);
-			}
+			if (e.getValueIsAdjusting())
+				return;
 			else
 			{
-				updateChangeSetList(-1);
+				// Row 0 shows pending changes selects latest changeset.
+				int selectedRevisionIndex = revisions.size() - ontologyView.getTable().getSelectedRow();
+				// System.out.println("SELECTED: " + selectedRevisionIndex);
+				if (selectedRevisionIndex >= 0 && selectedRevisionIndex <= revisions.size())
+				{
+					//
+					// Revision selectedRevision =
+					// versionedOntology.getRevisions().get(selectedRevisionIndex);
+					updateChangeSetList(selectedRevisionIndex);
+				}
+				else
+				{
+					updateChangeSetList(-1);
+				}
 			}
+		}
+		catch (Throwable t)
+		{
+			t.printStackTrace(System.err);
 		}
 	}
 }

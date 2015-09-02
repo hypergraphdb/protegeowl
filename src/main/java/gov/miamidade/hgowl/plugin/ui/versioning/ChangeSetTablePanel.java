@@ -2,11 +2,13 @@ package gov.miamidade.hgowl.plugin.ui.versioning;
 
 import gov.miamidade.hgowl.plugin.ui.versioning.ChangeSetTable.ChangeDisplayMode;
 
+
 import java.awt.BorderLayout;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 import java.util.SortedSet;
 
 import javax.swing.Action;
@@ -24,8 +26,8 @@ import javax.swing.TransferHandler;
 
 import org.hypergraphdb.HyperGraph;
 import org.hypergraphdb.app.owl.HGDBOntology;
-import org.hypergraphdb.app.owl.versioning.ChangeSet;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
+import org.hypergraphdb.app.owl.versioning.change.VChange;
 import org.protege.editor.owl.OWLEditorKit;
 
 /**
@@ -40,7 +42,7 @@ public class ChangeSetTablePanel extends JPanel
 	private static final long serialVersionUID = 1L;
 
 	private ChangeSetTable changeSetTable;
-	private ChangeSet<VersionedOntology> changeSet;
+	private List<VChange<VersionedOntology>> changeSet;
 	private JLabel headerLabel;
 	private JLabel footerLabel = new JLabel("Select changes and press Ctrl-C to copy");
 	private JToggleButton displayModeBt = new JToggleButton("Render Functional");
@@ -81,12 +83,12 @@ public class ChangeSetTablePanel extends JPanel
 		// BorderLayout.PAGE_END);
 	}
 
-	public void setChangeSet(ChangeSet<VersionedOntology> cs, String headerText)
+	public void setChangeSet(List<VChange<VersionedOntology>> cs, String headerText)
 	{
 		setChangeSet(cs, null, headerText);
 	}
 
-	public void setChangeSet(ChangeSet<VersionedOntology> cs, SortedSet<Integer> conflictIndices, String headerText)
+	public void setChangeSet(List<VChange<VersionedOntology>> cs, SortedSet<Integer> conflictIndices, String headerText)
 	{
 		headerLabel.setText(headerText);
 		changeSet = cs;
@@ -99,7 +101,7 @@ public class ChangeSetTablePanel extends JPanel
 		}
 	}
 
-	public ChangeSet<VersionedOntology> getChangeSet()
+	public List<VChange<VersionedOntology>> getChangeSet()
 	{
 		return changeSet;
 	}

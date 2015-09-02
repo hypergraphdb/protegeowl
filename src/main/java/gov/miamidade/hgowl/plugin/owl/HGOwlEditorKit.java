@@ -156,7 +156,6 @@ public class HGOwlEditorKit extends OWLEditorKit
 				new Hashtable<String, Object>());
 
 		getWorkspace().refreshComponents();
-
 	}
 	
 	@Override

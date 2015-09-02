@@ -1,16 +1,16 @@
 package gov.miamidade.hgowl.plugin.ui.versioning;
 
-import java.util.SortedSet;
-
 import gov.miamidade.hgowl.plugin.ui.versioning.ChangeSetTable.ChangeDisplayMode;
 import gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDRenderer;
+
+import java.util.List;
+import java.util.SortedSet;
 
 import javax.swing.table.AbstractTableModel;
 
 import org.hypergraphdb.HyperGraph;
-import org.hypergraphdb.app.owl.versioning.ChangeSet;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
-import org.hypergraphdb.app.owl.versioning.change.VOWLChange;
+import org.hypergraphdb.app.owl.versioning.change.VChange;
 import org.hypergraphdb.app.owl.versioning.change.VOWLChangeFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
@@ -27,7 +27,7 @@ public class ChangeSetTableModel extends AbstractTableModel
 
 	private static final long serialVersionUID = -6611034383139157644L;
 
-	private ChangeSet<VersionedOntology> changeSet;
+	private List<VChange<VersionedOntology>> changeSet;
 	private SortedSet<Integer> conflictIndices;
 	private OWLOntology onto;
 	private HyperGraph graph;
@@ -80,7 +80,7 @@ public class ChangeSetTableModel extends AbstractTableModel
 		return 2;
 	}
 
-	public void refresh(ChangeSet<VersionedOntology> changeSet, SortedSet<Integer> conflictIndices)
+	public void refresh(List<VChange<VersionedOntology>> changeSet, SortedSet<Integer> conflictIndices)
 	{
 		this.changeSet = changeSet;
 		this.conflictIndices = conflictIndices;
@@ -107,8 +107,8 @@ public class ChangeSetTableModel extends AbstractTableModel
 	{
 		if (changeSet != null)
 		{
-			int changeIndex = changeSet.getArity() - rowIndex - 1;
-			VOWLChange voc = changeSet.getAt(changeIndex);
+			int changeIndex = changeSet.size() - rowIndex - 1;
+			VChange<VersionedOntology> voc = changeSet.get(changeIndex);
 			OWLOntologyChange oc = VOWLChangeFactory.create(voc, onto, graph);
 			if (columnIndex == 0)
 			{
@@ -156,7 +156,7 @@ public class ChangeSetTableModel extends AbstractTableModel
 	{
 		if (changeSet != null && conflictIndices != null)
 		{
-			int changeIndex = changeSet.getArity() - rowIndex - 1;
+			int changeIndex = changeSet.size() - rowIndex - 1;
 			if (conflictIndices.contains(changeIndex))
 			{
 				return "This pending change conflicts with an earlier change and will be removed when you commit.";
@@ -176,7 +176,7 @@ public class ChangeSetTableModel extends AbstractTableModel
 	{
 		if (changeSet != null && conflictIndices != null)
 		{
-			int changeIndex = changeSet.getArity() - rowIndex - 1;
+			int changeIndex = changeSet.size() - rowIndex - 1;
 			return (conflictIndices.contains(changeIndex));
 		}
 		else

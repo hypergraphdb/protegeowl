@@ -11,7 +11,8 @@
   <properties>
     <packageit>bundle</packageit>
     <bundle.symbolicName>gov.miamidade.owlgdb;singleton:=true</bundle.symbolicName>
-    <bundle.namespace>gov.miamidade.owlgdb</bundle.namespace>        
+    <bundle.namespace>gov.miamidade.owlgdb</bundle.namespace>
+    <hgdb.version>1.3</hgdb.version>            
   </properties>  
   <packaging>bundle</packaging>
   <artifactId>hgdbprotege</artifactId>
@@ -29,17 +30,17 @@
 	<dependency>
 	  <groupId>org.hypergraphdb</groupId>
 	  <artifactId>hgdb</artifactId>
-	  <version>${version}</version>
+	  <version>${hgdb.version}</version>
 	</dependency>	
 	<dependency>
 	  <groupId>org.hypergraphdb</groupId>
 	  <artifactId>hgdbmanagement</artifactId>
-	  <version>${version}</version>
+	  <version>${hgdb.version}</version>
 	</dependency>	
 	<dependency>
 	  <groupId>org.hypergraphdb</groupId>
 	  <artifactId>hgbdbje</artifactId>
-	  <version>${version}</version>
+	  <version>${hgdb.version}</version>
 	</dependency>  
 	<dependency>
 	  <groupId>org.hypergraphdb</groupId>

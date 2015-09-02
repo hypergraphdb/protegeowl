@@ -163,6 +163,7 @@ public class HGOwlProperties
 	{
 		this.p2pUser = p2pUser;
 		savePrefs();
+		Singles.versionManager().user(p2pUser);
 	}
 
 	/**

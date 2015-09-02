@@ -77,7 +77,7 @@ public class CommitDialog extends JDialog implements ActionListener
 		buttonPanel.add(btCancel);
 		//
 		changeSetPanel = new ChangeSetTablePanel(vo.ontology(), vo.graph(), kit);
-		changeSetPanel.setChangeSet(vo.changes(), new TreeSet<Integer>(), "");
+		changeSetPanel.setChangeSet(vo.changes().changes(), new TreeSet<Integer>(), "");
 		// renderChangeset((DefaultListModel)changeSetList.getModel(),
 		// workingSetChanges, vo.getHyperGraph(), vo.getWorkingSetData());
 		this.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);

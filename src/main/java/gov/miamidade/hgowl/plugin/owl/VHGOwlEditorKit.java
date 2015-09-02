@@ -1,5 +1,6 @@
 package gov.miamidade.hgowl.plugin.owl;
 
+import static gov.miamidade.hgowl.plugin.Singles.*;
 import gov.miamidade.hgowl.plugin.owl.model.HGOwlModelManagerImpl;
 import gov.miamidade.hgowl.plugin.owlapi.apibinding.PHGDBOntologyManagerImpl;
 import gov.miamidade.hgowl.plugin.ui.render.VHGOwlIconProviderImpl;
@@ -191,13 +192,14 @@ public class VHGOwlEditorKit extends HGOwlEditorKit
 	}
 
 	public boolean undoLocalChanges()
-	{
+	{ 
+		String actionTitle = bundles().value("undoworking.action.title","Drop Working Changes");
 		HGHandle hActive = activeOntology();
 		if (hActive == null || !versionManager().isVersioned(hActive))
 		{
 			JOptionPane.showMessageDialog(getWorkspace(),
 					"The currently active ontology does not appear under version control.",
-					"Hypergraph Versioning - Rollback ",
+					actionTitle,
 					JOptionPane.INFORMATION_MESSAGE);
 			return false;
 		}
@@ -206,17 +208,17 @@ public class VHGOwlEditorKit extends HGOwlEditorKit
 		{
 			JOptionPane.showMessageDialog(getWorkspace(),
 					"The selected ontology does not have any pending changes to roll back",
-					"Hypergraph Versioning - Rollback ",
+					actionTitle,
 					JOptionPane.INFORMATION_MESSAGE);
 			return false;
 		}
-		RollbackDialog dlg = RollbackDialog.showDialog("Hypergraph Versioning - Rollback", 
+		RollbackDialog dlg = RollbackDialog.showDialog(actionTitle, 
 													   getWorkspace(), 
 													   ver, 
 													   this);		
 		if (dlg.isRollbackOK() && 
-				areYouSure("Hypergraph Versioning - Rollback",
-					"Your pending changes will be lost. \r\n Are you sure to rollback?"))
+				areYouSure(actionTitle,
+					"Your pending changes will be lost. \r\n Are you sure to undo them?"))
 		{
 			ver.undo();
 			causeViewUpdate();

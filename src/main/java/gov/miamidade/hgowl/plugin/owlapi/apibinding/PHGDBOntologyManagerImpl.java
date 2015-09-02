@@ -1,9 +1,7 @@
 package gov.miamidade.hgowl.plugin.owlapi.apibinding;
 
 import gov.miamidade.hgowl.plugin.Singles;
-
 import java.io.File;
-
 import org.hypergraphdb.app.owl.HGDBOntology;
 import org.hypergraphdb.app.owl.HGDBOntologyFormat;
 import org.hypergraphdb.app.owl.HGDBOntologyManager;
@@ -43,7 +41,7 @@ public class PHGDBOntologyManagerImpl extends ProtegeOWLOntologyManager implemen
 	{
 		super(dataFactory);
 		ontologyRepository = Singles.vdRepo();
-		versionManager = ontologyRepository.getVersionManager();		
+		versionManager = Singles.versionManager();		
 		this.addOntologyChangeListener(new VersioningChangeListener(versionManager));
 	}
 

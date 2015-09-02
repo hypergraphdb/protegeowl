@@ -5,6 +5,7 @@ import java.util.concurrent.Callable;
 import javax.swing.JOptionPane;
 
 import org.hypergraphdb.app.owl.util.ImplUtils;
+import org.hypergraphdb.app.owl.versioning.VersionManager;
 import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
 import org.hypergraphdb.peer.HyperGraphPeer;
 import org.hypergraphdb.util.Ref;
@@ -20,6 +21,7 @@ import org.hypergraphdb.util.Ref;
 public class Singles
 {
 	static volatile VDHGDBOntologyRepository ontologyRepository;
+	static volatile VersionManager versionManager;
 	
 	static Ref<HyperGraphPeer> peerFactory = new Ref<HyperGraphPeer>()
 	{
@@ -60,7 +62,6 @@ public class Singles
 		{
 			synchronized (Singles.class)
 			{
-				
 				ontologyRepository = new VDHGDBOntologyRepository(
 					HGOwlProperties.getInstance().getHgLocationFolderPath(),
 					new MaybeRef<HyperGraphPeer>(peerFactory, onFailedPeer)					
@@ -68,5 +69,29 @@ public class Singles
 			}
 		}
 		return ontologyRepository;
+	}
+	
+	public static VersionManager versionManager()
+	{
+		if (versionManager == null)
+		{
+			synchronized (Singles.class)
+			{
+				// What is user is not configured here? We need to adjust that
+				// check and disable UI action that use the version manager until
+				// the user is configured.
+				versionManager = new VersionManager(vdRepo().getHyperGraph(),
+								HGOwlProperties.getInstance().getP2pUser());
+			}
+		}
+		return versionManager;
+	}
+	
+	/**
+	 * Return the resource bundle entry point for localized messages.
+	 */
+	public static Bundles bundles()
+	{
+		return Bundles.instance;
 	}
 }
