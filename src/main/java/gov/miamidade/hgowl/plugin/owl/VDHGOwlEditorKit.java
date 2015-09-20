@@ -12,6 +12,7 @@ import gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDRenderer;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JOptionPane;
@@ -22,11 +23,9 @@ import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.hypergraphdb.app.owl.versioning.distributed.ClientCentralizedOntology;
 import org.hypergraphdb.app.owl.versioning.distributed.DistributedOntology;
 import org.hypergraphdb.app.owl.versioning.distributed.PeerDistributedOntology;
-import org.hypergraphdb.app.owl.versioning.distributed.ServerCentralizedOntology;
 import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowseRepositoryActivity;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowseRepositoryActivity.BrowseEntry;
-import org.hypergraphdb.app.owl.versioning.distributed.activity.PushActivity;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.VersionUpdateActivity;
 import org.hypergraphdb.peer.HGPeerIdentity;
 import org.hypergraphdb.peer.workflow.ActivityResult;
@@ -51,9 +50,9 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 	public enum OntologyDistributionState
 	{
 		ONTO_NOT_SHARED, 
-		ONTO_SHARED_DISTRIBUTED, 
+		ONTO_SHARED_DISTRIBUTED /*, 
 		ONTO_SHARED_CENTRAL_CLIENT, 
-		ONTO_SHARED_CENTRAL_SERVER,
+		ONTO_SHARED_CENTRAL_SERVER, */
 	}
 
 	VDHGDBOntologyRepository repository;
@@ -79,6 +78,23 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 				new VDHGOwlIconProviderImpl(getModelManager(), this));
 	}
 
+	private void reportActivityResult(VersionUpdateActivity activity)
+	{
+		if (activity.getState().isCompleted())
+			JOptionPane.showMessageDialog(null, "Operation completed successfully." + 
+					(activity.completedMessage() != null ? activity.completedMessage() : ""));
+		else if (activity.getState().isFailed())
+			JOptionPane.showMessageDialog(null, "Operation failed." + 
+					(activity.completedMessage() != null ? activity.completedMessage() : ""));
+		else if (activity.getState().isCanceled())
+			JOptionPane.showMessageDialog(null, "Operation canceled." + 
+					(activity.completedMessage() != null ? activity.completedMessage() : ""));		
+		else
+			JOptionPane.showMessageDialog(null, "Operation did not finish properly (state " +
+					activity.getState() + ", " + 
+					(activity.completedMessage() != null ? activity.completedMessage() : ""));		
+	}
+	
 	public void handleShowHistoryActiveDistributedRequest()
 	{
 //		DistributedOntology dOnto = getActiveOntologyAsDistributed();
@@ -252,11 +268,47 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 		causeViewUpdate();
 	}
 
+	/**
+	 * An ontology is published at a remote peer assuming that peer doesn't already
+	 * have a copy.
+	 * @throws ExecutionException 
+	 * @throws InterruptedException 
+	 */
+	public void publishActive()	
+	{
+		if (! (getActiveOntology() instanceof HGDBOntology) )
+		{
+			JOptionPane.showMessageDialog(null, "The ontology " + 
+							getActiveOntology().getOntologyID().getDefaultDocumentIRI() + 
+							" is not HyperGraphDB backed and cannot be published for versioning.");
+			return;
+		}
+		HGDBOntology activeOntology = (HGDBOntology) getActiveOntology();
+		if (PeerViewPanel.showPeerSelectionDialog(getWorkspace(), repository) != JOptionPane.OK_OPTION)
+			return;
+		HGPeerIdentity targetPeer = PeerViewPanel.getSelectedPeer();
+//		RemoteOntology remoteOnto = graph.getOne(hg.and(hg.type(RemoteOntology.class), 
+//				hg.eq("ontologyHandle", ontologyHandle),
+//				hg.eq("repository", remoteRepository)));
+//		
+		VersionUpdateActivity activity = repository.publishOntology(activeOntology.getAtomHandle(), 
+																	targetPeer);
+		try
+		{
+			activity.getFuture().get();
+			reportActivityResult(activity);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace(System.err);
+			JOptionPane.showMessageDialog(null, "Error, please copy and paste complete stack trace and send to dev team.");			
+		}
+	}
+	
 	public void handlePushActiveRequest()
 	{
 		HGDBOntology activeOntology = (HGDBOntology) getActiveOntology();
-		DistributedOntology dOnto = repository
-				.getDistributedOntology(activeOntology);
+		DistributedOntology dOnto = repository.getDistributedOntology(activeOntology);
 		HGPeerIdentity serverPeer;
 		if (dOnto == null)
 			return;
@@ -288,7 +340,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 			// user cancelled.
 			return;
 		}
-		PushActivity pa = repository.push(dOnto, serverPeer);
+		VersionUpdateActivity pa = repository.push(activeOntology.getAtomHandle(), serverPeer);
 		try
 		{
 			ActivityResult paa = pa.getFuture().get(ACTIVITY_TIMEOUT_SECS,
@@ -298,7 +350,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 				JOptionPane.showMessageDialog(
 						getWorkspace(),
 						"Push completed with the following message: "
-								+ pa.getCompletedMessage(),
+								+ pa.completedMessage(),
 						"Hypergraph Team - Push Complete",
 						JOptionPane.INFORMATION_MESSAGE);
 			}
@@ -501,7 +553,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 
 	public void handleStatusRequest()
 	{
-
+		
 	}
 
 	public void handleCheckoutRequest()
@@ -539,7 +591,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 						return;
 					}
 					// START PULL
-					VersionUpdateActivity pa = repository.pullNew(remoteEntry.getUuid(),
+					VersionUpdateActivity pa = repository.cloneOntology(remoteEntry.getUuid(),
 							serverPeer);
 					//
 					// TODO BLOCK in NON AWT THREAD, let changes be applied in
@@ -1023,8 +1075,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 	{
 		if (isNetworking())
 		{
-			PeerViewPanel.showServerSelectionDialog(title, getWorkspace(),
-					repository);
+			PeerViewPanel.showServerSelectionDialog(title, getWorkspace(), repository);
 			return PeerViewPanel.getSelectedPeer();
 		}
 		else
@@ -1117,20 +1168,19 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 	{
 		HGOwlModelManagerImpl hmm = (HGOwlModelManagerImpl) getOWLModelManager();
 		OWLOntology activeOnto = hmm.getActiveOntology();
-		DistributedOntology donto = repository
-				.getDistributedOntology(activeOnto);
+		DistributedOntology donto = repository.getDistributedOntology(activeOnto);
 		if (donto == null)
 		{
 			return OntologyDistributionState.ONTO_NOT_SHARED;
 		}
-		else if (donto instanceof ClientCentralizedOntology)
-		{
-			return OntologyDistributionState.ONTO_SHARED_CENTRAL_CLIENT;
-		}
-		else if (donto instanceof ServerCentralizedOntology)
-		{
-			return OntologyDistributionState.ONTO_SHARED_CENTRAL_SERVER;
-		}
+//		else if (donto instanceof ClientCentralizedOntology)
+//		{
+//			return OntologyDistributionState.ONTO_SHARED_CENTRAL_CLIENT;
+//		}
+//		else if (donto instanceof ServerCentralizedOntology)
+//		{
+//			return OntologyDistributionState.ONTO_SHARED_CENTRAL_SERVER;
+//		}
 		else if (donto instanceof PeerDistributedOntology)
 		{
 			return OntologyDistributionState.ONTO_SHARED_DISTRIBUTED;

@@ -54,9 +54,9 @@ public class RemoteRepositoryTableModel extends AbstractTableModel {
         } else if(columnIndex == 1) {
             return entries.get(rowIndex).getOwlOntologyDocumentIRI();
         } else if(columnIndex == 2) {
-            return entries.get(rowIndex).getDistributionMode();
+            return "Peer"; // entries.get(rowIndex).getDistributionMode();
         } else if(columnIndex == 3) {
-            return entries.get(rowIndex).getLastRevision();
+            return ""; // entries.get(rowIndex).getLastRevision();
         } else { 
             throw new IllegalArgumentException();
         }

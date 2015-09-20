@@ -2,6 +2,7 @@ package gov.miamidade.hgowl.plugin.ui.versioning.distributed;
 
 import gov.miamidade.hgowl.plugin.owl.VDHGOwlEditorKit;
 import gov.miamidade.hgowl.plugin.owl.VDHGOwlEditorKit.OntologyDistributionState;
+import gov.miamidade.hgowl.plugin.ui.HGPluginAction;
 import gov.miamidade.hgowl.plugin.ui.versioning.VHGHistoryActiveAction;
 import gov.miamidade.hgowl.plugin.ui.versioning.VHGRevertActiveAction;
 import gov.miamidade.hgowl.plugin.ui.versioning.VHGRollbackActiveAction;
@@ -70,12 +71,12 @@ public class DynamicTeamMenu extends ProtegeDynamicAction {
 		boolean userOnline = vdKit.isNetworking();
 		if (activeOntoDistState.equals(OntologyDistributionState.ONTO_NOT_SHARED)) {
 			buildGeneralMenuItems(menu, vdKit, false, userOnline);
-		} else if (activeOntoDistState.equals(OntologyDistributionState.ONTO_SHARED_CENTRAL_SERVER)) {
-			buildCentralServerMenuItems(menu, vdKit);
-			buildGeneralMenuItems(menu, vdKit, true, userOnline);
-		} else if (activeOntoDistState.equals(OntologyDistributionState.ONTO_SHARED_CENTRAL_CLIENT)) {
-			buildCentralClientMenuItems(menu, vdKit, userOnline);
-			buildGeneralMenuItems(menu, vdKit, true, userOnline);
+//		} else if (activeOntoDistState.equals(OntologyDistributionState.ONTO_SHARED_CENTRAL_SERVER)) {
+//			buildCentralServerMenuItems(menu, vdKit);
+//			buildGeneralMenuItems(menu, vdKit, true, userOnline);
+//		} else if (activeOntoDistState.equals(OntologyDistributionState.ONTO_SHARED_CENTRAL_CLIENT)) {
+//			buildCentralClientMenuItems(menu, vdKit, userOnline);
+//			buildGeneralMenuItems(menu, vdKit, true, userOnline);
 		} else if (activeOntoDistState.equals(OntologyDistributionState.ONTO_SHARED_DISTRIBUTED)) {
 			menu.add(new JMenuItem("Distributed version control not yet implemented."));
 			menu.add(new JMenuItem("Cancel sharing."));
@@ -146,21 +147,49 @@ public class DynamicTeamMenu extends ProtegeDynamicAction {
 		menu.addSeparator();
 	}
 
-	private void buildGeneralMenuItems(JMenu menu, VDHGOwlEditorKit kit, boolean shared, boolean userOnline) {
+	@SuppressWarnings("serial")
+	private void buildGeneralMenuItems(final JMenu menu, 
+									   final VDHGOwlEditorKit kit, 
+									   final boolean shared, 
+									   final boolean userOnline) 
+	{
 		ProtegeOWLAction cur;
-		if (!shared) {
-			cur = new VDHGShareActiveAction();
-			cur.putValue(Action.NAME, "Share...");
+		if (!shared) 
+		{
+			cur = new HGPluginAction() {
+				public void act() 
+				{
+					kit.publishActive();
+				}
+			};				
+					//new VDHGShareActiveAction();
+			cur.putValue(Action.NAME, "Publish...");
 			cur.setEnabled(userOnline);
-		}  else {
-			cur = new VDHGShareActiveCancelAction();
-			cur.putValue(Action.NAME, "Cancel Sharing");
+			cur.setEditorKit(kit);
+			menu.add(cur); 
+			menu.addSeparator();
+		}		
+//		else 
+//		{
+//			cur = new VDHGShareActiveCancelAction();
+//			cur.putValue(Action.NAME, "Cancel Sharing");
+//		}
+		else
+		{
+			cur = new HGPluginAction() {
+				public void act() 
+				{
+					kit.handlePullActiveRequest();
+				}
+			};		
 		}
-		cur.setEditorKit(kit);
-		menu.add(cur); 
-		menu.addSeparator();
-		cur = new VDHGCheckoutNewAction();
-		cur.putValue(Action.NAME, "Checkout...");
+		cur = new HGPluginAction() {
+			public void act() 
+			{
+				kit.handleCheckoutRequest();
+			}
+		};
+		cur.putValue(Action.NAME, "Clone...");
 		cur.setEditorKit(kit);
 		cur.setEnabled(userOnline);
 		menu.add(cur);
