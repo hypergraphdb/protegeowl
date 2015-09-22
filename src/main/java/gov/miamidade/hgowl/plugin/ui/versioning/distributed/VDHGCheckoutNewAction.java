@@ -39,7 +39,7 @@ public class VDHGCheckoutNewAction extends ProtegeOWLAction {
 	public void actionPerformed(ActionEvent arg0) {
 		VDHGOwlEditorKit vdhgowlKit = (VDHGOwlEditorKit) getEditorKit();
 		try {
-			vdhgowlKit.handleCheckoutRequest();
+			vdhgowlKit.cloneOntology();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

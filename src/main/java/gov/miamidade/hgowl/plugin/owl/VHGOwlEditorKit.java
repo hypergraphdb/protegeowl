@@ -158,7 +158,7 @@ public class VHGOwlEditorKit extends HGOwlEditorKit
 		}			
 	}
 
-	public boolean commitActiveOntology() throws Exception
+	public boolean commitActiveOntology()
 	{
 		HGHandle hActive = activeOntology();
 		if (hActive == null)
@@ -229,7 +229,7 @@ public class VHGOwlEditorKit extends HGOwlEditorKit
 			return false;
 	}
 	
-	public void handleShowHistoryActiveRequest()
+	public void showHistoryActive()
 	{
 		HGHandle hActive = activeOntology();
 		if (hActive == null || !versionManager().isVersioned(hActive))
@@ -248,7 +248,7 @@ public class VHGOwlEditorKit extends HGOwlEditorKit
 		}
 	}
 	
-	public boolean handleRevertActiveRequest() throws Exception
+	public boolean revertActive()
 	{
 		HGHandle hActive = activeOntology();
 		if (hActive == null || !versionManager().isVersioned(hActive))

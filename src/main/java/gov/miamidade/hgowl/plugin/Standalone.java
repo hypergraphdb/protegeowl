@@ -1,12 +1,6 @@
 package gov.miamidade.hgowl.plugin;
 
-import gov.miamidade.hgowl.plugin.owl.HGOwlEditorKitFactory;
-import gov.miamidade.hgowl.plugin.owl.VDHGOwlEditorKit;
-import gov.miamidade.hgowl.plugin.ui.versioning.VHGCommitDialog;
-import gov.miamidade.hgowl.plugin.ui.versioning.VHGHistoryDialog;
-
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 
 import org.hypergraphdb.app.owl.HGDBOntology;
 import org.hypergraphdb.app.owl.versioning.Revision;

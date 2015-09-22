@@ -77,7 +77,7 @@
     
     <extension id="ui.view.hgversioning.menu"
     		   point="org.protege.editor.core.application.EditorKitMenuAction">
-        <name value="Local Versioning"/>
+        <name value="Versioning"/>
         <toolTip value="Actions related to versioning ontologies"/>
         <path value="/SlotCR-D"/>
         <class

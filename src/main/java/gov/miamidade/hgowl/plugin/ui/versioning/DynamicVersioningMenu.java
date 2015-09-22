@@ -1,15 +1,12 @@
 package gov.miamidade.hgowl.plugin.ui.versioning;
 
 import gov.miamidade.hgowl.plugin.owl.VDHGOwlEditorKit;
-
 import gov.miamidade.hgowl.plugin.owl.VHGOwlEditorKit;
+import gov.miamidade.hgowl.plugin.ui.HGPluginAction;
 import static gov.miamidade.hgowl.plugin.Singles.*;
 import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JMenu;
-
 import org.protege.editor.core.editorkit.EditorKit;
 import org.protege.editor.core.ui.action.ProtegeDynamicAction;
 import org.protege.editor.owl.ui.action.ProtegeOWLAction;
@@ -25,33 +22,23 @@ public class DynamicVersioningMenu extends ProtegeDynamicAction
 	private static final long serialVersionUID = -2187253639033356483L;
 
 	@Override
-	public void initialise() throws Exception
-	{
-		// TODO Auto-generated method stub
-
-	}
+	public void initialise() throws Exception { }
 
 	@Override
-	public void dispose() throws Exception
-	{
-		// TODO Auto-generated method stub
-
-	}
+	public void dispose() throws Exception { }
 
 	@Override
-	public void actionPerformed(ActionEvent e)
-	{
-		// TODO Auto-generated method stub
-		System.out.println("Woo hoo actionPerformed.");
-	}
+	public void actionPerformed(ActionEvent e) { }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.protege.editor.core.ui.action.ProtegeDynamicAction#rebuildChildMenuItems
-	 * (javax.swing.JMenu)
-	 */
+	private JMenu addItem(JMenu menu, ProtegeOWLAction action, String name, boolean enabled)
+	{
+		action.putValue(Action.NAME, name);
+		action.setEnabled(enabled);
+		action.setEditorKit(getEditorKit());
+		menu.add(action);
+		return menu;
+	}
+	
 	@Override
 	public void rebuildChildMenuItems(JMenu menu)
 	{
@@ -61,34 +48,15 @@ public class DynamicVersioningMenu extends ProtegeDynamicAction
 			System.err.println("Not running with a versioned VHGOwlEditorKit or subclass. Versioning menu will be empty.");
 			return;
 		}
-		VHGOwlEditorKit vKit = (VHGOwlEditorKit) ekit;
+		VDHGOwlEditorKit vKit = (VDHGOwlEditorKit) ekit;
 		boolean activeVersioned = vKit.isActiveOntologyVersioned();
-		boolean activeShared;
-		if (vKit instanceof VDHGOwlEditorKit)
-		{
-			VDHGOwlEditorKit vdKit = (VDHGOwlEditorKit) vKit;
-			activeShared = vdKit.isActiveOntologyShared();
-		}
-		else
-		{
-			activeShared = false;
-		}
 		if (!activeVersioned)
 		{
 			buildNotVersionedMenu(menu, vKit);
 		}
-		else if (activeVersioned && !activeShared)
-		{
-			buildVersionedMenu(menu, vKit);
-		}
-		else if (activeShared)
-		{
-			buildSharedMenu(menu, vKit);
-		}
 		else
 		{
-			System.err.println("DynamicVersioningMenu: Cannot build menu. unknown state detected: actShared: " + activeShared
-					+ " actVersioned: " + activeVersioned);
+			buildVersionedMenu(menu, vKit);
 		}
 	}
 
@@ -101,50 +69,44 @@ public class DynamicVersioningMenu extends ProtegeDynamicAction
 		menu.add(cur);
 	}
 
-	private void buildVersionedMenu(JMenu menu, VHGOwlEditorKit kit)
+	@SuppressWarnings("serial")
+	private void buildVersionedMenu(final JMenu menu, final VDHGOwlEditorKit kit)
 	{
-		// Commit
-		// History...
-		// Separator
-		// Rollback...
-		// Revert to...
-		// Separator
-		// Remove from Local Version Control...
-		ProtegeOWLAction cur;
-		cur = new VHGCommitActiveAction();
-		cur.putValue(Action.NAME, "Commit");
-		cur.setEditorKit(kit);
-		menu.add(cur);
-		cur = new VHGHistoryActiveAction();
-		cur.putValue(Action.NAME, "History...");
-		cur.setEditorKit(kit);
-		menu.add(cur);
+		boolean userOnline = kit.isNetworking();
+		addItem(menu,
+				new HGPluginAction() { public void act() { kit.pullActive(); } },
+				"Pull",
+				userOnline);			
+		addItem(menu,
+				new HGPluginAction() { public void act() { kit.commitActiveOntology(); } },
+				"Commit",
+				userOnline);
+		addItem(menu,
+				new HGPluginAction() { public void act() { kit.pushActive(); } },
+				"Push",
+				userOnline);			
+		addItem(menu,
+				new HGPluginAction() { public void act() { kit.showHistoryActive(); } },
+				"History",
+				true);
 		menu.addSeparator();
-		cur = new VHGRollbackActiveAction();
-		cur.putValue(Action.NAME, bundles().value("undoworking.action.title"));
-		cur.setEditorKit(kit);
-		menu.add(cur);
-		cur = new VHGRevertActiveAction();
-		cur.putValue(Action.NAME, "Revert to...");
-		cur.setEditorKit(kit);
-		menu.add(cur);
+		addItem(menu,
+				new HGPluginAction() { public void act() { kit.undoLocalChanges(); } },
+				bundles().value("undoworking.action.title"),
+				true);
+		addItem(menu,
+				new HGPluginAction() { public void act() { kit.revertActive(); } },
+				"Revert to...",
+				true);
 		menu.addSeparator();
-		cur = new VHGRemoveActiveFromVersionControlAction();
-		cur.putValue(Action.NAME, "Remove from Local Version Control...");
-		cur.setEditorKit(kit);
-		menu.add(cur);
-	}
-
-	private void buildSharedMenu(JMenu menu, VHGOwlEditorKit kit)
-	{
-		menu.add(new AbstractAction("Ontology shared. Use Team menu.")
-		{
-			private static final long serialVersionUID = -5125693951180514232L;
-
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-			}
-		});
+		addItem(menu,
+				new HGPluginAction() { public void act() { kit.stopVersioningActive(); } },
+				"Stop Versioning",
+				true);
+		menu.addSeparator();
+		addItem(menu,
+				new HGPluginAction() { public void act() { kit.publishActive(); } },
+				"Publish",
+				userOnline);				
 	}
 }

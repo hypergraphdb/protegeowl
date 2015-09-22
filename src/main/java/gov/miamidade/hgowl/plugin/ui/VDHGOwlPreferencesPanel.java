@@ -245,7 +245,8 @@ public class VDHGOwlPreferencesPanel extends OWLPreferencesPanel
 		private JTextField roomField;
 		private JTextField serverField;
 		private JCheckBox askForRemote;
-
+		private JCheckBox autoSignIn;
+		
 		public void initialise() throws Exception
 		{
 			setLayout(new BorderLayout(12, 12));
@@ -266,7 +267,7 @@ public class VDHGOwlPreferencesPanel extends OWLPreferencesPanel
 			Box panelRoom = new Box(BoxLayout.LINE_AXIS);
 			Box panel2 = new Box(BoxLayout.LINE_AXIS);
 			Box panel3 = new Box(BoxLayout.LINE_AXIS);
-			Box panel4 = new Box(BoxLayout.LINE_AXIS);
+			Box panel4 = new Box(BoxLayout.Y_AXIS);
 			userField = new JTextField(15);
 			userField.setText(HGOwlProperties.getInstance().getP2pUser());
 			panel1.add(new JLabel("P2P User:"));
@@ -284,9 +285,12 @@ public class VDHGOwlPreferencesPanel extends OWLPreferencesPanel
 			serverField.setText(HGOwlProperties.getInstance().getP2pServer());
 			panel3.add(new JLabel("P2P Server:"));
 			panel3.add(serverField);
-			askForRemote = new JCheckBox("Ask for Remote Target before each operation", HGOwlProperties.getInstance()
-					.isP2pAskForRemote());
+			askForRemote = new JCheckBox("Ask for Remote Target before each operation", 
+										HGOwlProperties.getInstance().isP2pAskForRemote());
+			autoSignIn = new JCheckBox("Automatically sign in on startup", 
+									   HGOwlProperties.getInstance().isP2pAutoSignIn());
 			panel4.add(askForRemote);
+			panel4.add(autoSignIn);
 			// toplevel
 			panel.add(panel1);
 			panel.add(panel2);
@@ -304,6 +308,7 @@ public class VDHGOwlPreferencesPanel extends OWLPreferencesPanel
 			HGOwlProperties.getInstance().setP2pPass(new String(passField.getPassword()));
 			HGOwlProperties.getInstance().setP2pServer(serverField.getText());
 			HGOwlProperties.getInstance().setP2pAskForRemote(askForRemote.isSelected());
+			HGOwlProperties.getInstance().setP2pAutoSignIn(askForRemote.isSelected());
 			// JOptionPane.showMessageDialog(this,
 			// "All values saved without validation.");
 		}

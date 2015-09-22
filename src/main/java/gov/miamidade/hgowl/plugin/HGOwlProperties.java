@@ -28,6 +28,7 @@ public class HGOwlProperties
 	private static final boolean DEFAULT_SHOW_LEGACY_EDITOR_KIT = false;
 
 	private static final boolean DEFAULT_P2P_ASK_FOR_REMOTE = true;
+	private static final boolean DEFAULT_P2P_AUTO_SIGN_IN = false;
 
 	// DISTRIBUTED START
 	public static final String P2P_ROOM = "P2PRoomName";
@@ -35,6 +36,8 @@ public class HGOwlProperties
 	public static final String P2P_PASSWORD = "P2PPassword";
 	public static final String P2P_SERVER = "P2PServer";
 	public static final String P2P_ASK_FOR_REMOTE = "P2PAskForRemote";
+	public static final String P2P_AUTO_SIGN_IN = "P2PAutoSignIn";
+	
 	// DISTRIBUTED END
 
 	private String hgLocationFolderPath;
@@ -46,7 +49,8 @@ public class HGOwlProperties
 	private String p2pServer;
 	private boolean p2pAskForRemote; // ask for the remote target before each
 										// operation.
-
+	private boolean p2pAutoSignIn;
+	
 	// DISTRIBUTED END
 
 	protected HGOwlProperties()
@@ -79,6 +83,7 @@ public class HGOwlProperties
 		p2pPass = getPreferences().getString(P2P_PASSWORD, "");
 		p2pServer = getPreferences().getString(P2P_SERVER, "");
 		p2pAskForRemote = getPreferences().getBoolean(P2P_ASK_FOR_REMOTE, DEFAULT_P2P_ASK_FOR_REMOTE);
+		p2pAutoSignIn = getPreferences().getBoolean(P2P_AUTO_SIGN_IN, DEFAULT_P2P_AUTO_SIGN_IN);
 	}
 
 	private void savePrefs()
@@ -91,6 +96,7 @@ public class HGOwlProperties
 		getPreferences().putString(P2P_PASSWORD, p2pPass);
 		getPreferences().putString(P2P_SERVER, p2pServer);
 		getPreferences().putBoolean(P2P_ASK_FOR_REMOTE, p2pAskForRemote);
+		getPreferences().putBoolean(P2P_AUTO_SIGN_IN, p2pAutoSignIn);
 	}
 
 	/**
@@ -219,4 +225,14 @@ public class HGOwlProperties
 		this.p2pAskForRemote = p2pAskForRemote;
 		savePrefs();
 	}
+
+	public boolean isP2pAutoSignIn()
+	{
+		return p2pAutoSignIn;
+	}
+
+	public void setP2pAutoSignIn(boolean p2pAutoSignIn)
+	{
+		this.p2pAutoSignIn = p2pAutoSignIn;
+	}	
 }

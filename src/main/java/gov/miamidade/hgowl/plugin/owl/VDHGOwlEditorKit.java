@@ -1,6 +1,7 @@
 package gov.miamidade.hgowl.plugin.owl;
 
 import gov.miamidade.hgowl.plugin.HGOwlProperties;
+
 import gov.miamidade.hgowl.plugin.obsolete.VersionedOntologyComparator.VersionedOntologyComparisonResult;
 import gov.miamidade.hgowl.plugin.owl.model.HGOwlModelManagerImpl;
 import gov.miamidade.hgowl.plugin.owlapi.apibinding.PHGDBOntologyManagerImpl;
@@ -22,7 +23,6 @@ import org.hypergraphdb.app.owl.versioning.ChangeSet;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.hypergraphdb.app.owl.versioning.distributed.ClientCentralizedOntology;
 import org.hypergraphdb.app.owl.versioning.distributed.DistributedOntology;
-import org.hypergraphdb.app.owl.versioning.distributed.PeerDistributedOntology;
 import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowseRepositoryActivity;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowseRepositoryActivity.BrowseEntry;
@@ -47,14 +47,6 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 
 	public static int ACTIVITY_TIMEOUT_SECS = 180;
 
-	public enum OntologyDistributionState
-	{
-		ONTO_NOT_SHARED, 
-		ONTO_SHARED_DISTRIBUTED /*, 
-		ONTO_SHARED_CENTRAL_CLIENT, 
-		ONTO_SHARED_CENTRAL_SERVER, */
-	}
-
 	VDHGDBOntologyRepository repository;
 
 	HGPeerIdentity selectedRemotePeer = null;
@@ -70,6 +62,9 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 	{
 		super.initialise();
 		repository = getDistributedRepository();
+		if (HGOwlProperties.getInstance().isP2pAutoSignIn())
+			try { repository.startNetworking(); }
+			catch (Throwable t) { t.printStackTrace(System.err); }
 	}
 
 	protected void initializeIconProvider()
@@ -93,179 +88,6 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 			JOptionPane.showMessageDialog(null, "Operation did not finish properly (state " +
 					activity.getState() + ", " + 
 					(activity.completedMessage() != null ? activity.completedMessage() : ""));		
-	}
-	
-	public void handleShowHistoryActiveDistributedRequest()
-	{
-//		DistributedOntology dOnto = getActiveOntologyAsDistributed();
-//		VHGHistoryDialog.showDialog("Hypergraph Team - History of "
-//				+ VDRenderer.render(dOnto), getWorkspace(),
-//				dOnto.getVersionedOntology(), this);
-	}
-
-	public void handleShareActiveRequest()
-	{
-//		OWLOntology activeOntology = getActiveOntology();
-//		if (activeOntology instanceof HGDBOntology)
-//		{
-//			if (isNetworking())
-//			{
-//				if (repository.isVersionControlled(activeOntology))
-//				{
-//					if (!repository
-//							.isDistributed((HGDBOntology) activeOntology))
-//					{
-//						VersionedOntology activeVo = repository
-//								.getVersionControlledOntology(activeOntology);
-//						int userChoice = PeerViewPanel
-//								.showServerSelectionDialog(
-//										"Hypergraph Team - Share - Select Ontology Server",
-//										getWorkspace(), repository);
-//						HGPeerIdentity serverPeer;
-//						if (userChoice == JOptionPane.CANCEL_OPTION)
-//						{
-//							return;
-//						}
-//						else
-//						{
-//							serverPeer = PeerViewPanel.getSelectedPeer();
-//						}
-//						if (serverPeer == null)
-//						{
-//							int shareLocalOption = JOptionPane
-//									.showConfirmDialog(
-//											getWorkspace(),
-//											"You did not select a server. As an experimental option for experienced users it is possible to have Protege serve your ontology locally. \n\r"
-//													+ "Do you with to share your ontology locally as server? Click NO if not sure.",
-//											"Hypergraph Team - Share - Experimental: Local Server",
-//											JOptionPane.YES_NO_OPTION,
-//											JOptionPane.WARNING_MESSAGE);
-//							if (shareLocalOption == JOptionPane.YES_OPTION)
-//							{
-//								repository.shareLocalInServerMode(activeVo);
-//								JOptionPane
-//										.showMessageDialog(
-//												getWorkspace(),
-//												"Sharing active ontology locally in server mode completed.",
-//												"Hypergraph Team - Share - Sharing completed.",
-//												JOptionPane.INFORMATION_MESSAGE);
-//							}
-//						}
-//						else
-//						{
-//							// Check if exists on server, no push if local
-//							// newer.
-//							int shareRemoteServerOption = JOptionPane
-//									.showConfirmDialog(
-//											getWorkspace(),
-//											"The active ontology "
-//													+ VDRenderer
-//															.render(activeVo)
-//													+ "\r\n will be shared on "
-//													+ VDRenderer
-//															.render(serverPeer)
-//													+ " "
-//													+ repository
-//															.getPeerUserId(serverPeer)
-//													+ " \r\n"
-//													+ "All necessary data will be transmitted to the server. Do you want to continue?.",
-//											"Hypergraph Team - Share - Share on Server",
-//											JOptionPane.YES_NO_OPTION,
-//											JOptionPane.INFORMATION_MESSAGE);
-//							if (shareRemoteServerOption == JOptionPane.YES_OPTION)
-//							{
-//								try
-//								{
-//									repository.shareRemoteInServerMode(
-//											activeVo, serverPeer,
-//											ACTIVITY_TIMEOUT_SECS);
-//								}
-//								catch (Throwable t)
-//								{
-//									showException(t,
-//											"System Error while sharing remote in server mode");
-//									return;
-//								}
-//								// Update icon
-//								causeViewUpdate();
-//								JOptionPane
-//										.showMessageDialog(
-//												getWorkspace(),
-//												"Sharing active ontology on selected server completed. All necessary data was sucessfullty transmitted.",
-//												"Hypergraph Team - Share - Sharing completed.",
-//												JOptionPane.INFORMATION_MESSAGE);
-//							}
-//							else
-//							{
-//								JOptionPane.showMessageDialog(getWorkspace(),
-//										"Active ontology was not shared.",
-//										"Hypergraph Team - Share - Abort",
-//										JOptionPane.WARNING_MESSAGE);
-//
-//							}
-//						}
-//					}
-//					else
-//					{
-//						JOptionPane.showMessageDialog(getWorkspace(),
-//								"Active ontology is already shared.",
-//								"Hypergraph Team - Share - Problem",
-//								JOptionPane.WARNING_MESSAGE);
-//					}
-//				}
-//				else
-//				{
-//					JOptionPane
-//							.showMessageDialog(
-//									getWorkspace(),
-//									"Active ontology is not version controled, which is a prerequisite to sharing.",
-//									"Hypergraph Team - Share - Problem",
-//									JOptionPane.ERROR_MESSAGE);
-//				}
-//			}
-//			else
-//			{
-//				// not networking
-//				JOptionPane.showMessageDialog(getWorkspace(),
-//						"Please sign in before sharing.",
-//						"Hypergraph Team - Share - Problem",
-//						JOptionPane.ERROR_MESSAGE);
-//			}
-//		}
-//		else
-//		{
-//			// file based is active
-//			JOptionPane
-//					.showMessageDialog(
-//							getWorkspace(),
-//							"Ontology is file based. Please import and add version control before sharing.",
-//							"Hypergraph Team - Share - Problem",
-//							JOptionPane.ERROR_MESSAGE);
-//		}
-	}
-
-	public void handleShareActiveCancelRequest()
-	{
-		DistributedOntology activeOntology = getActiveOntologyAsDistributed();
-		int confirm = JOptionPane.showConfirmDialog(getWorkspace(),
-				"Press OK to cancel sharing of the active ontology: " + "\r\n"
-						+ VDRenderer.render(activeOntology) + "\n ",
-				"Hypergraph Team - Share - Cancel Sharing Confirm",
-				JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
-		if (confirm != JOptionPane.OK_OPTION)
-		{
-			// user cancelled.
-			return;
-		}
-		//repository.cancelSharing(activeOntology);
-		JOptionPane
-				.showMessageDialog(
-						getWorkspace(),
-						"Sharing of the active ontology was cancelled. The full history is still available.",
-						"Hypergraph Team - Share - Cancel Sharing complete",
-						JOptionPane.INFORMATION_MESSAGE);
-		// Need to update dropdown to change icon
-		causeViewUpdate();
 	}
 
 	/**
@@ -305,7 +127,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 		}
 	}
 	
-	public void handlePushActiveRequest()
+	public void pushActive()
 	{
 		HGDBOntology activeOntology = (HGDBOntology) getActiveOntology();
 		DistributedOntology dOnto = repository.getDistributedOntology(activeOntology);
@@ -366,94 +188,38 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 		}
 	}
 
-	public void handlePullActiveRequest()
+	public void pullActive()
 	{
-//		HGDBOntology activeOntology = (HGDBOntology) getActiveOntology();
-//		DistributedOntology dOnto = repository
-//				.getDistributedOntology(activeOntology);
-//		HGPeerIdentity serverPeer;
-//		String action = "Pull";
-//		if (dOnto == null)
-//			return;
-//		if (!(dOnto instanceof ClientCentralizedOntology))
-//		{
-//			if (!ensureRemotePeerAccessible())
-//				return;
-//			serverPeer = selectedRemotePeer;
-//			action = "Update";
-//		}
-//		else
-//		{
-//			serverPeer = ((ClientCentralizedOntology) dOnto).getServerPeer();
-//		}
-//		int confirm = JOptionPane
-//				.showConfirmDialog(
-//						getWorkspace(),
-//						action
-//								+ " for "
-//								+ dOnto.toString()
-//								+ "\n from "
-//								+ serverPeer
-//								+ " "
-//								+ repository.getPeer().getNetworkTarget(
-//										serverPeer)
-//								+ "\n Press OK to start "
-//								+ action
-//								+ ". Please wait for the completed message and follow progess on console. ",
-//						"Hypergraph Team - " + action + " - in Progress",
-//						JOptionPane.OK_CANCEL_OPTION,
-//						JOptionPane.INFORMATION_MESSAGE);
-//		if (confirm != JOptionPane.OK_OPTION)
-//		{
-//			// user cancelled.
-//			return;
-//		}
-//		PullActivity pa = repository.pull(dOnto, serverPeer);
-//		try
-//		{
-//			// TODO BLOCK in NON AWT THREAD, let changes be applied in AWT.
-//			ActivityResult paa = pa.getFuture().get(ACTIVITY_TIMEOUT_SECS,
-//					TimeUnit.SECONDS);
-//			if (paa.getException() == null)
-//			{
-//				JOptionPane.showMessageDialog(
-//						getWorkspace(),
-//						action
-//								+ " "
-//								+ dOnto.toString()
-//								+ "\n from "
-//								+ serverPeer
-//								+ " "
-//								+ repository.getPeer().getNetworkTarget(
-//										serverPeer)
-//								+ "\n completed with the following message: \n"
-//								+ pa.getCompletedMessage(),
-//						"Hypergraph Team - " + action + " - Complete",
-//						JOptionPane.INFORMATION_MESSAGE);
-//			}
-//			else
-//			{
-//				throw paa.getException();
-//			}
-//		}
-//		catch (Throwable t)
-//		{
-//			showException(t, "System error while pulling ontology");
-//			return;
-//			// JOptionPane.showMessageDialog(getWorkspace(), e.toString() +
-//			// " - " + e.getMessage(), "Team - "+ action + " - Error",
-//			// JOptionPane.ERROR_MESSAGE);
-//		}
-//		// Fire Onto Reloaded
-//		try
-//		{
-//			this.getOWLModelManager().reload(dOnto.getWorkingSetData());
-//		}
-//		catch (OWLOntologyCreationException e)
-//		{
-//			showException(e, "OWLOntologyCreation after pulling ontology");
-//			return;
-//		}
+		if (! (getActiveOntology() instanceof HGDBOntology) )
+		{
+			JOptionPane.showMessageDialog(null, "The ontology " + 
+							getActiveOntology().getOntologyID().getDefaultDocumentIRI() + 
+							" is not HyperGraphDB backed and cannot be pulled/sychronized with a remote copy.");
+			return;
+		}
+		HGDBOntology activeOntology = (HGDBOntology) getActiveOntology();
+		if (!versionManager().isVersioned(activeOntology.getAtomHandle()))
+		{
+			JOptionPane.showMessageDialog(null, "The ontology " + 
+					getActiveOntology().getOntologyID().getDefaultDocumentIRI() + 
+					" is not versioned and cannot be pulled/sychronized with a remote copy.");
+			return;			
+		}
+		if (PeerViewPanel.showPeerSelectionDialog(getWorkspace(), repository) != JOptionPane.OK_OPTION)
+			return;
+		VersionedOntology versioned = versionManager().versioned(activeOntology.getAtomHandle());		
+		HGPeerIdentity targetPeer = PeerViewPanel.getSelectedPeer();
+		VersionUpdateActivity activity = repository.pull(versioned, targetPeer);
+		try
+		{
+			activity.getFuture().get();
+			reportActivityResult(activity);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace(System.err);
+			JOptionPane.showMessageDialog(null, "Error, please copy and paste complete stack trace and send to dev team.");			
+		}
 	}
 
 	public void handleStartNetworkingRequest()
@@ -471,8 +237,8 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 		}
 		String hostname = HGOwlProperties.getInstance().getP2pServer();
 		String userName = HGOwlProperties.getInstance().getP2pUser();
-		String password = HGOwlProperties.getInstance().getP2pPass();
-		String room = HGOwlProperties.getInstance().getP2pRoom();
+//		String password = HGOwlProperties.getInstance().getP2pPass();
+//		String room = HGOwlProperties.getInstance().getP2pRoom();
 		if (hostname == null || hostname.length() < 5 || userName.length() < 2)
 		{
 			JOptionPane
@@ -556,9 +322,9 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 		
 	}
 
-	public void handleCheckoutRequest()
+	public void cloneOntology()
 	{
-		HGPeerIdentity serverPeer = selectRemotePeer("Hypergraph Team - Checkout - Select Server");
+		HGPeerIdentity serverPeer = selectRemotePeer("Hypergraph Team - Clone - Select Server");
 		if (serverPeer == null)
 			return;
 		String userId = repository.getPeerUserId(serverPeer);
@@ -582,7 +348,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 									+ "\n from "
 									+ VDRenderer.render(serverPeer)
 									+ "\n Press ok to start.",
-							"Hypergraph Team - Checkout - Confirm",
+							"Hypergraph Team - Clone - Confirm",
 							JOptionPane.OK_CANCEL_OPTION,
 							JOptionPane.INFORMATION_MESSAGE);
 					if (confirm != JOptionPane.OK_OPTION)
@@ -604,14 +370,14 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 						JOptionPane
 								.showMessageDialog(
 										getWorkspace(),
-										"Checkout of "
+										"Clone of "
 												+ remoteEntry.toString()
 												+ "\n from "
 												+ VDRenderer.render(serverPeer)
 												+ "\n completed with the following message: "
 												+ pa.completedMessage()
 												+ "\n The new ontolgy will be loaded.",
-										"Hypergraph Team - Checkout - Complete",
+										"Hypergraph Team - Clone - Complete",
 										JOptionPane.INFORMATION_MESSAGE);
 						// Load this ontology as active
 						OWLOntology loadedOnto = getModelManager()
@@ -630,7 +396,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 					// Already Exists!
 					JOptionPane.showMessageDialog(getWorkspace(),
 							"The remote ontology already exists locally.",
-							"Hypergraph Team - Checkout - Aborted",
+							"Hypergraph Team - Clone - Aborted",
 							JOptionPane.INFORMATION_MESSAGE);
 				}
 			}
@@ -638,7 +404,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 			{
 				JOptionPane.showMessageDialog(getWorkspace(),
 						"No remote ontology selected ",
-						"Hypergraph Team - Checkout - Aborted",
+						"Hypergraph Team - Clone - Aborted",
 						JOptionPane.INFORMATION_MESSAGE);
 			}
 		}
@@ -648,7 +414,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 			return;
 			// JOptionPane.showMessageDialog(getWorkspace(),
 			// getRenderedActivityException(t),
-			// "Hypergraph Team - Checkout - Error",
+			// "Hypergraph Team - Clone - Error",
 			// JOptionPane.ERROR_MESSAGE);
 		}
 	}
@@ -1157,39 +923,6 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 //					"P2P Active not versioned", JOptionPane.WARNING_MESSAGE);
 //		}
 		return vo;
-	}
-
-	public boolean isActiveOntologyShared()
-	{
-		return getActiveOntologyDistributionState() != OntologyDistributionState.ONTO_NOT_SHARED;
-	}
-
-	public OntologyDistributionState getActiveOntologyDistributionState()
-	{
-		HGOwlModelManagerImpl hmm = (HGOwlModelManagerImpl) getOWLModelManager();
-		OWLOntology activeOnto = hmm.getActiveOntology();
-		DistributedOntology donto = repository.getDistributedOntology(activeOnto);
-		if (donto == null)
-		{
-			return OntologyDistributionState.ONTO_NOT_SHARED;
-		}
-//		else if (donto instanceof ClientCentralizedOntology)
-//		{
-//			return OntologyDistributionState.ONTO_SHARED_CENTRAL_CLIENT;
-//		}
-//		else if (donto instanceof ServerCentralizedOntology)
-//		{
-//			return OntologyDistributionState.ONTO_SHARED_CENTRAL_SERVER;
-//		}
-		else if (donto instanceof PeerDistributedOntology)
-		{
-			return OntologyDistributionState.ONTO_SHARED_DISTRIBUTED;
-		}
-		else
-		{
-			throw new IllegalStateException(
-					"getActiveOntologyDistributionState unknown for: " + donto);
-		}
 	}
 
 	/**

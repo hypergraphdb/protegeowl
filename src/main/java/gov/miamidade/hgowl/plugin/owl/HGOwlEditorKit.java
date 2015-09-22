@@ -21,6 +21,7 @@ import javax.swing.JOptionPane;
 
 
 
+
 //import org.apache.log4j.Logger;
 import org.hypergraphdb.app.owl.HGDBOntology;
 import org.hypergraphdb.app.owl.HGDBOntologyFormat;
@@ -35,6 +36,7 @@ import org.protege.editor.core.OntologyRepositoryManager;
 import org.protege.editor.core.ProtegeApplication;
 import org.protege.editor.core.editorkit.EditorKit;
 import org.protege.editor.core.editorkit.EditorKitDescriptor;
+import org.protege.editor.core.editorkit.RecentEditorKitManager;
 import org.protege.editor.core.ui.error.ErrorLogPanel;
 import org.protege.editor.core.ui.wizard.Wizard;
 import org.protege.editor.owl.OWLEditorKit;
@@ -181,45 +183,56 @@ public class HGOwlEditorKit extends OWLEditorKit
 		return "OWLEditorKit";
 	}
 
+	/**
+	 * This method gets called when protege starts up always, to open a 
+	 * new ontology. But we don't want to always create a new ontology, if
+	 * we are working on something, we want to open the last one automatically.
+	 */
 	public boolean handleNewRequest() throws Exception
 	{
-		if (5 > 4)
+		List<EditorKitDescriptor> L = RecentEditorKitManager.getInstance().getDescriptors();
+		if (L.isEmpty())
 			return super.handleNewRequest();
-		boolean handleNewSuccess = false;		
-		CreateHGOntologyWizard w = new CreateHGOntologyWizard(null, this);
-		int result = w.showModalDialog();
-		if (result == Wizard.FINISH_RETURN_CODE)
+		else // if user opted to load most recent
 		{
-			OWLOntologyID oid = w.getOntologyID();
-			if (oid != null)
-			{
-				HGOwlModelManagerImpl mm = (HGOwlModelManagerImpl) getOWLModelManager();
-				// check if already exists
-				// we are catching specific exceptions here instead of checking
-				// the cases before the
-				// call to mm.createNewOntology.
-				try
-				{
-					mm.createNewOntology(oid, w.getLocationURI());
-					// addToRecent(URI.create(prop.getProperty("hibernate.connection.url")));
-					addRecent(w.getLocationURI());
-					handleNewSuccess = true;
-				}
-				catch (OWLOntologyAlreadyExistsException e)
-				{
-					showNewExistsOntologyIDMessage(oid, e.getDocumentIRI());
-				}
-				catch (OWLOntologyDocumentAlreadyExistsException e)
-				{
-					showNewExistsDocumentLoadedMessage(oid, e.getOntologyDocumentIRI());
-				}
-				catch (HGDBOntologyAlreadyExistsByDocumentIRIException e)
-				{
-					showNewExistsDocumentRepoMessage(oid, e.getOntologyDocumentIRI());
-				}
-			}
+			this.handleLoadRecentRequest(L.iterator().next());
+			return true;
 		}
-		return handleNewSuccess;
+//		boolean handleNewSuccess = false;		
+//		CreateHGOntologyWizard w = new CreateHGOntologyWizard(null, this);
+//		int result = w.showModalDialog();
+//		if (result == Wizard.FINISH_RETURN_CODE)
+//		{
+//			OWLOntologyID oid = w.getOntologyID();
+//			if (oid != null)
+//			{
+//				HGOwlModelManagerImpl mm = (HGOwlModelManagerImpl) getOWLModelManager();
+//				// check if already exists
+//				// we are catching specific exceptions here instead of checking
+//				// the cases before the
+//				// call to mm.createNewOntology.
+//				try
+//				{
+//					mm.createNewOntology(oid, w.getLocationURI());
+//					// addToRecent(URI.create(prop.getProperty("hibernate.connection.url")));
+//					addRecent(w.getLocationURI());
+//					handleNewSuccess = true;
+//				}
+//				catch (OWLOntologyAlreadyExistsException e)
+//				{
+//					showNewExistsOntologyIDMessage(oid, e.getDocumentIRI());
+//				}
+//				catch (OWLOntologyDocumentAlreadyExistsException e)
+//				{
+//					showNewExistsDocumentLoadedMessage(oid, e.getOntologyDocumentIRI());
+//				}
+//				catch (HGDBOntologyAlreadyExistsByDocumentIRIException e)
+//				{
+//					showNewExistsDocumentRepoMessage(oid, e.getOntologyDocumentIRI());
+//				}
+//			}
+//		}
+//		return handleNewSuccess;
 	}
 
 	/**
@@ -270,7 +283,7 @@ public class HGOwlEditorKit extends OWLEditorKit
 	public boolean handleLoadRecentRequest(EditorKitDescriptor descriptor) throws Exception
 	{
 		if (DBG)
-			System.out.println("HG handleLoadRecentRequest");
+			System.out.println("HG handleLoadRecentRequest " + descriptor.getURI(URI_KEY));
 		HGDBOntologyManager m = (HGDBOntologyManager) this.getModelManager().getOWLOntologyManager();
 		m.getOntologyRepository().printStatistics();
 		boolean retValue = super.handleLoadRecentRequest(descriptor);
@@ -304,7 +317,7 @@ public class HGOwlEditorKit extends OWLEditorKit
 		return success;
 	}
 
-	public boolean handleLoadFromRepositoryRequest() throws Exception
+	boolean handleLoadFromRepositoryRequest() throws Exception
 	{
 		if (DBG)
 			System.out.println("HG HandleLoadFromRepositoryRequest");
