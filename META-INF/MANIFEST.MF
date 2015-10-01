@@ -77,23 +77,23 @@ Export-Package: gov.miamidade.hgowl.plugin.ui.versioning;uses:="org.pr
  raphdb.app.owl",gov.miamidade.hgowl.plugin.ui.render;uses:="org.prote
  ge.editor.owl.model,javax.swing.tree,org.hypergraphdb.app.owl.version
  ing,org.hypergraphdb.app.owl.core,org.semanticweb.owlapi.model,org.pr
- otege.editor.owl.ui.renderer,org.protege.editor.owl,org.hypergraphdb.
- app.owl.versioning.distributed,javax.swing,javax.swing.table,org.osgi
- .framework,org.hypergraphdb,gov.miamidade.hgowl.plugin.owl,org.hyperg
- raphdb.app.owl",gov.miamidade.hgowl.plugin.ui;uses:="org.protege.edit
- or.owl.model,gov.miamidade.hgowl.plugin.owl.model,org.protege.editor.
- core.ui.workspace,org.semanticweb.owlapi.model,org.protege.editor.owl
- .ui.ontology.wizard.create,org.hypergraphdb.app.owl.gc,org.protege.ed
- itor.owl.ui.preferences,javax.swing,org.protege.editor.owl.model.hist
- ory,org.protege.editor.owl.ui.action,org.hypergraphdb.app.owl.version
- ing.distributed.serialize,gov.miamidade.hgowl.plugin.owlapi.apibindin
- g,org.coode.owlapi.manchesterowlsyntax,org.protege.editor.core.ui.uti
- l,org.coode.owlapi.latex,javax.swing.border,de.uulm.ecs.ai.owlapi.krs
- sparser,org.protege.editor.core.editorkit,org.coode.owlapi.obo.parser
- ,org.protege.editor.owl,org.protege.editor.core.ui.wizard,org.semanti
- cweb.owlapi.io,gov.miamidade.hgowl.plugin,gov.miamidade.hgowl.plugin.
- owl,org.coode.owlapi.turtle,org.hypergraphdb.app.owl",gov.miamidade.h
- gowl.plugin.obsolete;uses:="org.hypergraphdb.app.owl.versioning"
+ otege.editor.owl.ui.renderer,org.protege.editor.owl,javax.swing,javax
+ .swing.table,org.osgi.framework,org.hypergraphdb,gov.miamidade.hgowl.
+ plugin.owl,org.hypergraphdb.app.owl",gov.miamidade.hgowl.plugin.ui;us
+ es:="org.protege.editor.owl.model,gov.miamidade.hgowl.plugin.owl.mode
+ l,org.protege.editor.core.ui.workspace,org.semanticweb.owlapi.model,o
+ rg.protege.editor.owl.ui.ontology.wizard.create,org.hypergraphdb.app.
+ owl.gc,org.protege.editor.owl.ui.preferences,javax.swing,org.protege.
+ editor.owl.model.history,org.protege.editor.owl.ui.action,org.hypergr
+ aphdb.app.owl.versioning.distributed.serialize,gov.miamidade.hgowl.pl
+ ugin.owlapi.apibinding,org.coode.owlapi.manchesterowlsyntax,org.prote
+ ge.editor.core.ui.util,org.coode.owlapi.latex,javax.swing.border,de.u
+ ulm.ecs.ai.owlapi.krssparser,org.protege.editor.core.editorkit,org.co
+ ode.owlapi.obo.parser,org.protege.editor.owl,org.protege.editor.core.
+ ui.wizard,org.semanticweb.owlapi.io,gov.miamidade.hgowl.plugin,gov.mi
+ amidade.hgowl.plugin.owl,org.coode.owlapi.turtle,org.hypergraphdb.app
+ .owl",gov.miamidade.hgowl.plugin.obsolete;uses:="org.hypergraphdb.app
+ .owl.versioning"
 Ignore-Package: gov.miamidade.hgowl.plugin.ui.versioning,gov.miamidade
  .hgowl.plugin,gov.miamidade.hgowl.plugin.ui.repository,gov.miamidade.
  hgowl.plugin.owl.model,gov.miamidade.hgowl.plugin.ui.versioning.distr
@@ -109,7 +109,7 @@ Require-Bundle: org.protege.editor.owl,org.protege.editor.core.applica
  .hypergraphdb-hgdbp2p,org.hypergraphdb.app.owl
 Build-Jdk: 1.7.0_60
 Bundle-Version: 1.3.0.SNAPSHOT
-Bnd-LastModified: 1442896171151
+Bnd-LastModified: 1443416969265
 Bundle-Activator: gov.miamidade.hgowl.plugin.HGDBActivator
 Bundle-ManifestVersion: 2
 Bundle-Description: A Protege plugin offering HyperGraphDB based back-

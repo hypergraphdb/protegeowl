@@ -1,6 +1,6 @@
 package gov.miamidade.hgowl.plugin.ui.versioning.distributed;
 
-import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
+import org.hypergraphdb.app.owl.versioning.distributed.OntologyDatabasePeer;
 import org.hypergraphdb.peer.HGPeerIdentity;
 
 import gov.miamidade.hgowl.plugin.ui.versioning.distributed.PeerViewPanel.ViewMode;
@@ -22,13 +22,13 @@ public class PeerTableModel extends AbstractTableModel
 
 	private static final long serialVersionUID = 7543477174882794254L;
 
-	private VDHGDBOntologyRepository repository;
+	private OntologyDatabasePeer repository;
 
 	private List<HGPeerIdentity> entries;
 
 	private ViewMode viewMode;
 
-	public PeerTableModel(VDHGDBOntologyRepository repository, ViewMode viewMode)
+	public PeerTableModel(OntologyDatabasePeer repository, ViewMode viewMode)
 	{
 		this.repository = repository;
 		this.viewMode = viewMode;

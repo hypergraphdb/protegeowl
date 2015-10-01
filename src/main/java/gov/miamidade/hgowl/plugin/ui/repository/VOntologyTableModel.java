@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.hypergraphdb.app.owl.versioning.Branch;
 import org.hypergraphdb.app.owl.versioning.Revision;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 
@@ -23,9 +24,18 @@ public class VOntologyTableModel extends AbstractTableModel
 	VersionedOntology versionedOntology;
 	List<Revision> revisions;
 
+	private String branchName(Revision rev)
+	{
+		Branch branch = rev.branch();
+		if (branch == null)
+			return "Anonymous";
+		else
+			return branch.getName();
+	}
+	
 	public static enum Column 
 	{
-		Master("Master"), 
+		Branch("Branch"), 
 		Revision("Revision"), 
 		TimeStamp("Time Stamp"), 
 		User("User"), 
@@ -96,7 +106,7 @@ public class VOntologyTableModel extends AbstractTableModel
 		Revision rev = revisions.get(revisionIndex);
 		switch (columnIndex)
 		{
-			case 0: return (revisionIndex == revisions.size() - 1) ? "HEAD":"";
+			case 0: return (revisionIndex == revisions.size() - 1 ? "HEAD":"") + " " + branchName(rev);
 			case 1: return rev.getAtomHandle();
 			case 2: return new java.util.Date(rev.timestamp());
 			case 3: return rev.user();
@@ -110,7 +120,7 @@ public class VOntologyTableModel extends AbstractTableModel
 	{
 		switch (columnIndex)
 		{
-			case 0:return "UNCOMMITTED";
+			case 0:return "UNCOMMITTED " + branchName(versionedOntology.revision());
 			case 1:case 2: return "";
 			case 3:return "you";
 			case 4:return ""; // comments  
@@ -125,7 +135,7 @@ public class VOntologyTableModel extends AbstractTableModel
 		switch (columnIndex)
 		{
 			case 0:return "INIT";
-			case 1:return "local label?";//rev.getRevision();
+			case 1:return rev.getAtomHandle();
 			case 2:return new java.util.Date(rev.timestamp());
 			case 3:return rev.user();
 			case 4:return rev.comment() == null ? "" : rev.comment();

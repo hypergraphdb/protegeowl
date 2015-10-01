@@ -1,11 +1,13 @@
 package gov.miamidade.hgowl.plugin.owlapi.apibinding;
 
 import gov.miamidade.hgowl.plugin.Singles;
+
 import java.io.File;
+
 import org.hypergraphdb.app.owl.HGDBOntology;
 import org.hypergraphdb.app.owl.HGDBOntologyFormat;
 import org.hypergraphdb.app.owl.HGDBOntologyManager;
-import org.hypergraphdb.app.owl.HGDBOntologyRepository;
+import org.hypergraphdb.app.owl.OntologyDatabase;
 import org.hypergraphdb.app.owl.core.AddPrefixChange;
 import org.hypergraphdb.app.owl.core.OWLDataFactoryHGDB;
 import org.hypergraphdb.app.owl.core.PrefixChange;
@@ -14,8 +16,9 @@ import org.hypergraphdb.app.owl.core.RemovePrefixChange;
 import org.hypergraphdb.app.owl.versioning.VersionManager;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.hypergraphdb.app.owl.versioning.VersioningChangeListener;
-import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
+import org.hypergraphdb.app.owl.versioning.distributed.OntologyDatabasePeer;
 import org.protege.owlapi.model.ProtegeOWLOntologyManager;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyFormat;
 
@@ -32,7 +35,7 @@ import org.semanticweb.owlapi.model.OWLOntologyFormat;
 public class PHGDBOntologyManagerImpl extends ProtegeOWLOntologyManager implements HGDBOntologyManager, PrefixChangeListener
 {
 	private static final long serialVersionUID = 1L;
-	VDHGDBOntologyRepository ontologyRepository;
+	OntologyDatabasePeer ontologyRepository;
 	VersionManager versionManager;
 	
 
@@ -46,7 +49,7 @@ public class PHGDBOntologyManagerImpl extends ProtegeOWLOntologyManager implemen
 	}
 
 	@Override
-	public HGDBOntologyRepository getOntologyRepository()
+	public OntologyDatabase getOntologyRepository()
 	{
 		return ontologyRepository;
 	}
@@ -56,6 +59,23 @@ public class PHGDBOntologyManagerImpl extends ProtegeOWLOntologyManager implemen
 		throw new IllegalStateException("Not yet implemented.");
 	}
 
+	public HGDBOntology importOntology(IRI documentIRI)
+	{
+		try
+		{
+			OWLOntology o = loadOntologyFromOntologyDocument(documentIRI);
+			HGDBOntologyFormat format = new HGDBOntologyFormat();
+			setOntologyFormat(o, format);
+			setOntologyDocumentIRI(o, documentIRI);
+			saveOntology(o, format, documentIRI);
+			return ontologyRepository.getOntologyByDocumentIRI(documentIRI);
+		}
+		catch (Exception ex)
+		{
+			throw new RuntimeException(ex);
+		}		
+	}
+	
 	public VersionManager getVersionManager()
 	{
 		return versionManager;

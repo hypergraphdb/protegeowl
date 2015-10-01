@@ -7,8 +7,8 @@ import java.io.File;
 
 import javax.swing.JOptionPane;
 
-import org.hypergraphdb.app.owl.HGDBOntologyRepository;
-import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
+import org.hypergraphdb.app.owl.OntologyDatabase;
+import org.hypergraphdb.app.owl.versioning.distributed.OntologyDatabasePeer;
 import org.protege.editor.core.OntologyRepository;
 import org.protege.editor.core.OntologyRepositoryFactory;
 
@@ -21,7 +21,7 @@ import org.protege.editor.core.OntologyRepositoryFactory;
  */
 public class HGOwlOntologyRepositoryFactory extends OntologyRepositoryFactory
 {
-	HGDBOntologyRepository dbRepository;
+	OntologyDatabase dbRepository;
 
 	@Override
 	public void initialise() throws Exception
@@ -70,9 +70,9 @@ public class HGOwlOntologyRepositoryFactory extends OntologyRepositoryFactory
 		OntologyRepository r;
 		if (dbRepository == null)
 			throw new IllegalStateException("Cannot create HGOwlOntologyRepository. dbRepository was null.");
-		if (dbRepository instanceof VDHGDBOntologyRepository)
+		if (dbRepository instanceof OntologyDatabasePeer)
 		{
-			r = new VDHGOwlOntologyRepository("Hypergraph - Team ", (VDHGDBOntologyRepository) dbRepository);
+			r = new VDHGOwlOntologyRepository("Hypergraph - Team ", (OntologyDatabasePeer) dbRepository);
 		}
 		else
 		{

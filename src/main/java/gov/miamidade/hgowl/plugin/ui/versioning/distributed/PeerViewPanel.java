@@ -1,6 +1,6 @@
 package gov.miamidade.hgowl.plugin.ui.versioning.distributed;
 
-import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
+import org.hypergraphdb.app.owl.versioning.distributed.OntologyDatabasePeer;
 import org.hypergraphdb.peer.HGPeerIdentity;
 import org.protege.editor.core.ui.util.JOptionPaneEx;
 import org.protege.editor.core.ui.workspace.Workspace;
@@ -29,11 +29,11 @@ public class PeerViewPanel extends JPanel {
     private JButton refreshButton;
     private JCheckBox showOnlyServersCb;
     
-	public PeerViewPanel(VDHGDBOntologyRepository repo, ViewMode mode) {
+	public PeerViewPanel(OntologyDatabasePeer repo, ViewMode mode) {
         createUI(repo, mode);
     }
 
-    private void createUI(VDHGDBOntologyRepository repo, ViewMode mode) {
+    private void createUI(OntologyDatabasePeer repo, ViewMode mode) {
         setLayout(new BorderLayout());
         //String showing = "Ontology servers only";
 		String message = "<html> <h2> Select Ontology Server </h2> ";
@@ -88,7 +88,7 @@ public class PeerViewPanel extends JPanel {
 	
     private static HGPeerIdentity selectedEntry;
 	
-    public static int showPeerSelectionDialog(Workspace ws, VDHGDBOntologyRepository repo) {
+    public static int showPeerSelectionDialog(Workspace ws, OntologyDatabasePeer repo) {
         PeerViewPanel panel = new PeerViewPanel(repo, ViewMode.ALL_PEERS);
         int ret = JOptionPaneEx.showConfirmDialog(ws, "Please Select a remote Peer ", panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, panel.table);
         selectedEntry = panel.getSelectedEntry();
@@ -102,14 +102,14 @@ public class PeerViewPanel extends JPanel {
      * @param repo
      * @return a JOptionPane.OK_Option or CANCEL_Option, 
      */
-    public static int showServerSelectionDialog(String title, Workspace ws, VDHGDBOntologyRepository repo) {
+    public static int showServerSelectionDialog(String title, Workspace ws, OntologyDatabasePeer repo) {
         PeerViewPanel panel = new PeerViewPanel(repo, ViewMode.ONTOLOGY_SERVERS);
         int ret = JOptionPaneEx.showConfirmDialog(ws, title, panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, panel.table);
         selectedEntry = panel.getSelectedEntry();
         return ret;
     }
 
-    public static int showPeerOrServerSelectionDialog(String title, Workspace ws, VDHGDBOntologyRepository repo, ViewMode mode) {
+    public static int showPeerOrServerSelectionDialog(String title, Workspace ws, OntologyDatabasePeer repo, ViewMode mode) {
         PeerViewPanel panel = new PeerViewPanel(repo, mode);
         int ret = JOptionPaneEx.showConfirmDialog(ws, title, panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, panel.table);
         selectedEntry = panel.getSelectedEntry();

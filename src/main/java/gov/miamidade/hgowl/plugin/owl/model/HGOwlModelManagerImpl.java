@@ -21,7 +21,7 @@ import java.util.Set;
 import org.coode.xml.XMLWriterPreferences;
 import org.hypergraphdb.app.owl.HGDBIRIMapper;
 import org.hypergraphdb.app.owl.HGDBOntology;
-import org.hypergraphdb.app.owl.HGDBOntologyRepository;
+import org.hypergraphdb.app.owl.OntologyDatabase;
 import org.protege.editor.core.ProtegeApplication;
 import org.protege.editor.core.ui.error.ErrorLogPanel;
 import org.protege.editor.owl.model.MissingImportHandler;
@@ -260,7 +260,7 @@ public class HGOwlModelManagerImpl extends OWLModelManagerImpl implements OWLMod
 		autoMappedRepositoryIRIMapper = new AutoMappedRepositoryIRIMapper(this);
 		userResolvedIRIMapper = new UserResolvedIRIMapper(new MissingImportHandlerImpl());
 		manager.clearIRIMappers();
-		HGDBOntologyRepository repository = manager.getOntologyRepository();
+		OntologyDatabase repository = manager.getOntologyRepository();
 		manager.addIRIMapper(userResolvedIRIMapper);
 		manager.addIRIMapper(new WebConnectionIRIMapper());
 		manager.addIRIMapper(autoMappedRepositoryIRIMapper);

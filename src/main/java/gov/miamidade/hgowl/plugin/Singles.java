@@ -6,7 +6,7 @@ import javax.swing.JOptionPane;
 
 import org.hypergraphdb.app.owl.util.ImplUtils;
 import org.hypergraphdb.app.owl.versioning.VersionManager;
-import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
+import org.hypergraphdb.app.owl.versioning.distributed.OntologyDatabasePeer;
 import org.hypergraphdb.peer.HyperGraphPeer;
 import org.hypergraphdb.util.Ref;
 
@@ -20,7 +20,7 @@ import org.hypergraphdb.util.Ref;
  */
 public class Singles
 {
-	static volatile VDHGDBOntologyRepository ontologyRepository;
+	static volatile OntologyDatabasePeer ontologyRepository;
 	static volatile VersionManager versionManager;
 	
 	static Ref<HyperGraphPeer> peerFactory = new Ref<HyperGraphPeer>()
@@ -34,7 +34,7 @@ public class Singles
 												 HGOwlProperties.getInstance().getHgLocationFolderPath());
 			if (peer.getPeerInterface() == null || !peer.getPeerInterface().isConnected())
 			{
-				peer.getObjectContext().put(VDHGDBOntologyRepository.OBJECTCONTEXT_REPOSITORY, 
+				peer.getObjectContext().put(OntologyDatabasePeer.OBJECTCONTEXT_REPOSITORY, 
 											ontologyRepository);
 			}
 			return peer;
@@ -56,13 +56,13 @@ public class Singles
 	/**
 	 * Return the global VDHGDBOntologyRepository instance.
 	 */
-	public static VDHGDBOntologyRepository vdRepo()
+	public static OntologyDatabasePeer vdRepo()
 	{
 		if (ontologyRepository == null)
 		{
 			synchronized (Singles.class)
 			{
-				ontologyRepository = new VDHGDBOntologyRepository(
+				ontologyRepository = new OntologyDatabasePeer(
 					HGOwlProperties.getInstance().getHgLocationFolderPath(),
 					new MaybeRef<HyperGraphPeer>(peerFactory, onFailedPeer)					
 				);

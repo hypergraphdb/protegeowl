@@ -27,7 +27,7 @@ import org.hypergraphdb.app.owl.HGDBOntology;
 import org.hypergraphdb.app.owl.HGDBOntologyFormat;
 import org.hypergraphdb.app.owl.HGDBOntologyImpl;
 import org.hypergraphdb.app.owl.HGDBOntologyManager;
-import org.hypergraphdb.app.owl.HGDBOntologyRepository;
+import org.hypergraphdb.app.owl.OntologyDatabase;
 import org.hypergraphdb.app.owl.exception.HGDBOntologyAlreadyExistsByDocumentIRIException;
 import org.osgi.framework.ServiceRegistration;
 import org.protege.editor.core.OntologyRepository;
@@ -601,7 +601,7 @@ public class HGOwlEditorKit extends OWLEditorKit
 		PHGDBOntologyManagerImpl man = (PHGDBOntologyManagerImpl) getModelManager().getOWLOntologyManager();
 		OWLOntologyFormat oldFormat = man.getOntologyFormat(ont);
 		IRI oldDocumentIRI = man.getOntologyDocumentIRI(ont);
-		HGDBOntologyRepository repo = man.getOntologyRepository();
+		OntologyDatabase repo = man.getOntologyRepository();
 		if (oldFormat instanceof PrefixOWLOntologyFormat && format instanceof PrefixOWLOntologyFormat)
 		{
 			PrefixOWLOntologyFormat oldPrefixes = (PrefixOWLOntologyFormat) oldFormat;

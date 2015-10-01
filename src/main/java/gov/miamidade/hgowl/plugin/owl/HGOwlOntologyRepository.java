@@ -10,7 +10,7 @@ import java.util.List;
 
 import org.hypergraphdb.HGQuery.hg;
 import org.hypergraphdb.app.owl.HGDBOntology;
-import org.hypergraphdb.app.owl.HGDBOntologyRepository;
+import org.hypergraphdb.app.owl.OntologyDatabase;
 import org.protege.editor.core.OntologyRepository;
 import org.protege.editor.core.OntologyRepositoryEntry;
 import org.protege.editor.core.editorkit.EditorKit;
@@ -42,13 +42,13 @@ public class HGOwlOntologyRepository implements OntologyRepository
 
 	private String repositoryName;
 
-	private HGDBOntologyRepository dbRepository;
+	private OntologyDatabase dbRepository;
 
 	private List<HGDBRepositoryEntry> entries;
 
 	private OWLOntologyIRIMapper iriMapper;
 
-	public HGOwlOntologyRepository(String repositoryName, HGDBOntologyRepository dbRepository)
+	public HGOwlOntologyRepository(String repositoryName, OntologyDatabase dbRepository)
 	{
 		this.repositoryName = repositoryName;
 		this.dbRepository = dbRepository;

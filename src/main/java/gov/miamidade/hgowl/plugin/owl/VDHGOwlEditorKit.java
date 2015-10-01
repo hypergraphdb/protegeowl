@@ -1,8 +1,6 @@
 package gov.miamidade.hgowl.plugin.owl;
 
 import gov.miamidade.hgowl.plugin.HGOwlProperties;
-
-import gov.miamidade.hgowl.plugin.obsolete.VersionedOntologyComparator.VersionedOntologyComparisonResult;
 import gov.miamidade.hgowl.plugin.owl.model.HGOwlModelManagerImpl;
 import gov.miamidade.hgowl.plugin.owlapi.apibinding.PHGDBOntologyManagerImpl;
 import gov.miamidade.hgowl.plugin.ui.render.VDHGOwlIconProviderImpl;
@@ -18,12 +16,14 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.JOptionPane;
 
+import org.hypergraphdb.HGHandle;
 import org.hypergraphdb.app.owl.HGDBOntology;
-import org.hypergraphdb.app.owl.versioning.ChangeSet;
+import org.hypergraphdb.app.owl.versioning.Revision;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
+import org.hypergraphdb.app.owl.versioning.versioning;
 import org.hypergraphdb.app.owl.versioning.distributed.ClientCentralizedOntology;
 import org.hypergraphdb.app.owl.versioning.distributed.DistributedOntology;
-import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
+import org.hypergraphdb.app.owl.versioning.distributed.OntologyDatabasePeer;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowseRepositoryActivity;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowseRepositoryActivity.BrowseEntry;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.VersionUpdateActivity;
@@ -47,7 +47,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 
 	public static int ACTIVITY_TIMEOUT_SECS = 180;
 
-	VDHGDBOntologyRepository repository;
+	OntologyDatabasePeer repository;
 
 	HGPeerIdentity selectedRemotePeer = null;
 
@@ -113,8 +113,8 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 //				hg.eq("ontologyHandle", ontologyHandle),
 //				hg.eq("repository", remoteRepository)));
 //		
-		VersionUpdateActivity activity = repository.publishOntology(activeOntology.getAtomHandle(), 
-																	targetPeer);
+		VersionUpdateActivity activity = repository.publish(activeOntology.getAtomHandle(), 
+															targetPeer);
 		try
 		{
 			activity.getFuture().get();
@@ -130,25 +130,14 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 	public void pushActive()
 	{
 		HGDBOntology activeOntology = (HGDBOntology) getActiveOntology();
-		DistributedOntology dOnto = repository.getDistributedOntology(activeOntology);
-		HGPeerIdentity serverPeer;
-		if (dOnto == null)
+		if (PeerViewPanel.showPeerSelectionDialog(getWorkspace(), repository) != JOptionPane.OK_OPTION)
 			return;
-		if (!(dOnto instanceof ClientCentralizedOntology))
-		{
-			if (!ensureRemotePeerAccessible())
-				return;
-			serverPeer = selectedRemotePeer;
-		}
-		else
-		{
-			serverPeer = ((ClientCentralizedOntology) dOnto).getServerPeer();
-		}
+		HGPeerIdentity serverPeer = PeerViewPanel.getSelectedPeer();
 		int confirm = JOptionPane
 				.showConfirmDialog(
 						getWorkspace(),
 						"Pushing "
-								+ VDRenderer.render(dOnto)
+								+ VDRenderer.render(activeOntology)
 								+ "\n to "
 								+ VDRenderer.render(serverPeer)
 								+ " "
@@ -209,10 +198,29 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 			return;
 		VersionedOntology versioned = versionManager().versioned(activeOntology.getAtomHandle());		
 		HGPeerIdentity targetPeer = PeerViewPanel.getSelectedPeer();
+		HGHandle currentBranch = versioned.revision().branchHandle(); 
+		boolean atbranchhead = currentBranch != null && 
+							   versioned.branchHead(currentBranch) == versioned.revision();				
 		VersionUpdateActivity activity = repository.pull(versioned, targetPeer);
 		try
 		{
 			activity.getFuture().get();
+			// Did we pull changes on the current branch we are working on?
+			if (/*atbranchhead && */ activity.getState().isCompleted())
+			{
+				Revision branchHead = versioned.branchHead(currentBranch);
+				if (branchHead != versioned.revision()) // Object ref compare is ok b/w atoms
+				{
+					if (versioning.isPrior(getDistributedRepository().getHyperGraph(), 
+										   versioned.getCurrentRevision(), 
+										   branchHead.getAtomHandle()))						
+						versioned.goTo(branchHead);
+					else
+						versioned.merge(versionManager().user(), 
+										"auto merge", 
+										versioned.revision(), branchHead);
+				}
+			}
 			reportActivityResult(activity);
 		}
 		catch (Exception e)
@@ -357,14 +365,12 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 						return;
 					}
 					// START PULL
-					VersionUpdateActivity pa = repository.cloneOntology(remoteEntry.getUuid(),
-							serverPeer);
+					VersionUpdateActivity pa = repository.clone(remoteEntry.getUuid(), serverPeer);
 					//
 					// TODO BLOCK in NON AWT THREAD, let changes be applied in
 					// AWT.
 					//
-					ActivityResult paa = pa.getFuture().get(
-							ACTIVITY_TIMEOUT_SECS, TimeUnit.SECONDS);
+					ActivityResult paa = pa.getFuture().get(ACTIVITY_TIMEOUT_SECS, TimeUnit.SECONDS);
 					if (paa.getException() == null)
 					{
 						JOptionPane
@@ -416,84 +422,6 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 			// getRenderedActivityException(t),
 			// "Hypergraph Team - Clone - Error",
 			// JOptionPane.ERROR_MESSAGE);
-		}
-	}
-
-	public void handleCommitAndPushActiveClientOntologyRequest()
-	{
-		ClientCentralizedOntology activeOnto = (ClientCentralizedOntology) getActiveOntologyAsDistributed();
-		HGPeerIdentity server = getServerForDistributedOntology(activeOnto);
-		if (server == null)
-			return;
-		String userId = repository.getPeerUserId(server);
-		VersionedOntology vo = activeOnto.getVersionedOntology();
-		ChangeSet<VersionedOntology> pendingChanges = vo.changes();
-		if (pendingChanges.isEmpty())
-		{
-			// NO PENDING CHANGES OK
-			// System.out.println("No pending changes.");
-			JOptionPane.showMessageDialog(getWorkspace(),
-					"No need to commit: No pending changes",
-					"Hypergraph Team - Commit - No Changes to commit",
-					JOptionPane.WARNING_MESSAGE);
-		}
-//		else if (vo.getNrOfCommittableChanges() == 0)
-//		{
-//			JOptionPane
-//					.showMessageDialog(
-//							getWorkspace(),
-//							"Cannot Commit: All pending changes are conflicts \r\n"
-//									+ "Check Team/History.",
-//							"Hypergraph Team - Commit - All pending changes are conflicts",
-//							JOptionPane.WARNING_MESSAGE);
-//		}
-		else
-		{
-			// COMMIT WHAT WHO INCREMENT OK CANCEL
-			String title = "Hypergraph Team - Commit "
-					+ VDRenderer.render(activeOnto);
-//			CommitDialog dlg = CommitDialog.showDialog(title, getWorkspace(),
-//					activeOnto, server, userId, this);
-//			if (dlg.isCommitOK())
-//			{
-//				// Check if allowed
-//				if (checkCommitPushAllowed(activeOnto, server))
-//				{
-//					// DO IT LOCALLY
-//					vo.commit(getSystemUserName(), Revision.REVISION_INCREMENT,
-//							dlg.getCommitComment());
-//					// Push it to server
-//					boolean needsUndo = false;
-//					try
-//					{
-//						PushActivity pa = repository.push(activeOnto, server);
-//						// Should be ok in AWT thread as no view updates are
-//						// expected:
-//						ActivityResult ar = pa.getFuture().get(
-//								ACTIVITY_TIMEOUT_SECS, TimeUnit.SECONDS);
-//						if (ar.getException() != null)
-//						{
-//							throw ar.getException();
-//						}
-//						JOptionPane
-//								.showMessageDialog(
-//										getWorkspace(),
-//										"All changes were committed and uploaded to the server.",
-//										"Hypergraph Team - Commit - Commit completed",
-//										JOptionPane.INFORMATION_MESSAGE);
-//					}
-//					catch (Throwable t)
-//					{
-//						needsUndo = true;
-//						showException(t, "System error while pushing ontology");
-//					}
-//					finally
-//					{
-//						if (needsUndo)
-//							vo.undoCommit();
-//					}
-//				} // else error was already shown to user.
-//			}
 		}
 	}
 
@@ -644,14 +572,14 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 
 	public void handleUpdateActiveClientOntologyRequest()
 	{
-		DistributedOntology dOnto = getActiveOntologyAsDistributed();
-		HGPeerIdentity serverPeer = getServerForDistributedOntology(dOnto);
-		String serverPeerUser = repository.getPeerUserId(serverPeer);
-		if (serverPeer == null)
-			return;
+//		DistributedOntology dOnto = getActiveOntologyAsDistributed();
+//		HGPeerIdentity serverPeer = getServerForDistributedOntology(dOnto);
+//		String serverPeerUser = repository.getPeerUserId(serverPeer);
+//		if (serverPeer == null)
+//			return;
 		// Show Pull Dialog with incoming changes
 		// Offer to Pull until a certain revision
-		VersionedOntologyComparisonResult result = null;
+//		VersionedOntologyComparisonResult result = null;
 //		try
 //		{
 //			result = repository.compareOntologyToRemote(dOnto, serverPeer, ACTIVITY_TIMEOUT_SECS);
@@ -731,42 +659,6 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 //		} // else UI already showed reason
 	}
 
-	public void handleCompareActiveRequest()
-	{
-		DistributedOntology dOnto = getActiveOntologyAsDistributed();
-		HGPeerIdentity server = getServerForDistributedOntology(dOnto);
-		if (server == null)
-			return;
-//		String userId = repository.getPeerUserId(server);
-//		VersionedOntologyComparisonResult result = repository
-//				.compareOntologyToRemote(dOnto, server, ACTIVITY_TIMEOUT_SECS);
-//		if (result != null)
-//		{
-//			String title = "Hypergraph Team - Compare "
-//					+ VDRenderer.render(dOnto) + " Remote: "
-//					+ VDRenderer.render(server);
-//			CompareVersionedOntologyViewPanel
-//					.showCompareVersionedOntologyDialog(title, getWorkspace(),
-//							dOnto, server, userId, result);
-//		}
-//		else
-//		{
-//			JOptionPane
-//					.showMessageDialog(
-//							getWorkspace(),
-//							"Comparison failed. Server not accessible or does not have onto.",
-//							"Hypergraph Team - - Error ",
-//							JOptionPane.ERROR_MESSAGE);
-//		}
-		JOptionPane
-		.showMessageDialog(
-				getWorkspace(),
-				"Function not available.",
-				"Hypergraph Team - - Error ",
-				JOptionPane.ERROR_MESSAGE);
-
-	}
-
 	/**
 	 * For ClientCentralOntologies: returns either the clients server, if it is
 	 * available on the network. For PeerOntologies: a user selected available
@@ -815,20 +707,19 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 		return server;
 	}
 
-	public DistributedOntology getActiveOntologyAsDistributed()
-	{
-		HGDBOntology activeOnto = (HGDBOntology) getActiveOntology();
-		DistributedOntology dOnto = repository
-				.getDistributedOntology(activeOnto);
-		if (dOnto == null)
-		{
-			JOptionPane.showMessageDialog(getWorkspace(),
-					"The active ontology is not distributed:" + "\r\n "
-							+ activeOnto + " ", "Team - Error ",
-					JOptionPane.ERROR_MESSAGE);
-		}
-		return dOnto;
-	}
+//	public DistributedOntology getActiveOntologyAsDistributed()
+//	{
+//		HGDBOntology activeOnto = (HGDBOntology) getActiveOntology();
+//		DistributedOntology dOnto = repository.getDistributedOntology(activeOnto);
+//		if (dOnto == null)
+//		{
+//			JOptionPane.showMessageDialog(getWorkspace(),
+//					"The active ontology is not distributed:" + "\r\n "
+//							+ activeOnto + " ", "Team - Error ",
+//					JOptionPane.ERROR_MESSAGE);
+//		}
+//		return dOnto;
+//	}
 
 	public boolean isNetworking()
 	{
@@ -892,11 +783,11 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 		}
 	}
 
-	public VDHGDBOntologyRepository getDistributedRepository()
+	public OntologyDatabasePeer getDistributedRepository()
 	{
 		HGOwlModelManagerImpl hmm = (HGOwlModelManagerImpl) getOWLModelManager();
 		PHGDBOntologyManagerImpl hom = (PHGDBOntologyManagerImpl) hmm.getOWLOntologyManager();
-		return (VDHGDBOntologyRepository) hom.getOntologyRepository();
+		return (OntologyDatabasePeer) hom.getOntologyRepository();
 	}
 
 	/**

@@ -104,8 +104,7 @@ public class VDHGOwlIconProviderImpl extends VHGOwlIconProviderImpl
 		if (owlOntology instanceof HGDBOntologyImpl)
 		{
 			VDHGOwlEditorKit kit = (VDHGOwlEditorKit) super.vhgEditorKit;
-			isShared = kit.getDistributedRepository().isDistributed(
-					(HGDBOntology) owlOntology);
+//			isShared = kit.getDistributedRepository().isDistributed((HGDBOntology) owlOntology);
 			if (isShared)
 			{
 				icon = ontologyDBVD;

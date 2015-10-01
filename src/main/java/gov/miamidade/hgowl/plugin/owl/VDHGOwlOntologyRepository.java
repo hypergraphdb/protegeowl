@@ -13,11 +13,7 @@ import java.util.List;
 import org.hypergraphdb.app.owl.HGDBOntology;
 import org.hypergraphdb.app.owl.versioning.VersionManager;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
-import org.hypergraphdb.app.owl.versioning.distributed.ClientCentralizedOntology;
-import org.hypergraphdb.app.owl.versioning.distributed.DistributedOntology;
-import org.hypergraphdb.app.owl.versioning.distributed.PeerDistributedOntology;
-import org.hypergraphdb.app.owl.versioning.distributed.ServerCentralizedOntology;
-import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
+import org.hypergraphdb.app.owl.versioning.distributed.OntologyDatabasePeer;
 import org.protege.editor.core.OntologyRepository;
 import org.protege.editor.core.OntologyRepositoryEntry;
 import org.protege.editor.core.editorkit.EditorKit;
@@ -55,13 +51,13 @@ public class VDHGOwlOntologyRepository implements OntologyRepository
 
 	private String repositoryName;
 
-	private VDHGDBOntologyRepository dbRepository;
+	private OntologyDatabasePeer dbRepository;
 	private VersionManager versionManager;
 	private List<VDHGDBRepositoryEntry> entries;
 
 	private OWLOntologyIRIMapper iriMapper;
 
-	public VDHGOwlOntologyRepository(String repositoryName, VDHGDBOntologyRepository dbRepository)
+	public VDHGOwlOntologyRepository(String repositoryName, OntologyDatabasePeer dbRepository)
 	{
 		this.repositoryName = repositoryName;
 		this.dbRepository = dbRepository;
@@ -159,31 +155,31 @@ public class VDHGOwlOntologyRepository implements OntologyRepository
 			if (versionManager.isVersioned(o.getAtomHandle()))
 			{
 				VersionedOntology vo = versionManager.versioned(o.getAtomHandle());
-				DistributedOntology dOnto = dbRepository.getDistributedOntology(o);
-				if (dOnto != null)
-				{
-					if (dOnto instanceof ClientCentralizedOntology)
-					{
-						ClientCentralizedOntology cco = (ClientCentralizedOntology) dOnto;
-						distributedInfo = "Client (" + VDRenderer.render(cco.getServerPeer()) + ")";
-					}
-					else if (dOnto instanceof ServerCentralizedOntology)
-					{
-						distributedInfo = "Server";
-					}
-					else if (dOnto instanceof PeerDistributedOntology)
-					{
-						distributedInfo = "Peer";
-					}
-					else
-					{
-						throw new IllegalStateException("Distributed Ontology Type not recognized " + dOnto);
-					}
-				}
-				else
-				{
-					distributedInfo = "Local Versioning";
-				}
+//				DistributedOntology dOnto = dbRepository.getDistributedOntology(o);
+//				if (dOnto != null)
+//				{
+//					if (dOnto instanceof ClientCentralizedOntology)
+//					{
+//						ClientCentralizedOntology cco = (ClientCentralizedOntology) dOnto;
+//						distributedInfo = "Client (" + VDRenderer.render(cco.getServerPeer()) + ")";
+//					}
+//					else if (dOnto instanceof ServerCentralizedOntology)
+//					{
+//						distributedInfo = "Server";
+//					}
+//					else if (dOnto instanceof PeerDistributedOntology)
+//					{
+//						distributedInfo = "Peer";
+//					}
+//					else
+//					{
+//						throw new IllegalStateException("Distributed Ontology Type not recognized " + dOnto);
+//					}
+//				}
+//				else
+//				{
+//					distributedInfo = "Local Versioning";
+//				}
 				headRevision = VDRenderer.render(vo.revision(), !vo.changes().isEmpty());
 			}
 			else

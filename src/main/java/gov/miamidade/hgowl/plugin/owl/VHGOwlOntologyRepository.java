@@ -14,7 +14,7 @@ import java.util.List;
 import org.hypergraphdb.app.owl.HGDBOntology;
 import org.hypergraphdb.app.owl.versioning.VersionManager;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
-import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
+import org.hypergraphdb.app.owl.versioning.distributed.OntologyDatabasePeer;
 import org.protege.editor.core.OntologyRepository;
 import org.protege.editor.core.OntologyRepositoryEntry;
 import org.protege.editor.core.editorkit.EditorKit;
@@ -48,13 +48,13 @@ public class VHGOwlOntologyRepository implements OntologyRepository
 
 	private String repositoryName;
 
-	private VDHGDBOntologyRepository dbRepository;
+	private OntologyDatabasePeer dbRepository;
 	private VersionManager versionManager;
 	private List<VHGDBRepositoryEntry> entries;
 
 	private OWLOntologyIRIMapper iriMapper;
 
-	public VHGOwlOntologyRepository(String repositoryName, VDHGDBOntologyRepository dbRepository)
+	public VHGOwlOntologyRepository(String repositoryName, OntologyDatabasePeer dbRepository)
 	{
 		this.repositoryName = repositoryName;
 		this.dbRepository = dbRepository;
