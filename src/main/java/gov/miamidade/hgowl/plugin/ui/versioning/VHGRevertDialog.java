@@ -30,6 +30,7 @@ import javax.swing.event.ListSelectionListener;
 import org.hypergraphdb.app.owl.versioning.ChangeSet;
 import org.hypergraphdb.app.owl.versioning.Revision;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
+import org.hypergraphdb.app.owl.versioning.versioning;
 import org.protege.editor.owl.OWLEditorKit;
 
 /**
@@ -166,7 +167,7 @@ public class VHGRevertDialog extends JDialog implements ActionListener, ListSele
 	public void updateChangeSetList(int selectedRevisionIndex)
 	{
 		String firstItemString = null;
-		List<ChangeSet<VersionedOntology>>  selectedCS = null;
+		ChangeSet<VersionedOntology>  selectedCS = null;
 		SortedSet<Integer> selectedCSConflicts = null;
 
 		if (selectedRevisionIndex != -1)
@@ -175,14 +176,16 @@ public class VHGRevertDialog extends JDialog implements ActionListener, ListSele
 			{
 				// Pending changes in local workingset
 				firstItemString = "<html>Showing <b>uncommitted</b> Changes that were made by <b>you</b> </html>";
-				selectedCS = Collections.singletonList(versionedOntology.changes());
+				selectedCS = versionedOntology.changes();
 				selectedCSConflicts = new TreeSet<Integer>();//versionedOntology.getWorkingSetConflicts();
 				// renderChangeset(lm, selectedCS);
 			}
 			else if (selectedRevisionIndex > 0)
 			{
 				Revision selectedRev = revisions.get(selectedRevisionIndex);
-				selectedCS = versionedOntology.changes(selectedRev);
+				selectedCS = versioning.changes(versionedOntology.graph(), 
+						selectedRev.getAtomHandle(), 
+						revisions.get(selectedRevisionIndex-1).getAtomHandle());
 				firstItemString = "<html>Showing Changes that were commited by <b>" + selectedRev.user() + "</b> at "
 						+ VDRenderer.render(new java.util.Date(selectedRev.timestamp())) + 
 						" for revision " + selectedRev + "</html>";
@@ -209,7 +212,7 @@ public class VHGRevertDialog extends JDialog implements ActionListener, ListSele
 			// Empty list, nothing selected
 			firstItemString = EMPTY_LIST_TEXT;
 		}
-		changeSetPanel.setChangeSet(VU.flattenChanges(selectedCS), selectedCSConflicts, firstItemString);
+		changeSetPanel.setChangeSet(selectedCS.changes(), selectedCSConflicts, firstItemString);
 	}
 
 	@Override

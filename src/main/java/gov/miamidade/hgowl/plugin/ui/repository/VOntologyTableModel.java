@@ -9,6 +9,7 @@ import javax.swing.table.AbstractTableModel;
 import org.hypergraphdb.app.owl.versioning.Branch;
 import org.hypergraphdb.app.owl.versioning.Revision;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
+import org.hypergraphdb.app.owl.versioning.versioning;
 
 /**
  * VOntologyTableModel.
@@ -111,7 +112,10 @@ public class VOntologyTableModel extends AbstractTableModel
 			case 2: return new java.util.Date(rev.timestamp());
 			case 3: return rev.user();
 			case 4: return rev.comment() == null ? "" : rev.comment();
-			case 5: return VU.flattenChanges(versionedOntology.changes(rev)).size();
+			// TODO - we may not have a single parent here...the whole think needs redoing
+			case 5: return versioning.changes(versionedOntology.graph(), 
+											  rev.getAtomHandle(), 
+											  revisions.get(revisionIndex-1).getAtomHandle()).changes();
 			default:return "unknown col index";
 		}
 	}

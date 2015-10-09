@@ -216,9 +216,9 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 										   branchHead.getAtomHandle()))						
 						versioned.goTo(branchHead);
 					else
-						versioned.merge(versionManager().user(), 
-										"auto merge", 
-										versioned.revision(), branchHead);
+						versioned.goTo(versioned.merge(versionManager().user(), 
+													   "auto merge", 
+													    versioned.revision(), branchHead));
 				}
 			}
 			reportActivityResult(activity);
