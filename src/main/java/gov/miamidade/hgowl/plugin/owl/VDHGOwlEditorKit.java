@@ -219,6 +219,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 						versioned.goTo(versioned.merge(versionManager().user(), 
 													   "auto merge", 
 													    versioned.revision(), branchHead));
+					causeViewUpdate();
 				}
 			}
 			reportActivityResult(activity);
@@ -249,12 +250,10 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 //		String room = HGOwlProperties.getInstance().getP2pRoom();
 		if (hostname == null || hostname.length() < 5 || userName.length() < 2)
 		{
-			JOptionPane
-					.showMessageDialog(
-							getWorkspace(),
-							"Please configure P2P server, userName and password in Preferences.",
-							"Hypergraph Team - Sign In - Error",
-							JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(getWorkspace(),
+										 "Please configure P2P server, userName and password in Preferences.",
+										 "Hypergraph Team - Sign In - Error",
+										 JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		boolean startOK = repository.startNetworking();
@@ -303,19 +302,14 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 		{
 			if (HGOwlProperties.getInstance().isP2pAskForRemote())
 			{
-				JOptionPane
-						.showMessageDialog(
-								getWorkspace(),
-								"Your selection will be ignored, because AskForRemote is set to true in File/Preferences/Hypergraph/P2P.",
-								"Hypergraph Team - Selection - Ignored",
-								JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(
+					getWorkspace(),
+					"Your selection will be ignored, because AskForRemote is set to true in File/Preferences/Hypergraph/P2P.",
+					"Hypergraph Team - Selection - Ignored",
+					JOptionPane.WARNING_MESSAGE);
 			}
-			int userChoice = PeerViewPanel.showPeerSelectionDialog(
-					getWorkspace(), repository);
-			if (userChoice == JOptionPane.OK_OPTION)
-			{
+			if (PeerViewPanel.showPeerSelectionDialog(getWorkspace(), repository) == JOptionPane.OK_OPTION)
 				selectedRemotePeer = PeerViewPanel.getSelectedPeer();
-			}
 		}
 		else
 		{
@@ -342,9 +336,11 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 			ActivityResult braa = bra.getFuture().get();
 			if (braa.getException() != null)
 				throw braa.getException();
-			BrowseEntry remoteEntry = RemoteRepositoryViewPanel
-					.showBrowseEntrySelectionDialog(getWorkspace(), serverPeer,
-							userId, bra.getRepositoryBrowseEntries());
+			BrowseEntry remoteEntry = RemoteRepositoryViewPanel.showBrowseEntrySelectionDialog(
+					getWorkspace(), 
+					serverPeer,
+					userId, 
+					bra.getRepositoryBrowseEntries());
 			if (remoteEntry != null && braa.getException() == null)
 			{
 				// USER CONFIRM
@@ -723,6 +719,13 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 
 	public boolean isNetworking()
 	{
+		String hostname = HGOwlProperties.getInstance().getP2pServer();
+		String userName = HGOwlProperties.getInstance().getP2pUser();
+//		String password = HGOwlProperties.getInstance().getP2pPass();
+//		String room = HGOwlProperties.getInstance().getP2pRoom();
+		if (hostname == null || hostname.length() < 5 || userName.length() < 2)
+			return false;
+		
 		return repository.getPeer() != null &&
 			   repository.getPeer().getPeerInterface() != null &&  
 			   repository.getPeer().getPeerInterface().isConnected();
@@ -761,8 +764,8 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 			}
 			else
 			{
-				int userChoice = PeerViewPanel.showPeerSelectionDialog(
-						getWorkspace(), repository);
+				int userChoice = PeerViewPanel.showPeerSelectionDialog(getWorkspace(), 
+																	   repository);
 				if (userChoice == JOptionPane.CANCEL_OPTION)
 				{
 					return repository.getPeer().getConnectedPeers().contains(selectedRemotePeer);

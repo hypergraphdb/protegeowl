@@ -6,11 +6,16 @@ import gov.miamidade.hgowl.plugin.owl.model.HGOntologyRepositoryEntry;
 
 
 
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -67,7 +72,7 @@ public class VOntologyViewPanel extends JPanel
 		table.getColumnModel().getColumn(4).setPreferredWidth(300);
 		table.getColumnModel().getColumn(5).setPreferredWidth(60);
 		table.getColumnModel().getColumn(5).setMaxWidth(60);
-		add(new JScrollPane(table));
+		add(new JScrollPane(table));      		
 	}
 
 	public Dimension getPreferredSize()

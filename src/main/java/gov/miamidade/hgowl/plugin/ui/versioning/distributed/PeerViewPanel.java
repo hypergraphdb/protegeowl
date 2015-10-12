@@ -5,118 +5,153 @@ import org.hypergraphdb.peer.HGPeerIdentity;
 import org.protege.editor.core.ui.util.JOptionPaneEx;
 import org.protege.editor.core.ui.workspace.Workspace;
 
+import gov.miamidade.hgowl.plugin.ui.uihelp;
+
 import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
- * PeerViewPanel shows a list of selected peers as HGPeerIdentities and allows the user to select and entry.
- * The user can also refresh the list (search again for peers), while the dialog is open.
- *  
+ * PeerViewPanel shows a list of selected peers as HGPeerIdentities and allows
+ * the user to select and entry. The user can also refresh the list (search
+ * again for peers), while the dialog is open.
+ * 
  * @author Thomas Hilpold (CIAO/Miami-Dade County)
  * @created Mar 26, 2012
  */
-public class PeerViewPanel extends JPanel {
-	
-	public enum ViewMode { ALL_PEERS, ONTOLOGY_SERVERS };
+public class PeerViewPanel extends JPanel
+{
 
-    private static final long serialVersionUID = -328358981641882683L;
+	public enum ViewMode
+	{
+		ALL_PEERS, ONTOLOGY_SERVERS
+	};
 
-    private PeerTable table;
-    
-    private JButton refreshButton;
-    private JCheckBox showOnlyServersCb;
-    
-	public PeerViewPanel(OntologyDatabasePeer repo, ViewMode mode) {
-        createUI(repo, mode);
-    }
+	private static final long serialVersionUID = -328358981641882683L;
 
-    private void createUI(OntologyDatabasePeer repo, ViewMode mode) {
-        setLayout(new BorderLayout());
-        //String showing = "Ontology servers only";
+	private PeerTable table;
+
+	private JButton refreshButton;
+	private JCheckBox showOnlyServersCb;
+
+	public PeerViewPanel(OntologyDatabasePeer repo, ViewMode mode)
+	{
+		createUI(repo, mode);
+	}
+
+	private void createUI(OntologyDatabasePeer repo, ViewMode mode)
+	{
+		setLayout(new BorderLayout());
+		// String showing = "Ontology servers only";
 		String message = "<html> <h2> Select Ontology Server </h2> ";
-//	    +"<table width='100%' border='0'>"
-//	    +"<tr><td align='right'><b>Showing:</b></td><td>"+ showing + "</td></tr>"
-//	    +"</table>";
+		// +"<table width='100%' border='0'>"
+		// +"<tr><td align='right'><b>Showing:</b></td><td>"+ showing +
+		// "</td></tr>"
+		// +"</table>";
 		JPanel northPanel = new JPanel(new BorderLayout(5, 5));
 		northPanel.add(new JLabel(message), BorderLayout.NORTH);
-        table = new PeerTable(repo, mode);
-        add(northPanel, BorderLayout.NORTH);
-        add(new JScrollPane(table));
-        refreshButton = new JButton("Refresh Peer table");
-        refreshButton.addActionListener( new ActionListener() {
+		table = new PeerTable(repo, mode);
+		add(northPanel, BorderLayout.NORTH);
+		add(new JScrollPane(table));
+		refreshButton = new JButton("Refresh Peer table");
+		refreshButton.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e)
+			{
 				table.refresh();
 			}
 		});
-        showOnlyServersCb = new JCheckBox("Show only Ontology Servers");
-        showOnlyServersCb.setSelected(mode == ViewMode.ONTOLOGY_SERVERS);
-        showOnlyServersCb.addActionListener(new ActionListener() {
-			
+		showOnlyServersCb = new JCheckBox("Show only Ontology Servers");
+		showOnlyServersCb.setSelected(mode == ViewMode.ONTOLOGY_SERVERS);
+		showOnlyServersCb.addActionListener(new ActionListener()
+		{
+
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (showOnlyServersCb.isSelected()) {
+			public void actionPerformed(ActionEvent e)
+			{
+				if (showOnlyServersCb.isSelected())
+				{
 					table.peerTableModel.setViewMode(ViewMode.ONTOLOGY_SERVERS);
-				} else {
+				}
+				else
+				{
 					table.peerTableModel.setViewMode(ViewMode.ALL_PEERS);
 				}
 			}
 		});
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(refreshButton);
-        buttonPanel.add(showOnlyServersCb);
-        add(buttonPanel, BorderLayout.SOUTH);
-    }
-    
-    public Dimension getPreferredSize() {
-        return new Dimension(900, 450);
-    }
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.add(refreshButton);
+		buttonPanel.add(showOnlyServersCb);
+		add(buttonPanel, BorderLayout.SOUTH);
+		uihelp.okOnDoubleClick(table);
+	}
 
-    /**
+	public Dimension getPreferredSize()
+	{
+		return new Dimension(900, 450);
+	}
+
+	/**
 	 * @return the table
 	 */
-	protected PeerTable getTable() {
+	protected PeerTable getTable()
+	{
 		return table;
 	}
 
-	public HGPeerIdentity getSelectedEntry() {
-		return (HGPeerIdentity)table.getSelectedEntry();
+	public HGPeerIdentity getSelectedEntry()
+	{
+		return (HGPeerIdentity) table.getSelectedEntry();
 	}
-	
-    private static HGPeerIdentity selectedEntry;
-	
-    public static int showPeerSelectionDialog(Workspace ws, OntologyDatabasePeer repo) {
-        PeerViewPanel panel = new PeerViewPanel(repo, ViewMode.ALL_PEERS);
-        int ret = JOptionPaneEx.showConfirmDialog(ws, "Please Select a remote Peer ", panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, panel.table);
-        selectedEntry = panel.getSelectedEntry();
-        return ret;
-    }
 
-    /**
-     * Shows a list of servers for selection.
-     * @param title
-     * @param ws
-     * @param repo
-     * @return a JOptionPane.OK_Option or CANCEL_Option, 
-     */
-    public static int showServerSelectionDialog(String title, Workspace ws, OntologyDatabasePeer repo) {
-        PeerViewPanel panel = new PeerViewPanel(repo, ViewMode.ONTOLOGY_SERVERS);
-        int ret = JOptionPaneEx.showConfirmDialog(ws, title, panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, panel.table);
-        selectedEntry = panel.getSelectedEntry();
-        return ret;
-    }
+	private static HGPeerIdentity selectedEntry;
 
-    public static int showPeerOrServerSelectionDialog(String title, Workspace ws, OntologyDatabasePeer repo, ViewMode mode) {
-        PeerViewPanel panel = new PeerViewPanel(repo, mode);
-        int ret = JOptionPaneEx.showConfirmDialog(ws, title, panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, panel.table);
-        selectedEntry = panel.getSelectedEntry();
-        return ret;
-    }
-    
-    public static HGPeerIdentity getSelectedPeer() {
-    	return selectedEntry;
-    }
+	public static int showPeerSelectionDialog(Workspace ws, OntologyDatabasePeer repo)
+	{
+		PeerViewPanel panel = new PeerViewPanel(repo, ViewMode.ALL_PEERS);
+		int ret = JOptionPaneEx.showConfirmDialog(ws, 
+												  "Please Select a remote Peer ", 
+												  panel, 
+												  JOptionPane.PLAIN_MESSAGE,
+												  JOptionPane.OK_CANCEL_OPTION, 
+												  panel.table);
+		selectedEntry = panel.getSelectedEntry();
+		return ret;
+	}
+
+	/**
+	 * Shows a list of servers for selection.
+	 * 
+	 * @param title
+	 * @param ws
+	 * @param repo
+	 * @return a JOptionPane.OK_Option or CANCEL_Option,
+	 */
+	public static int showServerSelectionDialog(String title, Workspace ws, OntologyDatabasePeer repo)
+	{
+		PeerViewPanel panel = new PeerViewPanel(repo, ViewMode.ONTOLOGY_SERVERS);
+		int ret = JOptionPaneEx.showConfirmDialog(ws, title, panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION,
+				panel.table);
+		selectedEntry = panel.getSelectedEntry();
+		return ret;
+	}
+
+	public static int showPeerOrServerSelectionDialog(String title, Workspace ws, OntologyDatabasePeer repo, ViewMode mode)
+	{
+		PeerViewPanel panel = new PeerViewPanel(repo, mode);
+		int ret = JOptionPaneEx.showConfirmDialog(ws, title, panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION,
+				panel.table);
+		selectedEntry = panel.getSelectedEntry();
+		return ret;
+	}
+
+	public static HGPeerIdentity getSelectedPeer()
+	{
+		return selectedEntry;
+	}
 }

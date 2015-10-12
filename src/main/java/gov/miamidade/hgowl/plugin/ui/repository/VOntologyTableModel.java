@@ -1,7 +1,5 @@
 package gov.miamidade.hgowl.plugin.ui.repository;
 
-import gov.miamidade.hgowl.plugin.ui.versioning.VU;
-
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;

@@ -22,6 +22,7 @@ import javax.swing.JOptionPane;
 
 
 
+
 //import org.apache.log4j.Logger;
 import org.hypergraphdb.app.owl.HGDBOntology;
 import org.hypergraphdb.app.owl.HGDBOntologyFormat;
@@ -34,6 +35,7 @@ import org.protege.editor.core.OntologyRepository;
 import org.protege.editor.core.OntologyRepositoryEntry;
 import org.protege.editor.core.OntologyRepositoryManager;
 import org.protege.editor.core.ProtegeApplication;
+import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.core.editorkit.EditorKit;
 import org.protege.editor.core.editorkit.EditorKitDescriptor;
 import org.protege.editor.core.editorkit.RecentEditorKitManager;
@@ -191,11 +193,23 @@ public class HGOwlEditorKit extends OWLEditorKit
 	public boolean handleNewRequest() throws Exception
 	{
 		List<EditorKitDescriptor> L = RecentEditorKitManager.getInstance().getDescriptors();
-		if (L.isEmpty())
+		if (L.isEmpty() || ProtegeManager.getInstance().getEditorKitManager().getEditorKitCount() > 0)
 			return super.handleNewRequest();
 		else // if user opted to load most recent
 		{
-			this.handleLoadRecentRequest(L.iterator().next());
+			boolean loaded = false;
+			for (EditorKitDescriptor descriptor : L)
+			{
+				URI uri = descriptor.getURI(URI_KEY);				
+				if (getModelManager().getOWLOntologyManager()
+						.getOntologyRepository().getOntologyByDocumentIRI(IRI.create(uri)) != null)
+				{
+					this.handleLoadRecentRequest(descriptor);
+					loaded = true;
+				}
+			}
+			if (!loaded)
+				return super.handleNewRequest();
 			return true;
 		}
 //		boolean handleNewSuccess = false;		
@@ -369,17 +383,21 @@ public class HGOwlEditorKit extends OWLEditorKit
 		{
 			// User wants to delete ontology.
 			// Do not allow deletion of any active ontology:
-			if (isLoadedOntologyFromLocation(ontologyEntry.getPhysicalURI()))
-			{
-				// Dialog, cannot delete active ontology. Remove from sources
-				// first.
-				showDeleteCannotDeleteLoaded(ontologyEntry.getPhysicalURI());
-				success = false;
-			}
-			else
-			{
+//			if (isLoadedOntologyFromLocation(ontologyEntry.getPhysicalURI()))
+//			{
+//				// Dialog, cannot delete active ontology. Remove from sources
+//				// first.
+//				showDeleteCannotDeleteLoaded(ontologyEntry.getPhysicalURI());
+//				success = false;
+//			}
+//			else
+//			{
 				success = handleDeleteFrom(ontologyEntry);
-			}
+				if (success)
+				{
+					this.handleNewRequest();
+				}
+//			}
 		}
 		else
 		{
@@ -446,6 +464,8 @@ public class HGOwlEditorKit extends OWLEditorKit
 		HGOwlModelManagerImpl hmm = (HGOwlModelManagerImpl) getOWLModelManager();
 		PHGDBOntologyManagerImpl hom = (PHGDBOntologyManagerImpl) hmm.getOWLOntologyManager();
 		OWLOntology loadedOntoToDelete = hom.getOntology(oID);
+		hmm.removeOntology(loadedOntoToDelete);
+		hom.removeOntology(loadedOntoToDelete);
 		// will be null if not loaded.
 		// getOntologyCatalogManager().Ontologies()
 		// B) Provide a confirmation Dialog with as much information as

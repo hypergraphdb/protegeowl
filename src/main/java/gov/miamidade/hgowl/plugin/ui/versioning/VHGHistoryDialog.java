@@ -11,7 +11,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Collections;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -26,11 +25,12 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.hypergraphdb.HyperGraph;
 import org.hypergraphdb.app.owl.versioning.ChangeSet;
 import org.hypergraphdb.app.owl.versioning.Revision;
+import org.hypergraphdb.app.owl.versioning.VersionManager;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.hypergraphdb.app.owl.versioning.versioning;
-import org.hypergraphdb.app.owl.versioning.change.VChange;
 import org.protege.editor.owl.OWLEditorKit;
 
 /**
@@ -146,7 +146,7 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 		String firstItemString = null;
 		ChangeSet<VersionedOntology> selectedCS = null;
 		SortedSet<Integer> selectedCSConflicts = null;
-
+		HyperGraph graph = versionedOntology.graph();
 		if (selectedRevisionIndex != -1)
 		{
 			if (selectedRevisionIndex == revisions.size())
@@ -161,7 +161,7 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 			else if (selectedRevisionIndex > 0)
 			{
 				Revision selectedRev = revisions.get(selectedRevisionIndex);
-				selectedCS = versioning.changes(versionedOntology.graph(), 
+				selectedCS = versioning.changes(graph, 
 												selectedRev.getAtomHandle(), 
 												revisions.get(selectedRevisionIndex-1).getAtomHandle());
 				firstItemString = "<html>Showing Changes that were commited by <b>" + selectedRev.user() + "</b> at "
@@ -175,9 +175,8 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 				Revision selectedRev = revisions.get(selectedRevisionIndex);
 				firstItemString = ("<html> Initial revision that was created by <b>" + selectedRev.user() + "</b> at "
 						+ VDRenderer.render(new java.util.Date(selectedRev.timestamp())) + "</html>");
-				// lm.addElement("<html>with comment <b>" +
-				// selectedRev.getRevisionComment() + "</b> </html>");
-				// lm.addElement("<html>No changes to show.</html>");
+				
+				selectedCS = graph.get(new VersionManager(graph, selectedRev.user()).emptyChangeSetHandle());
 			}
 			else
 			{
@@ -190,7 +189,9 @@ public class VHGHistoryDialog extends JDialog implements ActionListener, ListSel
 			// Empty list, nothing selected
 			firstItemString = EMPTY_LIST_TEXT;
 		}
-		changeSetPanel.setChangeSet(selectedCS.changes(), selectedCSConflicts, firstItemString);
+		changeSetPanel.setChangeSet(selectedCS.changes(), 
+									selectedCSConflicts, 
+									firstItemString);
 	}
 
 	/*

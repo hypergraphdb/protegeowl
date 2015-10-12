@@ -80,7 +80,7 @@ public class DynamicVersioningMenu extends ProtegeDynamicAction
 		addItem(menu,
 				new HGPluginAction() { public void act() { kit.commitActiveOntology(); } },
 				"Commit",
-				userOnline);
+				true);
 		addItem(menu,
 				new HGPluginAction() { public void act() { kit.pushActive(); } },
 				"Push",

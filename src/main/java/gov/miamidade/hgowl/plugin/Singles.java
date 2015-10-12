@@ -52,7 +52,8 @@ public class Singles
 					JOptionPane.ERROR_MESSAGE);			
 			return false;
 		}
-	};	
+	};
+	
 	/**
 	 * Return the global VDHGDBOntologyRepository instance.
 	 */
