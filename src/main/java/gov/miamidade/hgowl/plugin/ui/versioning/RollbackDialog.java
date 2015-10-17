@@ -1,5 +1,7 @@
 package gov.miamidade.hgowl.plugin.ui.versioning;
 
+import gov.miamidade.hgowl.plugin.ui.DialogBase;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
@@ -23,7 +25,7 @@ import org.protege.editor.owl.OWLEditorKit;
  * @author Thomas Hilpold (CIAO/Miami-Dade County)
  * @created Jan 31, 2012
  */
-public class RollbackDialog extends JDialog implements ActionListener
+public class RollbackDialog extends DialogBase implements ActionListener
 {
 	private static final long serialVersionUID = -2849737178569671572L;
 	private ChangeSetTablePanel changeSetPanel;

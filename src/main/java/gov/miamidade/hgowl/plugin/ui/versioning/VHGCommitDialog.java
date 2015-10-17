@@ -1,14 +1,16 @@
 package gov.miamidade.hgowl.plugin.ui.versioning;
 
+import gov.miamidade.hgowl.plugin.ui.DialogBase;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DateFormat;
 import java.util.Date;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -25,20 +27,22 @@ import org.hypergraphdb.app.owl.versioning.VersionedOntology;
  * @author Thomas Hilpold (CIAO/Miami-Dade County)
  * @created Jan 31, 2012
  */
-public class VHGCommitDialog extends JDialog implements ActionListener
+public class VHGCommitDialog extends DialogBase implements ActionListener
 {
 
 	private static final long serialVersionUID = -2849737178569671572L;
 	private JTextField tfUserComment;
+	private JTextField tfBranchName;
 	private JButton btOK;
 	private JButton btCancel;
 
 	private boolean userCommitOK;
 	private String userCommitComment;
-
-	public static VHGCommitDialog showDialog(Component parent, VersionedOntology vo)
+	private String branchName;
+	
+	public static VHGCommitDialog showDialog(Component parent, VersionedOntology vo, boolean newBranch)
 	{
-		VHGCommitDialog dlg = new VHGCommitDialog(SwingUtilities.windowForComponent(parent), vo);
+		VHGCommitDialog dlg = new VHGCommitDialog(SwingUtilities.windowForComponent(parent), vo, newBranch);
 		dlg.setLocationRelativeTo(parent);
 		dlg.setModalityType(ModalityType.APPLICATION_MODAL);
 		dlg.setVisible(true);
@@ -46,7 +50,7 @@ public class VHGCommitDialog extends JDialog implements ActionListener
 		return dlg;
 	}
 
-	public VHGCommitDialog(Window w, VersionedOntology vo)
+	public VHGCommitDialog(Window w, VersionedOntology vo, boolean newBranch)
 	{
 		super(w);
 		setTitle("Commit Versioned HGDB Ontology - Confirm Commit");
@@ -63,11 +67,16 @@ public class VHGCommitDialog extends JDialog implements ActionListener
 		JPanel centerPanel = new JPanel(new BorderLayout(5, 5));
 		message = "<html><pre><b>" + message + "</b></pre></html>";
 		centerPanel.add(new JLabel(message), BorderLayout.NORTH);
-		JPanel enterPanel = new JPanel(new BorderLayout());
-		enterPanel.add(new JLabel("Enter Commit Comment: "), BorderLayout.NORTH);
+		                                                                                                                                
+		JPanel inputPanel = new JPanel();
+		inputPanel.setLayout(new GridLayout(2,2));
+		inputPanel.add(new JLabel("Enter Commit Comment: "));
 		tfUserComment = new JTextField(30);
-		enterPanel.add(tfUserComment, BorderLayout.SOUTH);
-		centerPanel.add(enterPanel, BorderLayout.SOUTH);
+		inputPanel.add(tfUserComment);
+		inputPanel.add(new JLabel("Enter Branch Name: "));
+		tfBranchName = new JTextField(30);
+		inputPanel.add(tfBranchName);		
+		centerPanel.add(inputPanel, BorderLayout.SOUTH);		
 		
 		btOK = new JButton("Commit");
 		btOK.addActionListener(this);
@@ -88,6 +97,11 @@ public class VHGCommitDialog extends JDialog implements ActionListener
 		return userCommitComment;
 	}
 
+	public String getBranchName()
+	{
+		return branchName;
+	}
+	
 	public boolean isCommitOK()
 	{
 		return userCommitOK;
@@ -100,6 +114,7 @@ public class VHGCommitDialog extends JDialog implements ActionListener
 		{
 			userCommitComment = tfUserComment.getText();
 			userCommitOK = true;
+			branchName = tfBranchName.getText();
 		}
 		else if (e.getSource() == btCancel)
 		{

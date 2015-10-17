@@ -82,6 +82,10 @@ public class DynamicVersioningMenu extends ProtegeDynamicAction
 				"Commit",
 				true);
 		addItem(menu,
+				new HGPluginAction() { public void act() { kit.commitNewBranch(); } },
+				"Create Branch",
+				true);
+		addItem(menu,
 				new HGPluginAction() { public void act() { kit.pushActive(); } },
 				"Push",
 				userOnline);			
@@ -96,7 +100,7 @@ public class DynamicVersioningMenu extends ProtegeDynamicAction
 				true);
 		addItem(menu,
 				new HGPluginAction() { public void act() { kit.revertActive(); } },
-				"Revert to...",
+				"Revert",
 				true);
 		menu.addSeparator();
 		addItem(menu,

@@ -1,13 +1,13 @@
 package gov.miamidade.hgowl.plugin.owl;
 
 import static gov.miamidade.hgowl.plugin.Singles.*;
+import gov.miamidade.hgowl.plugin.Singles;
 import gov.miamidade.hgowl.plugin.owl.model.HGOwlModelManagerImpl;
 import gov.miamidade.hgowl.plugin.owlapi.apibinding.PHGDBOntologyManagerImpl;
 import gov.miamidade.hgowl.plugin.ui.render.VHGOwlIconProviderImpl;
+import gov.miamidade.hgowl.plugin.ui.versioning.RevisionGraphDialog;
 import gov.miamidade.hgowl.plugin.ui.versioning.RollbackDialog;
 import gov.miamidade.hgowl.plugin.ui.versioning.VHGCommitDialog;
-import gov.miamidade.hgowl.plugin.ui.versioning.VHGHistoryDialog;
-import gov.miamidade.hgowl.plugin.ui.versioning.VHGRevertDialog;
 
 import java.util.Collection;
 
@@ -15,6 +15,7 @@ import javax.swing.JOptionPane;
 
 import org.hypergraphdb.HGHandle;
 import org.hypergraphdb.app.owl.HGDBOntology;
+import org.hypergraphdb.app.owl.versioning.Revision;
 import org.hypergraphdb.app.owl.versioning.VersionManager;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.protege.editor.core.OntologyRepository;
@@ -167,7 +168,7 @@ public class VHGOwlEditorKit extends HGOwlEditorKit
 		{
 			JOptionPane.showMessageDialog(getWorkspace(),
 					"Cannot commit: Active ontology not version controlled.",
-					"Hypergraph Versioning - Active not versioned",
+					Singles.bundles().value("commit.dialog.title"),
 					JOptionPane.INFORMATION_MESSAGE);
 			return false;
 		}
@@ -176,12 +177,12 @@ public class VHGOwlEditorKit extends HGOwlEditorKit
 		{
 			JOptionPane.showMessageDialog(getWorkspace(),
 					"Cannot commit: No pending changes",
-					"Hypergraph Versioning - No Changes",
+					Singles.bundles().value("commit.dialog.title"),
 					JOptionPane.INFORMATION_MESSAGE);
 			return false;
 		}
 		// COMMIT WHAT WHO INCREMENT OK CANCEL
-		VHGCommitDialog dlg = VHGCommitDialog.showDialog(getWorkspace(), versioned);
+		VHGCommitDialog dlg = VHGCommitDialog.showDialog(getWorkspace(), versioned, false);
 		if (dlg.isCommitOK())
 		{
 			// DO IT
@@ -191,6 +192,55 @@ public class VHGOwlEditorKit extends HGOwlEditorKit
 		return true;
 	}
 
+	public boolean commitNewBranch()
+	{
+		HGHandle hActive = activeOntology();
+		if (hActive == null)
+			return false;
+		else if (!versionManager().isVersioned(hActive))
+		{
+			JOptionPane.showMessageDialog(getWorkspace(),
+					"Cannot create branch on a non version controlled ontology.",
+					Singles.bundles().value("newbranch.dialog.title"),
+					JOptionPane.INFORMATION_MESSAGE);
+			return false;
+		}
+		VersionedOntology versioned = versionManager().versioned(hActive);
+		if (!versioned.changes().isEmpty())
+		{
+			if (JOptionPane.showConfirmDialog(getWorkspace(),
+					"A new branch will be created with current working changes as a first commit. Proceed?",
+					Singles.bundles().value("newbranch.dialog.title"),
+					JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
+				return false;
+		}
+		VHGCommitDialog dlg = VHGCommitDialog.showDialog(getWorkspace(), versioned, true);
+		if (dlg.isCommitOK())
+		{
+			if (dlg.getBranchName() == null || dlg.getBranchName().length() == 0)
+			{
+				JOptionPane.showMessageDialog(getWorkspace(),
+						"No branch name specified.",
+						Singles.bundles().value("newbranch.dialog.title"),
+						JOptionPane.INFORMATION_MESSAGE);
+				return false;
+			}	
+			else if (versioned.metadata().findBranch(dlg.getBranchName()) != null)
+			{
+				JOptionPane.showMessageDialog(getWorkspace(),
+						"Branch name already exists. To commit to that branch, first go to its head revision.",
+						Singles.bundles().value("newbranch.dialog.title"),
+						JOptionPane.INFORMATION_MESSAGE);
+				return false;
+			}
+			// DO IT
+			versioned.commit(getSystemUserName(), 
+							 dlg.getCommitComment(),
+							 dlg.getBranchName());
+		}
+		return true;
+	}
+	
 	public boolean undoLocalChanges()
 	{ 
 		String actionTitle = bundles().value("undoworking.action.title","Drop Working Changes");
@@ -242,177 +292,52 @@ public class VHGOwlEditorKit extends HGOwlEditorKit
 		else
 		{
 			VersionedOntology vo = versionManager().versioned(hActive);
-			VHGHistoryDialog.showDialog(
-				"Hypergraph Versioning - History of " + vo, 
-				getWorkspace(), vo, this);
+			new RevisionGraphDialog("Hypergraph Versioning - History of " + vo, 
+									 getWorkspace(), 
+									 vo, 
+									 this).build().showDialog();
 		}
 	}
 	
-	public boolean revertActive()
+	public void revertActive()
 	{
 		HGHandle hActive = activeOntology();
 		if (hActive == null || !versionManager().isVersioned(hActive))
 		{
 			JOptionPane.showMessageDialog(getWorkspace(),
 					"The selected ontology is not under version control.",
-					"Hypergraph Versioning - Revert  ",
+					"Hypergraph Versioning - Revert",
 					JOptionPane.INFORMATION_MESSAGE);	
-			return false;
+			return;
 		}
-		VersionedOntology vo = versionManager().versioned(hActive);
-		VHGRevertDialog dlg = VHGRevertDialog.showDialog(
-				"Hypergraph Versioning - Revert " + vo, getWorkspace(), vo, this);
-		if (dlg.isUserConfirmedRevert())
-		{
-			//Revision selectedRevision = dlg.getSelectedRevision();
-			return true;
-		}
-		return false;
-//		if (activeOntology != null)
-//		{
-//			VersionedOntology vo = getVersionedRepository()
-//					.getVersionControlledOntology(activeOntology);
-//			if (vo != null)
-//			{
-//				// ?Head == Base?, cannot do it
-//				// not on pending changes!
-//				// Allow working set changes
-//				VHGRevertDialog dlg = VHGRevertDialog.showDialog(
-//						"Hypergraph Versioning - Revert "
-//								+ VDRenderer.render(vo), getWorkspace(), vo,
-//						this);
-//				if (dlg.isUserConfirmedRevert())
-//				{
-//					Revision selectedRevision = dlg.getSelectedRevision();
-//					if (selectedRevision != null)
-//					{
-//						if (!selectedRevision.equals(vo.getHeadRevision()))
-//						{
-//							if (vo.getNrOfRevisions() > 1)
-//							{
-//								if (areYouSure(
-//										"Hypergraph Versioning - Revert",
-//										"Are you sure to revert ontololgy?"))
-//								{
-//									vo.revertHeadTo(selectedRevision, true);
-//									causeViewUpdate();
-//									// Clear undo/redo history on revert
-//									getModelManager().getHistoryManager()
-//											.getLoggedChanges().clear();
-//									success = true;
-//									if (vo.getWorkingSetConflicts().isEmpty())
-//									{
-//										JOptionPane
-//												.showMessageDialog(
-//														getWorkspace(),
-//														"This ontology was sucessfully reverted. "
-//																+ "Head is now: \r\n"
-//																+ VDRenderer
-//																		.render(vo
-//																				.getHeadRevision())
-//																+ "\r\n  ("
-//																+ (vo.getHeadRevision()
-//																		.getRevisionComment())
-//																+ ")"
-//																+ "\r\n Reapplied uncommitted changes: "
-//																+ vo.getWorkingSetChanges()
-//																		.size(),
-//														"Hypergraph Versioning - Revert Completed",
-//														JOptionPane.INFORMATION_MESSAGE);
-//									}
-//									else
-//									{
-//										// Conflicts.
-//										JOptionPane
-//												.showMessageDialog(
-//														getWorkspace(),
-//														"This ontology was sucessfully reverted, but conflicts occured with your uncommitted changes. "
-//																+ "Head is now: \r\n"
-//																+ VDRenderer
-//																		.render(vo
-//																				.getHeadRevision())
-//																+ "\r\n  ("
-//																+ (vo.getHeadRevision()
-//																		.getRevisionComment())
-//																+ ")"
-//																+ "\r\n Reapplied uncommitted changes: "
-//																+ vo.getWorkingSetChanges()
-//																		.size()
-//																+ "\r\n Conflicts: "
-//																+ vo.getWorkingSetConflicts()
-//																		.size()
-//																+ "\r\n Please open Team/History for details on conflicts.",
-//														"Hypergraph Versioning - Revert Completed with Conflicts",
-//														JOptionPane.WARNING_MESSAGE);
-//									}
-//								}
-//								else
-//								{
-//									success = false;
-//								}
-//							}
-//							else
-//							{
-//								// cannot revert beyond base
-//								JOptionPane
-//										.showMessageDialog(
-//												getWorkspace(),
-//												"This ontology was not reverted, because "
-//														+ " it only has one revision: \r\n"
-//														+ VDRenderer.render(vo),
-//												"Hypergraph Versioning - Revert Nothing to do",
-//												JOptionPane.INFORMATION_MESSAGE);
-//								success = false;
-//							}
-//						}
-//						else
-//						{
-//							// head selected, nothing to do
-//							JOptionPane
-//									.showMessageDialog(
-//											getWorkspace(),
-//											"This ontology cannot be reverted, because "
-//													+ " the user selected the head revision: \r\n"
-//													+ VDRenderer.render(vo),
-//											"Hypergraph Versioning - Revert Nothing to do",
-//											JOptionPane.WARNING_MESSAGE);
-//							success = false;
-//						}
-//					}
-//					else
-//					{
-//						JOptionPane
-//								.showMessageDialog(
-//										getWorkspace(),
-//										"The selected ontology: \r\n "
-//												+ VDRenderer.render(vo)
-//												+ "\r\n was NOT reverted, because no revision to revert to was selected.",
-//										"Hypergraph Versioning - Revert Abort",
-//										JOptionPane.WARNING_MESSAGE);
-//						success = false;
-//					}
-//				}
-//				else
-//				{
-//					// User abort: no dialog
-//					success = false;
-//				}
-//			}
-//			else
-//			{
-//				JOptionPane.showMessageDialog(getWorkspace(),
-//						"The selected ontology is not under version control: \r\n"
-//								+ VDRenderer.render(activeOntology),
-//						"Hypergraph Versioning - Revert  ",
-//						JOptionPane.INFORMATION_MESSAGE);
-//				success = false;
-//			}
-//		}
-//		else
-//		{
-//			success = false;
-//		}
-//		return success;
+		final VersionedOntology vo = versionManager().versioned(hActive);
+		final RevisionGraphDialog dlg = new RevisionGraphDialog(
+				"Hypergraph Versioning - Revert " + vo, 
+				 getWorkspace(), 
+				 vo, 
+				 this);
+		Runnable revertAction = new Runnable() { public void run() {
+			Revision rev = dlg.getSelectedRevision();
+			if (!rev.children().isEmpty())
+			{
+				JOptionPane.showMessageDialog(getWorkspace(),
+						"The selected revision is not a head revision and cannot be removed.",
+						"Hypergraph Versioning - Revert  ",
+						JOptionPane.INFORMATION_MESSAGE);
+				return;
+			}
+			else if (JOptionPane.showConfirmDialog(getWorkspace(),
+					"The selected head revision will be deleted from the version history.Proceed?", 						
+					"CAUTION: Irreversible Operation",
+					JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
+				return;
+			vo.dropHeadRevision(rev.getAtomHandle());
+			dlg.ontologyView().getTableModel().deleteRevison(rev);
+			
+		}};	
+		dlg.action("Revert To Previous Revision", revertAction)
+		   .build()
+		   .showDialog();
 	}
 
 	/**

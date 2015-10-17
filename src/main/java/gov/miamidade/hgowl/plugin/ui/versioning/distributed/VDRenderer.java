@@ -1,14 +1,12 @@
 package gov.miamidade.hgowl.plugin.ui.versioning.distributed;
 
 import java.text.DateFormat;
+
 import java.text.DecimalFormat;
 import java.util.Date;
 
 import org.hypergraphdb.app.owl.versioning.Revision;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
-import org.hypergraphdb.app.owl.versioning.distributed.ClientCentralizedOntology;
-import org.hypergraphdb.app.owl.versioning.distributed.DistributedOntology;
-import org.hypergraphdb.app.owl.versioning.distributed.ServerCentralizedOntology;
 import org.hypergraphdb.peer.HGPeerIdentity;
 import org.semanticweb.owlapi.model.OWLOntology;
 
@@ -21,26 +19,6 @@ import org.semanticweb.owlapi.model.OWLOntology;
 public class VDRenderer
 {
 	static DateFormat df = DateFormat.getDateTimeInstance();
-
-	public static String render(DistributedOntology dOnto)
-	{
-		if (dOnto == null)
-			return "";
-		String shareType;
-		if (dOnto instanceof ClientCentralizedOntology)
-		{
-			shareType = "Client";
-		}
-		else if (dOnto instanceof ServerCentralizedOntology)
-		{
-			shareType = "Server";
-		}
-		else
-		{
-			shareType = "Peer";
-		}
-		return render(dOnto.getVersionedOntology()) + " " + shareType;
-	}
 
 	public static String render(VersionedOntology vo)
 	{

@@ -21,8 +21,6 @@ import org.hypergraphdb.app.owl.HGDBOntology;
 import org.hypergraphdb.app.owl.versioning.Revision;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.hypergraphdb.app.owl.versioning.versioning;
-import org.hypergraphdb.app.owl.versioning.distributed.ClientCentralizedOntology;
-import org.hypergraphdb.app.owl.versioning.distributed.DistributedOntology;
 import org.hypergraphdb.app.owl.versioning.distributed.OntologyDatabasePeer;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowseRepositoryActivity;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowseRepositoryActivity.BrowseEntry;
@@ -39,7 +37,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
  * VDHGOwlEditorKit contains UI functions for editing distributed (shared)
  * versioned ontologies.
  * 
- * @author Thomas Hilpold (CIAO/Miami-Dade County)
+ * @author Thomas Hilpold (CIAO/Miami-Dade County), Borislav Iordanov
  * @created Mar 26, 2012
  */
 public class VDHGOwlEditorKit extends VHGOwlEditorKit
@@ -206,7 +204,7 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 		{
 			activity.getFuture().get();
 			// Did we pull changes on the current branch we are working on?
-			if (/*atbranchhead && */ activity.getState().isCompleted())
+			if (atbranchhead && activity.getState().isCompleted())
 			{
 				Revision branchHead = versioned.branchHead(currentBranch);
 				if (branchHead != versioned.revision()) // Object ref compare is ok b/w atoms
@@ -421,143 +419,6 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 		}
 	}
 
-	/**
-	 * Checks if local pending changes may be committed and sent to the server
-	 * based on a comparison. Will open explanatory dialogs if a reason is found
-	 * that would prevent a commit.
-	 * 
-	 * @param dOnto
-	 * @param server
-	 * @return
-	 */
-	public boolean checkCommitPushAllowed(DistributedOntology dOnto, HGPeerIdentity server)
-	{
-		boolean mayCommit = true;
-//		VersionedOntologyComparisonResult result = null;
-//		try
-//		{
-//			result = repository.compareOntologyToRemote(dOnto, server,
-//					ACTIVITY_TIMEOUT_SECS);
-//		}
-//		catch (Throwable t)
-//		{
-//			showException(t, "System error while comparing to remote");
-//		}
-//		if (result != null)
-//		{
-//			if (result.isConflict())
-//			{
-//				JOptionPane
-//						.showMessageDialog(
-//								getWorkspace(),
-//								"Cannot commit: A conflict between the local and the server's history exists. "
-//										+ "\r\n Use compare for details. You might need to Revert to an older revision.",
-//								"Hypergraph Team - Commit - Conflict ",
-//								JOptionPane.ERROR_MESSAGE);
-//				mayCommit = false;
-//			}
-//			else if (result.isTargetNewer())
-//			{
-//				JOptionPane
-//						.showMessageDialog(
-//								getWorkspace(),
-//								"Cannot commit: The server has newer Revisions that need to be pulled first."
-//										+ "\r\n Use pull to merge your pending changes before you commit. ",
-//								"Hypergraph Team - Commit - Remote is newer",
-//								JOptionPane.WARNING_MESSAGE);
-//				mayCommit = false;
-//			}
-//			else
-//			{
-//				mayCommit = true;
-//			}
-//		}
-//		else
-//		{
-//			JOptionPane
-//					.showMessageDialog(
-//							getWorkspace(),
-//							"Cannot commit: There was a problem comparing the local history to the server's ontology."
-//									+ "\r\n This might mean that the server was not available or a timeout occured. ",
-//							"Hypergraph Team - Commit - Error on Compare",
-//							JOptionPane.ERROR_MESSAGE);
-//			mayCommit = false;
-//		}
-		return mayCommit;
-	}
-
-//	public boolean checkPullAllowed(VersionedOntologyComparisonResult result)
-//	{
-//		boolean mayPull = true;
-//		if (result != null)
-//		{
-//			if (result.isConflict())
-//			{
-//				JOptionPane
-//						.showMessageDialog(
-//								getWorkspace(),
-//								"Cannot pull: A conflict between the local and the server's history exists. "
-//										+ "\r\n Use compare for details. You might need to revert to an older revision.",
-//								"Hypergraph Team - Pull - Conflict ",
-//								JOptionPane.ERROR_MESSAGE);
-//				mayPull = false;
-//			}
-//			else if (result.isSourceNewer())
-//			{
-//				JOptionPane
-//						.showMessageDialog(
-//								getWorkspace(),
-//								"Cannot pull: The local history has newer revisions that need to be pushed."
-//										+ "\r\n Use push to upload your pending changes to the server. ",
-//								"Hypergraph Team - Pull - Source is newer",
-//								JOptionPane.WARNING_MESSAGE);
-//				mayPull = false;
-//			}
-//			else if (result.isSourceTargetEqual())
-//			{
-//				JOptionPane.showMessageDialog(getWorkspace(),
-//						"No need to pull: The local and remote revision history "
-//								+ "\r\n of the ontology are equal ",
-//						"Hypergraph Team - Pull - Local and Remote are equal",
-//						JOptionPane.WARNING_MESSAGE);
-//				mayPull = false;
-//			}
-//			else
-//			{
-//				// Target is newer
-//				mayPull = true;
-//			}
-//		}
-//		else
-//		{
-//			JOptionPane
-//					.showMessageDialog(
-//							getWorkspace(),
-//							"Cannot pull: There was a problem comparing the local history to the server's ontology."
-//									+ "\r\n This might mean that the server was not available or a timeout occured. ",
-//							"Hypergraph Team - Commit - Error on compare",
-//							JOptionPane.ERROR_MESSAGE);
-//			mayPull = false;
-//		}
-//		return mayPull;
-//	}
-
-	public boolean checkPullAllowed(DistributedOntology dOnto, HGPeerIdentity server)
-	{
-//		VersionedOntologyComparisonResult result = null;
-//		try
-//		{
-//			result = repository.compareOntologyToRemote(dOnto, server,
-//					ACTIVITY_TIMEOUT_SECS);
-//		}
-//		catch (Throwable t)
-//		{
-//			showException(t, "System error while comparing ontologies");
-//			return false;
-//		}
-//		return checkPullAllowed(result);
-		return true;
-	}
 
 	public VHGCommitDialog showUserCommitDialog(VersionedOntology vo,
 			OWLOntology onto)
@@ -566,163 +427,12 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 		return null;//VHGCommitDialog.showDialog(getWorkspace(), vo, onto);
 	}
 
-	public void handleUpdateActiveClientOntologyRequest()
-	{
-//		DistributedOntology dOnto = getActiveOntologyAsDistributed();
-//		HGPeerIdentity serverPeer = getServerForDistributedOntology(dOnto);
-//		String serverPeerUser = repository.getPeerUserId(serverPeer);
-//		if (serverPeer == null)
-//			return;
-		// Show Pull Dialog with incoming changes
-		// Offer to Pull until a certain revision
-//		VersionedOntologyComparisonResult result = null;
-//		try
-//		{
-//			result = repository.compareOntologyToRemote(dOnto, serverPeer, ACTIVITY_TIMEOUT_SECS);
-//		}
-//		catch (Exception e)
-//		{
-//			showException(e, "System error while comparing to remote.");
-//			return;
-//		}
-//		if (checkPullAllowed(dOnto, serverPeer))
-//		{
-//			int confirm = PullDistributedOntologyViewPanel
-//					.showUpdateVersionedOntologyDialog(getWorkspace(), result,
-//							dOnto, serverPeerUser, serverPeer);
-//			Revision lastPullRevision = PullDistributedOntologyViewPanel
-//					.getLastPullRevision();
-//			System.out.println("Last Pull Revision = " + lastPullRevision);
-//			if (confirm != JOptionPane.OK_OPTION)
-//			{
-//				// user cancelled.
-//				return;
-//			}
-//			if (lastPullRevision == null)
-//			{
-//				JOptionPane.showMessageDialog(getWorkspace(),
-//						"There was no revision checked for the update. ",
-//						"Hypergraph Team - Update - No revision to transmit",
-//						JOptionPane.WARNING_MESSAGE);
-//				return;
-//			}
-//			if (areYouSure("Hyperaph Team - Update", "Are you sure to update?"))
-//			{
-//				PullActivity pa = repository.pullUntilRevision(dOnto, serverPeer, lastPullRevision);
-//				try
-//				{
-//					// TODO BLOCK in NON AWT THREAD, let changes be applied in
-//					// AWT.
-//					ActivityResult paa = pa.getFuture().get(60,
-//							TimeUnit.SECONDS);
-//					if (paa.getException() == null)
-//					{
-//						JOptionPane
-//								.showMessageDialog(
-//										getWorkspace(),
-//										"Updating "
-//												+ VDRenderer.render(dOnto)
-//												+ "\n from "
-//												+ VDRenderer.render(serverPeer)
-//												+ " "
-//												+ repository
-//														.getPeerUserId(serverPeer)
-//												+ "\n completed with the following message: \n"
-//												+ pa.getCompletedMessage(),
-//										"Hypergraph Team - Update - Complete",
-//										JOptionPane.INFORMATION_MESSAGE);
-//					}
-//					else
-//					{
-//						throw paa.getException();
-//					}
-//				}
-//				catch (Throwable e)
-//				{
-//					showException(e, "System error while pull until revision.");
-//					// JOptionPane.showMessageDialog(getWorkspace(),
-//					// e.toString() + " - " + e.getMessage(),
-//					// "Team Update Error",
-//					// JOptionPane.ERROR_MESSAGE);
-//				}
-//				// Fire Onto Reloaded
-//				causeViewUpdate();
-//			}
-//			else
-//			{
-//				// user cancelled
-//			}
-//		} // else UI already showed reason
-	}
 
-	/**
-	 * For ClientCentralOntologies: returns either the clients server, if it is
-	 * available on the network. For PeerOntologies: a user selected available
-	 * server null otherwise.
-	 * 
-	 * @param dOnto
-	 * @return
-	 */
-	public HGPeerIdentity getServerForDistributedOntology(DistributedOntology dOnto)
-	{
-		if (dOnto == null)
-			throw new IllegalArgumentException("Distributed Ontology null");
-		HGPeerIdentity server;
-		if (dOnto instanceof ClientCentralizedOntology)
-		{
-			ClientCentralizedOntology cDOnto = (ClientCentralizedOntology) dOnto;
-			server = cDOnto.getServerPeer();
-		}
-		else
-		{
-			server = selectRemotePeer("Hypergraph Team - - Select Server for "
-					+ dOnto);
-		}
-		if (server != null)
-		{
-			if (!repository.isNetworking())
-			{
-				JOptionPane.showMessageDialog(getWorkspace(),
-						"You are not signed in.", "Hypergraph Team - Error ",
-						JOptionPane.ERROR_MESSAGE);
-				server = null;
-			}
-			else
-			{
-				if (!repository.getPeer().getConnectedPeers().contains(server))
-				{
-					JOptionPane.showMessageDialog(getWorkspace(),
-							"The server or peer is not accessible on the network. \r\n"
-									+ server,
-							"Hypergraph Team - Network Error ",
-							JOptionPane.ERROR_MESSAGE);
-					server = null;
-				}
-			}
-		}
-		return server;
-	}
-
-//	public DistributedOntology getActiveOntologyAsDistributed()
-//	{
-//		HGDBOntology activeOnto = (HGDBOntology) getActiveOntology();
-//		DistributedOntology dOnto = repository.getDistributedOntology(activeOnto);
-//		if (dOnto == null)
-//		{
-//			JOptionPane.showMessageDialog(getWorkspace(),
-//					"The active ontology is not distributed:" + "\r\n "
-//							+ activeOnto + " ", "Team - Error ",
-//					JOptionPane.ERROR_MESSAGE);
-//		}
-//		return dOnto;
-//	}
 
 	public boolean isNetworking()
 	{
 		String hostname = HGOwlProperties.getInstance().getP2pServer();
 		String userName = HGOwlProperties.getInstance().getP2pUser();
-//		String password = HGOwlProperties.getInstance().getP2pPass();
-//		String room = HGOwlProperties.getInstance().getP2pRoom();
 		if (hostname == null || hostname.length() < 5 || userName.length() < 2)
 			return false;
 		

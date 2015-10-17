@@ -51,6 +51,16 @@ public class VOntologyTableModel extends AbstractTableModel
 		this.revisions = revisions;
 	}
 
+	public VOntologyTableModel deleteRevison(Revision revision)
+	{
+		int idx = revisions.indexOf(revision);
+		if (idx < -1)
+			throw new IllegalArgumentException("Revision " + revision + " not displayed.");
+		revisions.remove(idx);
+		this.fireTableRowsDeleted(idx, idx);
+		return this;
+	}
+	
 	@Override
 	public int getColumnCount()
 	{

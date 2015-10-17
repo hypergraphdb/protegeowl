@@ -1,21 +1,10 @@
 package gov.miamidade.hgowl.plugin.ui.repository;
 
 import gov.miamidade.hgowl.plugin.owl.model.HGOntologyRepositoryEntry;
-
-
-
-
-
-
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.List;
-
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
