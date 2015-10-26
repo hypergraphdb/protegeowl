@@ -5,7 +5,7 @@ import gov.miamidade.hgowl.plugin.Singles;
 import gov.miamidade.hgowl.plugin.owl.model.HGOwlModelManagerImpl;
 import gov.miamidade.hgowl.plugin.owlapi.apibinding.PHGDBOntologyManagerImpl;
 import gov.miamidade.hgowl.plugin.ui.render.VHGOwlIconProviderImpl;
-import gov.miamidade.hgowl.plugin.ui.versioning.RevisionGraphDialog;
+import gov.miamidade.hgowl.plugin.ui.versioning.RevisionDialog;
 import gov.miamidade.hgowl.plugin.ui.versioning.RollbackDialog;
 import gov.miamidade.hgowl.plugin.ui.versioning.VHGCommitDialog;
 
@@ -292,7 +292,7 @@ public class VHGOwlEditorKit extends HGOwlEditorKit
 		else
 		{
 			VersionedOntology vo = versionManager().versioned(hActive);
-			new RevisionGraphDialog("Hypergraph Versioning - History of " + vo, 
+			new RevisionDialog("Hypergraph Versioning - History of " + vo, 
 									 getWorkspace(), 
 									 vo, 
 									 this).build().showDialog();
@@ -311,7 +311,7 @@ public class VHGOwlEditorKit extends HGOwlEditorKit
 			return;
 		}
 		final VersionedOntology vo = versionManager().versioned(hActive);
-		final RevisionGraphDialog dlg = new RevisionGraphDialog(
+		final RevisionDialog dlg = new RevisionDialog(
 				"Hypergraph Versioning - Revert " + vo, 
 				 getWorkspace(), 
 				 vo, 

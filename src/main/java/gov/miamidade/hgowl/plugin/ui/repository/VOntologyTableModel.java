@@ -115,15 +115,20 @@ public class VOntologyTableModel extends AbstractTableModel
 		Revision rev = revisions.get(revisionIndex);
 		switch (columnIndex)
 		{
-			case 0: return (revisionIndex == revisions.size() - 1 ? "HEAD":"") + " " + branchName(rev);
+			case 0: return (rev.children().isEmpty() ? "HEAD":"") + " " + branchName(rev);
 			case 1: return rev.getAtomHandle();
 			case 2: return new java.util.Date(rev.timestamp());
 			case 3: return rev.user();
 			case 4: return rev.comment() == null ? "" : rev.comment();
 			// TODO - we may not have a single parent here...the whole think needs redoing
-			case 5: return versioning.changes(versionedOntology.graph(), 
-											  rev.getAtomHandle(), 
-											  revisions.get(revisionIndex-1).getAtomHandle()).changes();
+			case 5:
+			{
+				Revision parent = versioning.parentInSameBranch(rev);				
+				return parent == null ? "NA" : 
+					versioning.changes(versionedOntology.graph(), 
+						rev.getAtomHandle(), 
+						parent.getAtomHandle()).changes().size();
+			}
 			default:return "unknown col index";
 		}
 	}

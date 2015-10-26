@@ -1,10 +1,22 @@
 package gov.miamidade.hgowl.plugin;
 
+import java.awt.FlowLayout;
+
+import gov.miamidade.hgowl.plugin.ui.versioning.RevisionDialog;
+import gov.miamidade.hgowl.plugin.ui.versioning.RevisionGraphPanel;
+
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.BevelBorder;
 
 import org.hypergraphdb.app.owl.HGDBOntology;
+import org.hypergraphdb.app.owl.test.TU;
+import org.hypergraphdb.app.owl.test.versioning.TestContext;
 import org.hypergraphdb.app.owl.versioning.Revision;
+import org.hypergraphdb.app.owl.versioning.VersionManager;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
+import org.hypergraphdb.app.owl.versioning.versioning;
 import org.semanticweb.owlapi.model.IRI;
 
 public class Standalone
@@ -14,23 +26,58 @@ public class Standalone
 		System.out.println(s);
 	}
 	
-	public static void main(String [] args)
+	static void testGraphShow(String dblocation)
 	{
+		TU.ctx.set(TU.newCtx(dblocation));		
+		VersionedOntology vo = RevisionGraphPanel.createTestData(Singles.versionManager().graph());
+		System.out.println(vo.revisions());
+		versioning.printRevisionGraph(vo);
+	}
+
+	static void testRevisionDialog(String dblocation)
+	{
+		TU.ctx.set(TU.newCtx(dblocation));		
 		JFrame frame = new JFrame("Test Me");
-		frame.setSize(500,  500);
-		trace("HG Location:" + HGOwlProperties.getInstance().getHgLocationFolderPath());
-		IRI iri = IRI.create("hgdb://www.semanticweb.org/borislav/ontologies/2015/7/untitled-ontology-256");
+		IRI iri = IRI.create("hgdb://testrevisiongraphpanel.io/670797e5-d2a8-44d8-a07c-47d0cf229d94");
 		HGDBOntology ontology = Singles.vdRepo().getOntologyByDocumentIRI(iri); 
 		trace("ontology: " + ontology);
 		VersionedOntology versioned = Singles.versionManager().versioned(ontology.getAtomHandle());
-		for (Revision rev : versioned.revisions())
-		{
-			System.out.println("Rev " + rev);
-		}
-//		frame.setVisible(true);
+//		for (Revision rev : versioned.revisions())
+//		{
+//			System.out.println("Rev " + rev);
+//		}
+				
+//		VersionedOntology versioned = RevisionGraphPanel.createTestData(Singles.versionManager().graph());
+
+		frame.setSize(500,  900);
+		frame.setVisible(true);
 //		VHGCommitDialog.showDialog(frame, versioned);
-		Singles.vdRepo().dispose();		
+		RevisionDialog dlg = new RevisionDialog("Hypergraph Versioning - History of " + versioned, 
+								 frame, 
+								 versioned, 
+								 null).build().showDialog();
+		
+		// Just the panel
+		
+//		JPanel panel = new JPanel();
+//		panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
+//		frame.setContentPane(panel);
+//		RevisionGraphPanel revpanel = new RevisionGraphPanel(versioned);
+//		revpanel.build();
+//		panel.add(revpanel);
+//		revpanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
+		
+		
+//		Singles.vdRepo().dispose();		
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		frame.dispose();
+//		frame.dispose();		
+	}
+	
+	public static void main(String [] args)
+	{
+		String dblocation = HGOwlProperties.getInstance().getHgLocationFolderPath();
+		trace("HG Location:" + dblocation);
+		//testGraphShow(dblocation);
+		testRevisionDialog(dblocation);
 	}
 }

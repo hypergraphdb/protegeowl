@@ -216,7 +216,8 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 					else
 						versioned.goTo(versioned.merge(versionManager().user(), 
 													   "auto merge", 
-													    versioned.revision(), branchHead));
+													   branchHead.branch() != null ? branchHead.branch().name():null,
+													   versioned.revision(), branchHead));
 					causeViewUpdate();
 				}
 			}

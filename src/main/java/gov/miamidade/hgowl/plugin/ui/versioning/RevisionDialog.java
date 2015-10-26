@@ -32,7 +32,7 @@ import org.hypergraphdb.app.owl.versioning.versioning;
 import org.hypergraphdb.util.Pair;
 import org.protege.editor.owl.OWLEditorKit;
 
-public class RevisionGraphDialog extends DialogBase implements ListSelectionListener
+public class RevisionDialog extends DialogBase implements ListSelectionListener
 {
 
 	public static final int MAX_CHANGES_SHOWN = 250;
@@ -54,7 +54,7 @@ public class RevisionGraphDialog extends DialogBase implements ListSelectionList
 	// private DateFormat dateF = DateFormat.getDateTimeInstance();
  
 
-	public RevisionGraphDialog(String title, Component parent, VersionedOntology vo, OWLEditorKit kit)
+	public RevisionDialog(String title, Component parent, VersionedOntology vo, OWLEditorKit kit)
 	{
 		super(SwingUtilities.windowForComponent(parent));
 		this.versionedOntology = vo;
@@ -63,13 +63,13 @@ public class RevisionGraphDialog extends DialogBase implements ListSelectionList
 		this.parent = parent;
 	}
 
-	public RevisionGraphDialog showDialog()
+	public RevisionDialog showDialog()
 	{
 		setVisible(true);
 		return this;
 	}
 
-	public RevisionGraphDialog build()
+	public RevisionDialog build()
 	{
 		setLayout(new BorderLayout());
 		String message = "<html> <table width='100%' border='0'>"
@@ -82,13 +82,16 @@ public class RevisionGraphDialog extends DialogBase implements ListSelectionList
 		JSplitPane centerPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		// TOP SHOWS REVISIONS
 		revisions = versionedOntology.revisions();
-		ontologyView = new VOntologyViewPanel(versionedOntology, revisions);
-		ontologyView.getTable().getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+		ontologyView = new VOntologyViewPanel(versionedOntology);
+		ontologyView.getTable().getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		ontologyView.getTable().getSelectionModel().addListSelectionListener(this);
 		centerPanel.setLeftComponent(ontologyView);
 
 		// BOTTOM SHOWS SELECTED CHANGESET
-		changeSetPanel = new ChangeSetTablePanel(versionedOntology.ontology(), versionedOntology.graph(), kit); 
+		changeSetPanel = new ChangeSetTablePanel(versionedOntology.ontology(), 
+												 versionedOntology.graph(), 
+												 kit); 
 		// centerPanel.add(new JScrollPane(changeSetList));
 		centerPanel.setRightComponent(changeSetPanel);
 		centerPanel.setDividerLocation(150);
@@ -126,7 +129,7 @@ public class RevisionGraphDialog extends DialogBase implements ListSelectionList
 		this.dispose();
 	}
 
-	public RevisionGraphDialog action(String caption, Runnable runnable)
+	public RevisionDialog action(String caption, Runnable runnable)
 	{
 		actions.add(new Pair<String, Runnable>(caption, runnable));
 		return this;

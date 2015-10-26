@@ -70,7 +70,7 @@ public class ChangeSetTable extends JTable
 		TableCellRenderer col1Renderer;
 		if (!newMode.equals(changeSetTableModel.getMode()))
 		{
-			if (newMode.equals(ChangeDisplayMode.OWL))
+			if (newMode.equals(ChangeDisplayMode.OWL) && kit != null)
 			{
 				col1Renderer = new ChangeRendererWithConflict(kit);
 			}
