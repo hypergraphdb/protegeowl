@@ -5,8 +5,10 @@ import static org.hypergraphdb.app.owl.test.TU.*;
 import org.hypergraphdb.app.owl.test.TU;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +31,7 @@ import org.hypergraphdb.app.owl.versioning.ChangeLink;
 import org.hypergraphdb.app.owl.versioning.Revision;
 import org.hypergraphdb.app.owl.versioning.VersionManager;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
+import org.hypergraphdb.app.owl.versioning.versioning;
 import org.hypergraphdb.util.Pair;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -37,37 +40,38 @@ public class RevisionGraphPanel extends JPanel
 {
 	private static final long serialVersionUID = -6943157589623626498L;
 
-	private int layerSize = 3;
-	private int cellWidth = 20, cellHeight = 40;
+	int yoffset = 0;
+	int cellWidth = 10, cellHeight = 40;
 	int radius = 5;
 	private VersionedOntology versionedOntology;
 	private List<Revision> revisions;
+	private List<List<Revision>> columns; 
+	private boolean [][] adjacencyMatrix;  // [i][j] == true iff revisions.get(i) is the direct parent of revisions.get(j)
 	
-//	SortedMap<Integer, HGHandle[]> layers = null;
-//	Map<HGHandle, Pair<Integer, Integer>> coordinates = new HashMap<HGHandle, Pair<Integer, Integer>>();
-	
-	void initLayers()
+	void computeColumns()
 	{
-		if (layers != null) return;
-		CoffmanGraham algo = new CoffmanGraham(versionedOntology.graph(), versionedOntology.getRootRevision());		
-		layers = algo.coffmanGrahamLayers(layerSize);
-		for (int i = 0; i < layers.size(); i++)
+		columns = new ArrayList<List<Revision>>();
+		for (int current = revisions.size() - 1; current >= 0; current--)
 		{
-			int ypos = i;			
-			HGHandle [] data = layers.get(i + 1);
-			for (int xpos = 0; xpos < data.length; xpos++)
-				coordinates.put(data[xpos], new Pair<Integer, Integer>(xpos, ypos));
-		}		
-	}
-	
-	int cellWidth()
-	{
-		return cellWidth;
-	}
-	
-	int cellHeight()
-	{
-		return cellHeight;
+			Revision rev = revisions.get(current);
+			boolean placed = false;
+			for (List<Revision> column : columns)
+			{
+				Revision last = column.get(column.size() - 1);
+				if (last.parents().contains(rev.getAtomHandle()))
+				{
+					column.add(rev);
+					placed = true;
+					break;
+				}
+			}
+			if (!placed)
+			{
+				ArrayList<Revision> column = new ArrayList<Revision>();
+				column.add(rev);
+				columns.add(column);
+			}
+		}
 	}
 	
 	void drawCircleByCenter(Graphics g, int x, int y, Color color)
@@ -75,75 +79,89 @@ public class RevisionGraphPanel extends JPanel
          g.setColor(color);
          int centerX = cellWidth*x + cellWidth / 2;
          int centerY = cellHeight*y + cellHeight / 2;
-         g.fillOval(centerX-radius, centerY-radius, 2*radius, 2*radius);
+         g.fillOval(centerX-radius, yoffset + centerY-radius, 2*radius, 2*radius);
     }
 	 
 	void drawConnection(Graphics g, int parentx, int parenty, int childx, int childy)
 	{
 		g.setColor(Color.blue);
         int parentCenterX = cellWidth*parentx + cellWidth / 2;
-        int parentCenterY = cellHeight*parenty + cellHeight / 2;
+        int parentCenterY = yoffset + cellHeight*parenty + cellHeight / 2;
         int childCenterX = cellWidth*childx + cellWidth / 2;
-        int childCenterY = cellHeight*childy + cellHeight / 2;		
+        int childCenterY = yoffset + cellHeight*childy + cellHeight / 2;		
 		g.drawLine(parentCenterX, parentCenterY - radius, childCenterX, childCenterY + radius);
 	}
 
-	public RevisionGraphPanel(VersionedOntology versionedOntology, List<Revision> revisions)
+	public RevisionGraphPanel(VersionedOntology versionedOntology, 
+							  List<Revision> revisions,
+							  boolean [][] adjacencyMatrix)
 	{	
 		this.versionedOntology = versionedOntology;
 		this.revisions = revisions;
+		this.adjacencyMatrix = adjacencyMatrix;
+		computeColumns();
+		versioning.printRevisionGraph(versionedOntology);
+		Dimension dims = new Dimension(this.columns.size()*cellWidth(), revisions.size()*cellHeight());
+//		this.setMaximumSize(dims);
+//		this.setMinimumSize(dims);
+		this.setPreferredSize(dims);
 	}
 	
 	public RevisionGraphPanel build()
 	{
-//		setSize(400, 600);
 		return this;
 	}
 	
 	public void paint(Graphics g)
 	{
-		initLayers();
-		HyperGraph graph = versionedOntology.graph();
-		for (int i = 0; i < layers.size(); i++)
+		HashMap<HGHandle, Pair<Integer, Integer>> coordinates = 
+				new HashMap<HGHandle, Pair<Integer, Integer>>();
+		for (int row = revisions.size() - 1; row >= 0; row--)
 		{
-			HGHandle [] data = layers.get(i + 1);
-			for (HGHandle current : data)
+			Revision rev = revisions.get(row);
+			int col = 0;
+			while (!columns.get(col).contains(rev))
+				col++;
+			int ycoord = revisions.size() - row - 1;
+			int xcoord = col;
+			drawCircleByCenter(g, xcoord, ycoord, Color.blue);
+			coordinates.put(rev.getAtomHandle(), new Pair<Integer, Integer>(xcoord, ycoord));
+		}
+		for (int row = revisions.size() - 1; row >= 0; row--)
+		{
+			Revision rev = revisions.get(row);
+			Pair<Integer, Integer> currentCoord = coordinates.get(rev.getAtomHandle());
+			for (HGHandle parentHandle : rev.parents())
 			{
-				Revision rev = graph.get(current);
-				Pair<Integer, Integer> currentCoord = coordinates.get(current);				
-				this.drawCircleByCenter(g, currentCoord.getFirst(), currentCoord.getSecond(), Color.blue);
-//				List<HGHandle> parents = graph.findAll(hg.apply(
-//						hg.targetAt(graph, 0), 
-//						hg.and(hg.type(ChangeLink.class), 
-//							   hg.orderedLink(hg.anyHandle(), hg.anyHandle(), current))));
-				Set<HGHandle> parents = rev.parents();
-				for (HGHandle parent : parents)
-				{
-					Pair<Integer, Integer> parentCoord = coordinates.get(parent);
-					if (parentCoord != null)
-					{
-						Revision prev = graph.get(parent);
-						System.out.println("Drawing line b/w parent " + prev.comment() + " and " + rev.comment());
-						drawConnection(g, 
-								  	   parentCoord.getFirst(), 
-								  	   parentCoord.getSecond(), 
-								  	   currentCoord.getFirst(), 
-								  	   currentCoord.getSecond());
-					}
-				}
+				Pair<Integer, Integer> parentCoord = coordinates.get(parentHandle);		
+				drawConnection(g, 
+					  	   parentCoord.getFirst(), 
+					  	   parentCoord.getSecond(), 
+					  	   currentCoord.getFirst(), 
+					  	   currentCoord.getSecond());				
 			}
 		}
-//		
-//		int width = this.getWidth();
-//		int height = this.getHeight();
-//        // Circular Surface
-//        drawCircleByCenter(g, width/2, height/2, width/2, Color.RED);
-//        Random r = new Random();
-//        Point center = new Point();
-//        center.x=r.nextInt(width/2);
-//        center.y=r.nextInt(width/2);
-//        drawCircleByCenter(g, center.x, center.y, width/15, Color.BLUE);
     }	
+	
+	public int cellWidth() 
+	{ 
+		return cellWidth; 
+	}
+	public RevisionGraphPanel cellWidth(int cellWidth) 
+	{ 
+		this.cellWidth = cellWidth; 
+		return this; 
+	}
+	public RevisionGraphPanel cellHeight(int cellHeight) 
+	{ 
+		this.cellHeight = cellHeight;
+		this.yoffset = cellHeight * 1;
+		return this; 
+	}
+	public int cellHeight() 
+	{ 
+		return cellHeight; 
+	}
 	
 	public static VersionedOntology createTestData(HyperGraph graph)
 	{
