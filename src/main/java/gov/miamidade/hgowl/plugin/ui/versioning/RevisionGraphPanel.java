@@ -1,40 +1,19 @@
 package gov.miamidade.hgowl.plugin.ui.versioning;
 
-import static org.hypergraphdb.app.owl.test.TU.*;
-
-import org.hypergraphdb.app.owl.test.TU;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.UUID;
 
 import javax.swing.JPanel;
 
 import org.hypergraphdb.HGHandle;
-import org.hypergraphdb.HGQuery.hg;
-import org.hypergraphdb.HyperGraph;
-import org.hypergraphdb.app.owl.HGDBOntology;
-import org.hypergraphdb.app.owl.HGDBOntologyManager;
-import org.hypergraphdb.app.owl.HGOntologyManagerFactory;
-import org.hypergraphdb.app.owl.util.CoffmanGraham;
-import org.hypergraphdb.app.owl.versioning.ChangeLink;
 import org.hypergraphdb.app.owl.versioning.Revision;
-import org.hypergraphdb.app.owl.versioning.VersionManager;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.hypergraphdb.app.owl.versioning.versioning;
 import org.hypergraphdb.util.Pair;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
 
 public class RevisionGraphPanel extends JPanel
 {
@@ -43,10 +22,13 @@ public class RevisionGraphPanel extends JPanel
 	int yoffset = 0;
 	int cellWidth = 10, cellHeight = 40;
 	int radius = 5;
-	private VersionedOntology versionedOntology;
+	int [] selectedRows = new int[0];
+	Color selectionBackground;
+	
+//	private VersionedOntology versionedOntology;
 	private List<Revision> revisions;
 	private List<List<Revision>> columns; 
-	private boolean [][] adjacencyMatrix;  // [i][j] == true iff revisions.get(i) is the direct parent of revisions.get(j)
+//	private boolean [][] adjacencyMatrix;  // [i][j] == true iff revisions.get(i) is the direct parent of revisions.get(j)
 	
 	void computeColumns()
 	{
@@ -96,9 +78,9 @@ public class RevisionGraphPanel extends JPanel
 							  List<Revision> revisions,
 							  boolean [][] adjacencyMatrix)
 	{	
-		this.versionedOntology = versionedOntology;
+//		this.versionedOntology = versionedOntology;
 		this.revisions = revisions;
-		this.adjacencyMatrix = adjacencyMatrix;
+//		this.adjacencyMatrix = adjacencyMatrix;
 		computeColumns();
 		versioning.printRevisionGraph(versionedOntology);
 		Dimension dims = new Dimension(this.columns.size()*cellWidth(), revisions.size()*cellHeight());
@@ -113,7 +95,15 @@ public class RevisionGraphPanel extends JPanel
 	}
 	
 	public void paint(Graphics g)
-	{
+	{		
+		g.clearRect(0, 0, getWidth(), getHeight());
+		if (!revisions.isEmpty() && selectedRows.length > 0)
+		{
+			g.setColor(selectionBackground);
+			for (int selectRow : selectedRows)
+				g.fillRect(0, selectRow*cellHeight, this.getWidth(), cellHeight);			
+		}
+ 
 		HashMap<HGHandle, Pair<Integer, Integer>> coordinates = 
 				new HashMap<HGHandle, Pair<Integer, Integer>>();
 		for (int row = revisions.size() - 1; row >= 0; row--)
@@ -143,6 +133,18 @@ public class RevisionGraphPanel extends JPanel
 		}
     }	
 	
+	public RevisionGraphPanel selectedRows(int [] selectedRows)
+	{
+		this.selectedRows = selectedRows;
+		return this;
+	}
+	
+	public RevisionGraphPanel selectionBackground(Color selectionBackground)
+	{
+		this.selectionBackground = selectionBackground;
+		return this;
+	}
+	
 	public int cellWidth() 
 	{ 
 		return cellWidth; 
@@ -162,7 +164,7 @@ public class RevisionGraphPanel extends JPanel
 	{ 
 		return cellHeight; 
 	}
-	
+/*	
 	public static VersionedOntology createTestData(HyperGraph graph)
 	{
 		try 
@@ -228,4 +230,5 @@ public class RevisionGraphPanel extends JPanel
 			throw new RuntimeException(ex);
 		}
 	}
+	*/
 }

@@ -21,7 +21,6 @@ public class DialogBase extends JDialog
             @Override
             public void actionPerformed(ActionEvent e) {
                 setVisible(false);
-                System.exit(0);
             }
         };
         getRootPane().registerKeyboardAction(escListener,

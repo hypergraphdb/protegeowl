@@ -138,54 +138,63 @@ public class RevisionDialog extends DialogBase implements ListSelectionListener
 	 * 
 	 * @param selectedRev
 	 */
-	public void updateChangeSetList(int selectedRevisionIndex)
+	public void updateChangeSetList(int selection1, int selection2)
 	{
 		String firstItemString = null;
 		ChangeSet<VersionedOntology> selectedCS = null;
 		SortedSet<Integer> selectedCSConflicts = null;
 		HyperGraph graph = versionedOntology.graph();
-		if (selectedRevisionIndex != -1)
-		{
-			if (selectedRevisionIndex == revisions.size())
-			{
-				// Pending changes in local workingset
-				firstItemString = "<html>Showing <b>uncommitted</b> Changes that were made by <b>you</b> </html>";
-				selectedCS = versionedOntology.changes(); 
-				// TODO...
-				selectedCSConflicts = new TreeSet<Integer>();//versionedOntology.getWorkingSetConflicts();
-				// renderChangeset(lm, selectedCS);
-			}
-			else if (selectedRevisionIndex > 0)
-			{
-				Revision selectedRev = revisions.get(selectedRevisionIndex);
-				selectedCS = versioning.changes(graph, 
-												selectedRev.getAtomHandle(), 
-												revisions.get(selectedRevisionIndex-1).getAtomHandle());
-				firstItemString = "<html>Showing Changes that were commited by <b>" + selectedRev.user() + "</b> at "
-						+ VDRenderer.render(new java.util.Date(selectedRev.timestamp())) + 
-						" for revision " + selectedRev + "</html>";
-				firstItemString += "<br> with comment <b>" + selectedRev.comment() + "</b>";
-				// renderChangeset(lm, selectedCS);
-			}
-			else if (selectedRevisionIndex == 0)
-			{
-				Revision selectedRev = revisions.get(selectedRevisionIndex);
-				firstItemString = ("<html> Initial revision that was created by <b>" + selectedRev.user() + "</b> at "
-						+ VDRenderer.render(new java.util.Date(selectedRev.timestamp())) + "</html>");
-				
-				selectedCS = graph.get(new VersionManager(graph, selectedRev.user()).emptyChangeSetHandle());
-			}
-			else
-			{
-				System.err.println("Cannot render revision: " + selectedRevisionIndex);
-				return;
-			}
-		}
-		else
-		{
-			// Empty list, nothing selected
-			firstItemString = EMPTY_LIST_TEXT;
-		}
+		Revision selectedRev = revisions.get(selection2);
+		selectedCS = versioning.changes(graph, 
+										selectedRev.getAtomHandle(), 
+										revisions.get(selection1).getAtomHandle());
+		firstItemString = "<html>Showing Changes that were commited by <b>" + selectedRev.user() + "</b> at "
+				+ VDRenderer.render(new java.util.Date(selectedRev.timestamp())) + 
+				" for revision " + selectedRev + "</html>";
+		firstItemString += "<br> with comment <b>" + selectedRev.comment() + "</b>";
+		
+//		if (selectedRevisionIndex != -1)
+//		{
+//			if (selectedRevisionIndex == revisions.size())
+//			{
+//				// Pending changes in local workingset
+//				firstItemString = "<html>Showing <b>uncommitted</b> Changes that were made by <b>you</b> </html>";
+//				selectedCS = versionedOntology.changes(); 
+//				// TODO...
+//				selectedCSConflicts = new TreeSet<Integer>();//versionedOntology.getWorkingSetConflicts();
+//				// renderChangeset(lm, selectedCS);
+//			}
+//			else if (selectedRevisionIndex > 0)
+//			{
+//				Revision selectedRev = revisions.get(selectedRevisionIndex);
+//				selectedCS = versioning.changes(graph, 
+//												selectedRev.getAtomHandle(), 
+//												revisions.get(selectedRevisionIndex-1).getAtomHandle());
+//				firstItemString = "<html>Showing Changes that were commited by <b>" + selectedRev.user() + "</b> at "
+//						+ VDRenderer.render(new java.util.Date(selectedRev.timestamp())) + 
+//						" for revision " + selectedRev + "</html>";
+//				firstItemString += "<br> with comment <b>" + selectedRev.comment() + "</b>";
+//				// renderChangeset(lm, selectedCS);
+//			}
+//			else if (selectedRevisionIndex == 0)
+//			{
+//				Revision selectedRev = revisions.get(selectedRevisionIndex);
+//				firstItemString = ("<html> Initial revision that was created by <b>" + selectedRev.user() + "</b> at "
+//						+ VDRenderer.render(new java.util.Date(selectedRev.timestamp())) + "</html>");
+//				
+//				selectedCS = graph.get(new VersionManager(graph, selectedRev.user()).emptyChangeSetHandle());
+//			}
+//			else
+//			{
+//				System.err.println("Cannot render revision: " + selectedRevisionIndex);
+//				return;
+//			}
+//		}
+//		else
+//		{
+//			// Empty list, nothing selected
+//			firstItemString = EMPTY_LIST_TEXT;
+//		}
 		changeSetPanel.setChangeSet(selectedCS.changes(), 
 									selectedCSConflicts, 
 									firstItemString);
@@ -198,26 +207,11 @@ public class RevisionDialog extends DialogBase implements ListSelectionListener
 			return;
 		else
 		{
-			// Row 0 shows pending changes selects latest changeset.
-			int selectedRevisionIndex = revisions.size() - ontologyView.getTable().getSelectedRow();
-			// System.out.println("SELECTED: " + selectedRevisionIndex);
-			if (selectedRevisionIndex >= 0 && selectedRevisionIndex <= revisions.size())
+			if (ontologyView.getTable().getSelectedRowCount() == 2)
 			{
-				if (selectedRevisionIndex != revisions.size())
-				{
-					selectedRevision = revisions.get(selectedRevisionIndex);
-				}
-				else
-				{
-					// Pending Changes selected
-					selectedRevision = null;
-				}
-				updateChangeSetList(selectedRevisionIndex);
-			}
-			else
-			{
-				selectedRevision = null;
-				updateChangeSetList(-1);
+				int rev1 = ontologyView.getTable().getSelectedRows()[0];
+				int rev2 = ontologyView.getTable().getSelectedRows()[1];
+				updateChangeSetList(rev1, rev2);
 			}
 		}
 	}
