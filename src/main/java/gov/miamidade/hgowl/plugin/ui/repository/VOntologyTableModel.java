@@ -127,7 +127,7 @@ public class VOntologyTableModel extends AbstractTableModel
 				return parent == null ? "NA" : 
 					versioning.changes(versionedOntology.graph(), 
 						rev.getAtomHandle(), 
-						parent.getAtomHandle()).changes().size();
+						parent.getAtomHandle()).size();
 			}
 			default:return "unknown col index";
 		}

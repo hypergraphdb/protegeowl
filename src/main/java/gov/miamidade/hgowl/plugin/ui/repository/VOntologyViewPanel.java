@@ -98,6 +98,11 @@ public class VOntologyViewPanel extends JPanel
 		createUI();
 	}
 
+	public List<Revision> orderedRevisions()
+	{
+		return revisions;
+	}
+	
 	private JPopupMenu revisionPopupMenu(final Revision revision)
 	{
 		JPopupMenu menu = new JPopupMenu();
@@ -140,14 +145,6 @@ public class VOntologyViewPanel extends JPanel
 		    }
 		};
 		table.setDefaultRenderer(Object.class, cellRenderer);
-		
-//		// 0.Master 1.Revision 2.TimeStamp 3.User 4.Comment 5.#Changes (after
-//		// revision)
-//		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
-//		rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
-//		table.getColumnModel().getColumn(1).setCellRenderer(rightRenderer);
-//		table.getColumnModel().getColumn(2).setCellRenderer(rightRenderer);
-//		table.getColumnModel().getColumn(5).setCellRenderer(rightRenderer);
 
 		table.getColumnModel().getColumn(0).setMinWidth(20);
 		table.getColumnModel().getColumn(1).setMinWidth(30);
@@ -170,7 +167,8 @@ public class VOntologyViewPanel extends JPanel
 				// System.out.println(table.getValueAt(table.getSelectedRow(),
 				// 0).toString());
 				while (table.getSelectedRowCount() > 2)
-					table.getSelectionModel().removeSelectionInterval(table.getSelectionModel().getLeadSelectionIndex(),
+					table.getSelectionModel().removeSelectionInterval(
+							table.getSelectionModel().getLeadSelectionIndex(),
 							table.getSelectionModel().getLeadSelectionIndex());
 				graphpanel.selectedRows(table.getSelectedRows());
 				graphpanel.selectionBackground(table.getSelectionBackground());

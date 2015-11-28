@@ -1,6 +1,7 @@
 package gov.miamidade.hgowl.plugin.ui.versioning;
 
 import gov.miamidade.hgowl.plugin.ui.DialogBase;
+
 import gov.miamidade.hgowl.plugin.ui.repository.VOntologyViewPanel;
 import gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDRenderer;
 
@@ -12,8 +13,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
-import java.util.TreeSet;
-
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -22,13 +21,11 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
 import org.hypergraphdb.HyperGraph;
-import org.hypergraphdb.app.owl.versioning.ChangeSet;
 import org.hypergraphdb.app.owl.versioning.Revision;
-import org.hypergraphdb.app.owl.versioning.VersionManager;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.hypergraphdb.app.owl.versioning.versioning;
+import org.hypergraphdb.app.owl.versioning.change.VChange;
 import org.hypergraphdb.util.Pair;
 import org.protege.editor.owl.OWLEditorKit;
 
@@ -51,9 +48,6 @@ public class RevisionDialog extends DialogBase implements ListSelectionListener
 	// TODO...it's not a linear list anymore, maybe do a topological ordering
 	List<Revision> revisions = null;
 	
-	// private DateFormat dateF = DateFormat.getDateTimeInstance();
- 
-
 	public RevisionDialog(String title, Component parent, VersionedOntology vo, OWLEditorKit kit)
 	{
 		super(SwingUtilities.windowForComponent(parent));
@@ -80,13 +74,12 @@ public class RevisionDialog extends DialogBase implements ListSelectionListener
 		JPanel northPanel = new JPanel(new BorderLayout(5, 5));
 		northPanel.add(new JLabel(message), BorderLayout.NORTH);
 		JSplitPane centerPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		// TOP SHOWS REVISIONS
-		revisions = versionedOntology.revisions();
 		
-		ontologyView = new VOntologyViewPanel(versionedOntology);
+		ontologyView = new VOntologyViewPanel(versionedOntology);		
 		ontologyView.getTable().getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		ontologyView.getTable().getSelectionModel().addListSelectionListener(this);
 		centerPanel.setLeftComponent(ontologyView);
+		revisions = ontologyView.orderedRevisions();
 
 		// BOTTOM SHOWS SELECTED CHANGESET
 		changeSetPanel = new ChangeSetTablePanel(versionedOntology.ontology(), 
@@ -141,17 +134,25 @@ public class RevisionDialog extends DialogBase implements ListSelectionListener
 	public void updateChangeSetList(int selection1, int selection2)
 	{
 		String firstItemString = null;
-		ChangeSet<VersionedOntology> selectedCS = null;
+		List<VChange<VersionedOntology>> changes = null;
 		SortedSet<Integer> selectedCSConflicts = null;
 		HyperGraph graph = versionedOntology.graph();
-		Revision selectedRev = revisions.get(selection2);
-		selectedCS = versioning.changes(graph, 
-										selectedRev.getAtomHandle(), 
-										revisions.get(selection1).getAtomHandle());
-		firstItemString = "<html>Showing Changes that were commited by <b>" + selectedRev.user() + "</b> at "
-				+ VDRenderer.render(new java.util.Date(selectedRev.timestamp())) + 
-				" for revision " + selectedRev + "</html>";
-		firstItemString += "<br> with comment <b>" + selectedRev.comment() + "</b>";
+		Revision from, to;
+		if (selection1 > selection2)
+		{
+			from = revisions.get(revisions.size() - selection1);
+			to = revisions.get(revisions.size() - selection2);
+		}
+		else
+		{
+			from = revisions.get(revisions.size() - selection2);
+			to = revisions.get(revisions.size() - selection1);			
+		}
+		changes = versioning.changes(graph, from.getAtomHandle(), to.getAtomHandle());
+		firstItemString = "<html>Showing Changes that were commited by <b>" + to.user() + "</b> at "
+				+ VDRenderer.render(new java.util.Date(to.timestamp())) + 
+				" for revision " + to + "</html>";
+		firstItemString += "<br> with comment <b>" + to.comment() + "</b>";
 		
 //		if (selectedRevisionIndex != -1)
 //		{
@@ -195,7 +196,7 @@ public class RevisionDialog extends DialogBase implements ListSelectionListener
 //			// Empty list, nothing selected
 //			firstItemString = EMPTY_LIST_TEXT;
 //		}
-		changeSetPanel.setChangeSet(selectedCS.changes(), 
+		changeSetPanel.setChangeSet(changes, 
 									selectedCSConflicts, 
 									firstItemString);
 	}
@@ -203,16 +204,23 @@ public class RevisionDialog extends DialogBase implements ListSelectionListener
 	@Override
 	public void valueChanged(ListSelectionEvent e)
 	{
-		if (e.getValueIsAdjusting())
-			return;
-		else
+		try
 		{
-			if (ontologyView.getTable().getSelectedRowCount() == 2)
+			if (e.getValueIsAdjusting())
+				return;
+			else
 			{
-				int rev1 = ontologyView.getTable().getSelectedRows()[0];
-				int rev2 = ontologyView.getTable().getSelectedRows()[1];
-				updateChangeSetList(rev1, rev2);
+				if (ontologyView.getTable().getSelectedRowCount() == 2)
+				{
+					int rev1 = ontologyView.getTable().getSelectedRows()[0];
+					int rev2 = ontologyView.getTable().getSelectedRows()[1];
+					updateChangeSetList(rev1, rev2);
+				}
 			}
+		}
+		catch (Throwable t)
+		{
+			t.printStackTrace(System.err);
 		}
 	}
 	
