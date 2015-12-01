@@ -1,7 +1,6 @@
 package gov.miamidade.hgowl.plugin.ui.versioning;
 
 import gov.miamidade.hgowl.plugin.ui.DialogBase;
-
 import gov.miamidade.hgowl.plugin.ui.repository.VOntologyViewPanel;
 import gov.miamidade.hgowl.plugin.ui.versioning.distributed.VDRenderer;
 
@@ -13,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
+
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -21,11 +21,12 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
 import org.hypergraphdb.HyperGraph;
 import org.hypergraphdb.app.owl.versioning.Revision;
+import org.hypergraphdb.app.owl.versioning.VChange;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.hypergraphdb.app.owl.versioning.versioning;
-import org.hypergraphdb.app.owl.versioning.change.VChange;
 import org.hypergraphdb.util.Pair;
 import org.protege.editor.owl.OWLEditorKit;
 

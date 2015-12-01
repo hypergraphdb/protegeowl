@@ -3,11 +3,6 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.hypergraphdb</groupId>
-    <artifactId>hgdbapps</artifactId>
-    <version>1.3-SNAPSHOT</version>  
-  </parent>
   <properties>
     <packageit>bundle</packageit>
     <bundle.symbolicName>gov.miamidade.owlgdb;singleton:=true</bundle.symbolicName>
@@ -15,7 +10,9 @@
     <hgdb.version>1.3</hgdb.version>            
   </properties>  
   <packaging>bundle</packaging>
+  <groupId>org.hypergraphdb</groupId>
   <artifactId>hgdbprotege</artifactId>
+  <version>1.4-SNAPSHOT</version>
   <name>HyperGraphDB OWL Protege Plugin</name>
   <description>A Protege plugin offering HyperGraphDB based back-end for OWL ontologies including versioning and collaboration tools.</description>
   

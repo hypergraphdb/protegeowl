@@ -3,6 +3,7 @@ package gov.miamidade.hgowl.plugin.ui.versioning;
 import gov.miamidade.hgowl.plugin.ui.versioning.ChangeSetTable.ChangeDisplayMode;
 
 
+
 import java.awt.BorderLayout;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -26,8 +27,8 @@ import javax.swing.TransferHandler;
 
 import org.hypergraphdb.HyperGraph;
 import org.hypergraphdb.app.owl.HGDBOntology;
+import org.hypergraphdb.app.owl.versioning.VChange;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
-import org.hypergraphdb.app.owl.versioning.change.VChange;
 import org.protege.editor.owl.OWLEditorKit;
 
 /**
