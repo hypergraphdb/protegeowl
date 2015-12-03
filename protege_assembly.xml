@@ -1,0 +1,43 @@
+<assembly
+	xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+	<id>plugins</id>
+	<formats>
+		<format>tar.gz</format>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<fileSets>
+		<fileSet>
+		    <directory>${project.build.directory}</directory>
+		    <outputDirectory>plugins</outputDirectory>
+		    <includes>
+		        <include>${project.artifactId}-${project.version}.jar</include>
+		        <!--
+		        <include>dependency/hgdb-${hgdb.version}.jar</include>
+		        <include>dependency/hgbdbje-${hgdb.version}.jar</include>
+		        <include>dependency/hgdbmanagement-${hgdb.version}.jar</include>
+		        <include>dependency/hgdbowl-${project.version}.jar</include>
+		        <include>dependency/hgdbp2p-${project.version}.jar</include>
+-->		        
+		     </includes>		    
+		</fileSet>		
+	</fileSets>
+	<dependencySets>
+        <dependencySet>
+            <outputDirectory>plugins</outputDirectory>
+            <useStrictFiltering>true</useStrictFiltering>
+            <useTransitiveDependencies>true</useTransitiveDependencies>
+            <includes>
+                <include>${project.groupId}:hgdbmanagement</include>
+                <include>${project.groupId}:hgdb</include>
+                <include>${project.groupId}:hgdbowl</include>
+                <include>${project.groupId}:hgbdbje</include>
+                <include>${project.groupId}:hgdbp2p</include>
+                <include>org.sharegov:mjson</include>
+            </includes>
+        </dependencySet>
+    </dependencySets>
+
+</assembly>
