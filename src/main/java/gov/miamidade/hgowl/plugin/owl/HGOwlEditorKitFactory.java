@@ -63,8 +63,9 @@ public class HGOwlEditorKitFactory extends OWLEditorKitFactory
 
 	public boolean isValidDescriptor(EditorKitDescriptor descriptor)
 	{
+		System.out.println("PUT HGDB Editor Kit as default.");
 		HGDBActivator.hgdbKitOnTop();
-		EditorKitManager em = ProtegeManager.getInstance().getEditorKitManager();
+		//EditorKitManager em = ProtegeManager.getInstance().getEditorKitManager();
 		URI uri = descriptor.getURI(OWLEditorKit.URI_KEY);
 		if (uri == null || uri.getScheme() == null)
 		{

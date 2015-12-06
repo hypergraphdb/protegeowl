@@ -22,8 +22,8 @@ public class HGOwlProperties
 
 	private static HGOwlProperties instance;
 
-	public static final String DEFAULT_HYPERGRAPH_LOCATION_FOLDER_PATH = System.getProperty("user.home")
-			+ System.getProperty("file.separator") + ".protegedb-je-17";
+	public static final String DEFAULT_HYPERGRAPH_LOCATION_FOLDER_PATH = 
+			System.getProperty("user.home") + System.getProperty("file.separator") + ".protegehgdb";
 
 	private static final boolean DEFAULT_SHOW_LEGACY_EDITOR_KIT = false;
 
