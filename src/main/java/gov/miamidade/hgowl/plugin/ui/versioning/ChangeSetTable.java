@@ -14,7 +14,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
 import org.hypergraphdb.HyperGraph;
-import org.hypergraphdb.app.owl.versioning.VChange;
+import org.hypergraphdb.app.owl.versioning.Change;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.protege.editor.owl.OWLEditorKit;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -53,13 +53,13 @@ public class ChangeSetTable extends JTable
 		getColumnModel().getColumn(ChangeSetTableModel.CHANGENR_COLUMN_INDEX).setMaxWidth(60);
 	}
 
-	public void setChangeSet(List<VChange<VersionedOntology>> changeSet, SortedSet<Integer> conflicts)
+	public void setChangeSet(List<Change<VersionedOntology>> changeSet, SortedSet<Integer> conflicts)
 	{
 		changeSetTableModel.refresh(changeSet, conflicts);
 		repaint();
 	}
 
-	public void setChangeSet(List<VChange<VersionedOntology>> changeSet)
+	public void setChangeSet(List<Change<VersionedOntology>> changeSet)
 	{
 		changeSetTableModel.refresh(changeSet, null);
 		repaint();

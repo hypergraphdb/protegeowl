@@ -24,7 +24,7 @@ import javax.swing.TransferHandler;
 import org.hypergraphdb.HyperGraph;
 import org.hypergraphdb.app.owl.HGDBOntology;
 import org.hypergraphdb.app.owl.versioning.ChangeSet;
-import org.hypergraphdb.app.owl.versioning.VChange;
+import org.hypergraphdb.app.owl.versioning.Change;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.hypergraphdb.app.owl.versioning.change.VOWLChangeFactory;
 import org.protege.editor.owl.OWLEditorKit;
@@ -110,10 +110,10 @@ public class ChangeSetPanel extends JPanel
 		// Iterate changeset reverse order
 		int nrOfchanges = cs.changes().size();
 		int i = nrOfchanges;
-		ListIterator<VChange<VersionedOntology>> lIt = cs.changes().listIterator(nrOfchanges);
+		ListIterator<Change<VersionedOntology>> lIt = cs.changes().listIterator(nrOfchanges);
 		while (lIt.hasPrevious() && (nrOfchanges - i) < maxChangesVisible)
 		{
-			VChange<VersionedOntology> vc = lIt.previous();
+			Change<VersionedOntology> vc = lIt.previous();
 			i--;
 			OWLOntologyChange c = VOWLChangeFactory.create(vc, onto, graph);
 			lm.addElement(c); // "" + VDRenderer.render(i) + " " +

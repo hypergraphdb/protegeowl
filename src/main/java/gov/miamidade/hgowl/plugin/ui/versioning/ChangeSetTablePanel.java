@@ -27,7 +27,7 @@ import javax.swing.TransferHandler;
 
 import org.hypergraphdb.HyperGraph;
 import org.hypergraphdb.app.owl.HGDBOntology;
-import org.hypergraphdb.app.owl.versioning.VChange;
+import org.hypergraphdb.app.owl.versioning.Change;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.protege.editor.owl.OWLEditorKit;
 
@@ -43,7 +43,7 @@ public class ChangeSetTablePanel extends JPanel
 	private static final long serialVersionUID = 1L;
 
 	private ChangeSetTable changeSetTable;
-	private List<VChange<VersionedOntology>> changeSet;
+	private List<Change<VersionedOntology>> changeSet;
 	private JLabel headerLabel;
 	private JLabel footerLabel = new JLabel("Select changes and press Ctrl-C to copy");
 	private JToggleButton displayModeBt = new JToggleButton("Render Functional");
@@ -84,12 +84,12 @@ public class ChangeSetTablePanel extends JPanel
 		// BorderLayout.PAGE_END);
 	}
 
-	public void setChangeSet(List<VChange<VersionedOntology>> cs, String headerText)
+	public void setChangeSet(List<Change<VersionedOntology>> cs, String headerText)
 	{
 		setChangeSet(cs, null, headerText);
 	}
 
-	public void setChangeSet(List<VChange<VersionedOntology>> cs, SortedSet<Integer> conflictIndices, String headerText)
+	public void setChangeSet(List<Change<VersionedOntology>> cs, SortedSet<Integer> conflictIndices, String headerText)
 	{
 		headerLabel.setText(headerText);
 		changeSet = cs;
@@ -102,7 +102,7 @@ public class ChangeSetTablePanel extends JPanel
 		}
 	}
 
-	public List<VChange<VersionedOntology>> getChangeSet()
+	public List<Change<VersionedOntology>> getChangeSet()
 	{
 		return changeSet;
 	}

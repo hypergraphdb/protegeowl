@@ -24,7 +24,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.hypergraphdb.HyperGraph;
 import org.hypergraphdb.app.owl.versioning.Revision;
-import org.hypergraphdb.app.owl.versioning.VChange;
+import org.hypergraphdb.app.owl.versioning.Change;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.hypergraphdb.app.owl.versioning.versioning;
 import org.hypergraphdb.util.Pair;
@@ -135,7 +135,7 @@ public class RevisionDialog extends DialogBase implements ListSelectionListener
 	public void updateChangeSetList(int selection1, int selection2)
 	{
 		String firstItemString = null;
-		List<VChange<VersionedOntology>> changes = null;
+		List<Change<VersionedOntology>> changes = null;
 		SortedSet<Integer> selectedCSConflicts = null;
 		HyperGraph graph = versionedOntology.graph();
 		Revision from, to;
