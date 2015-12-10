@@ -82,7 +82,7 @@ public class RevisionGraphPanel extends JPanel
 		this.revisions = revisions;
 //		this.adjacencyMatrix = adjacencyMatrix;
 		computeColumns();
-		versioning.printRevisionGraph(versionedOntology);
+		versioning.printRevisionGraph(versionedOntology, System.out);
 		Dimension dims = new Dimension(this.columns.size()*cellWidth(), revisions.size()*cellHeight());
 //		this.setMaximumSize(dims);
 //		this.setMinimumSize(dims);
