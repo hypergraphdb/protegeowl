@@ -77,12 +77,21 @@ public class VHGOwlEditorKit extends HGOwlEditorKit
 		OWLOntology activeOntology = getActiveOntology();
 		if (!(activeOntology instanceof HGDBOntology))
 		{
-			JOptionPane.showMessageDialog(
+			int userConfirm = JOptionPane.showConfirmDialog(
 				getWorkspace(),
-				"The active ontology is file based. It needs to be imported \r\n into the repositorty before Versioning can be used.",
+				"The active ontology is file based. It needs to be imported \r\n into the repositorty before Versioning can be used." +
+				"Would you like to import it?",
 				"Hypergraph Versioning - Add Ontology ",
-				JOptionPane.INFORMATION_MESSAGE);
-			return false;
+				JOptionPane.YES_NO_OPTION);
+			if (userConfirm == JOptionPane.YES_OPTION)
+			{
+				if (!handleAnImportRequest(activeOntology))
+					return false;
+				else
+					activeOntology = getActiveOntology();
+			}
+			else
+				return false;
 		}
 		HGDBOntology hgdbOntology = (HGDBOntology)activeOntology;
 		if (versionManager().isVersioned(hgdbOntology.getAtomHandle()))

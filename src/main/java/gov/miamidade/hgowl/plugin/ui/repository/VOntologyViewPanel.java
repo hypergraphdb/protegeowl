@@ -122,6 +122,8 @@ public class VOntologyViewPanel extends JPanel
 	{
 		tableModel = new VOntologyTableModel(versionedOntology, revisions);
 		table = new JTable(tableModel);
+	    table.getTableHeader().setResizingAllowed(true);
+	    table.getTableHeader().setVisible(true);
 
 		TableCellRenderer cellRenderer = new TableCellRenderer()
 		{
@@ -218,13 +220,16 @@ public class VOntologyViewPanel extends JPanel
 		SpringLayout layout = new SpringLayout();
 		internalPanel.setLayout(layout);
 		internalPanel.add(graphpanel);
+		internalPanel.add(table.getTableHeader());
 		internalPanel.add(table);
 		layout.putConstraint(SpringLayout.NORTH, graphpanel, 0, SpringLayout.NORTH, internalPanel);
 		layout.putConstraint(SpringLayout.WEST, graphpanel, 0, SpringLayout.WEST, internalPanel);
 		layout.putConstraint(SpringLayout.WEST, table, 0, SpringLayout.EAST, graphpanel);
-		layout.putConstraint(SpringLayout.NORTH, table, 0, SpringLayout.NORTH, internalPanel);
+		layout.putConstraint(SpringLayout.WEST, table.getTableHeader(), 0, SpringLayout.EAST, graphpanel);
+		layout.putConstraint(SpringLayout.NORTH, table.getTableHeader(), 0, SpringLayout.NORTH, internalPanel);
+		layout.putConstraint(SpringLayout.NORTH, table, 0, SpringLayout.SOUTH, table.getTableHeader());
 		layout.putConstraint(SpringLayout.EAST, table, 0, SpringLayout.EAST, internalPanel);
-		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));		
 		add(new JScrollPane(internalPanel));
 	}
 

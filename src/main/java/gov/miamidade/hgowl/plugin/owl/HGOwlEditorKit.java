@@ -585,11 +585,16 @@ public class HGOwlEditorKit extends OWLEditorKit
 	 * 
 	 * @param ont
 	 */
-	public boolean handleAnImportRequest(OWLOntology ont) throws Exception
+	public boolean handleAnImportRequest(OWLOntology ont)
 	{
-		// throw new UnsupportedOperationException("Sorry!");
-		return hghandleSaveAs(ont, new HGDBOntologyFormat());
-		//return false;
+		try
+		{
+			return hghandleSaveAs(ont, new HGDBOntologyFormat());
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**

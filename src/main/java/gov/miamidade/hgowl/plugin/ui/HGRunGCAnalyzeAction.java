@@ -1,6 +1,7 @@
 package gov.miamidade.hgowl.plugin.ui;
 
 import gov.miamidade.hgowl.plugin.owl.model.HGOwlModelManagerImpl;
+import gov.miamidade.hgowl.plugin.owlapi.apibinding.PHGDBOntologyManagerImpl;
 
 import java.awt.Toolkit;
 import java.awt.Window;
@@ -100,7 +101,7 @@ public class HGRunGCAnalyzeAction extends ProtegeOWLAction {
 	 */
 	public boolean mayRun() {
 		HGOwlModelManagerImpl mm = (HGOwlModelManagerImpl) this.getOWLModelManager();
-		HGDBOntologyManager om =  (HGDBOntologyManager) mm.getOWLOntologyManager();
+		PHGDBOntologyManagerImpl om =  (PHGDBOntologyManagerImpl) mm.getOWLOntologyManager();
 		return !om.hasInMemoryOntology();
 	}
 	

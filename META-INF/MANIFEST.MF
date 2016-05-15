@@ -20,21 +20,21 @@ Export-Package: gov.miamidade.hgowl.plugin.ui.versioning;uses:="org.pr
  ugin.owl.model,gov.miamidade.hgowl.plugin.ui.versioning,javax.swing,j
  avax.swing.table,org.hypergraphdb,org.protege.editor.core,javax.swing
  .event,gov.miamidade.hgowl.plugin.ui",gov.miamidade.hgowl.plugin.owl.
- model;uses:="org.protege.editor.owl.model.event,org.protege.editor.ow
- l.model,org.protege.editor.owl.ui.error,org.protege.editor.owl.model.
+ model;uses:="org.protege.editor.owl.model,org.protege.editor.owl.mode
+ l.event,org.protege.editor.owl.ui.error,org.protege.editor.owl.model.
  library,org.semanticweb.owlapi.model,org.semanticweb.owlapi.util,org.
  protege.editor.core.ui.error,org.protege.editor.owl.model.io,org.prot
  ege.editor.owl.model.selection.ontologies,org.protege.editor.owl.mode
  l.inference,org.protege.editor.owl.ui.clsdescriptioneditor,org.proteg
  e.editor.owl.model.classexpression.anonymouscls,org.protege.editor.ow
- l.model.history,org.protege.editor.core,gov.miamidade.hgowl.plugin.ow
- lapi.apibinding,org.protege.editor.owl.model.cache,org.protege.editor
- .owl.model.find,uk.ac.manchester.cs.owl.owlapi,org.coode.xml,org.prot
+ l.model.history,org.protege.editor.core,org.protege.editor.owl.model.
+ cache,gov.miamidade.hgowl.plugin.owlapi.apibinding,org.protege.editor
+ .owl.model.find,org.coode.xml,uk.ac.manchester.cs.owl.owlapi,org.prot
  ege.editor.owl.ui.explanation,org.protege.editor.owl.ui.renderer,org.
  protege.editor.owl.model.hierarchy,org.semanticweb.owlapi.reasoner,or
  g.protege.editor.owl.model.util,org.protege.editor.owl.ui.renderer.pl
  ugin,org.protege.xmlcatalog,org.protege.owlapi.model,org.protege.edit
- or.owl.model.entity,org.protege.editor.owl.ui,org.hypergraphdb.app.ow
+ or.owl.ui,org.protege.editor.owl.model.entity,org.hypergraphdb.app.ow
  l",gov.miamidade.hgowl.plugin.ui.versioning.distributed;uses:="org.pr
  otege.editor.core.ui.util,org.hypergraphdb.peer,org.protege.editor.co
  re.ui.action,org.hypergraphdb.app.owl.versioning,org.hypergraphdb.app
@@ -47,8 +47,8 @@ Export-Package: gov.miamidade.hgowl.plugin.ui.versioning;uses:="org.pr
  owl.model.event,org.protege.editor.owl.model,org.hypergraphdb.peer,or
  g.protege.editor.owl.ui.error,org.hypergraphdb.app.owl.versioning,org
  .protege.editor.core.ui.workspace,gov.miamidade.hgowl.plugin.owl.mode
- l,org.semanticweb.owlapi.model,org.hypergraphdb.query,org.protege.edi
- tor.core.ui.error,org.semanticweb.owlapi.util,org.protege.editor.owl.
+ l,org.semanticweb.owlapi.model,org.hypergraphdb.query,org.semanticweb
+ .owlapi.util,org.protege.editor.core.ui.error,org.protege.editor.owl.
  model.io,org.hypergraphdb.peer.workflow,org.protege.editor.owl.ui.ont
  ology.imports.missing,gov.miamidade.hgowl.plugin.ui.versioning,org.hy
  pergraphdb.app.owl.versioning.distributed,javax.swing,org.protege.edi
@@ -65,9 +65,9 @@ Export-Package: gov.miamidade.hgowl.plugin.ui.versioning;uses:="org.pr
  .util,org.hypergraphdb.app.owl.versioning,org.coode.owlapi.rdfxml.par
  ser,org.semanticweb.owlapi.model,org.semanticweb.owlapi.util,org.cood
  e.owlapi.functionalparser,org.coode.owlapi.owlxmlparser,org.hypergrap
- hdb.app.owl.versioning.distributed,org.coode.owlapi.rdf.rdfxml,uk.ac.
- manchester.cs.owl.owlapi.turtle.parser,org.hypergraphdb.app.owl.versi
- oning.distributed.serialize,org.hypergraphdb,org.coode.owlapi.manches
+ hdb.app.owl.versioning.distributed,org.coode.owlapi.rdf.rdfxml,org.hy
+ pergraphdb.app.owl.versioning.distributed.serialize,uk.ac.manchester.
+ cs.owl.owlapi.turtle.parser,org.hypergraphdb,org.coode.owlapi.manches
  terowlsyntax,uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer,org.coo
  de.owlapi.functionalrenderer,org.coode.owlapi.latex,uk.ac.manchester.
  cs.owl.owlapi,org.hypergraphdb.app.owl.core,de.uulm.ecs.ai.owlapi.krs
@@ -107,9 +107,9 @@ Created-By: Apache Maven Bundle Plugin
 Require-Bundle: org.protege.editor.owl,org.protege.editor.core.applica
  tion,org.semanticweb.owl.owlapi,            org.hypergraphdb-hgdb,org
  .hypergraphdb-hgdbp2p,org.hypergraphdb.app.owl
-Build-Jdk: 1.7.0_60
+Build-Jdk: 1.7.0_75
 Bundle-Version: 1.4.0.SNAPSHOT
-Bnd-LastModified: 1449433401282
+Bnd-LastModified: 1463107967646
 Bundle-ManifestVersion: 2
 Bundle-Activator: gov.miamidade.hgowl.plugin.HGDBActivator
 Bundle-Description: A Protege plugin offering HyperGraphDB based back-

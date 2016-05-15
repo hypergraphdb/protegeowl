@@ -19,7 +19,9 @@ import org.hypergraphdb.app.owl.versioning.VersioningChangeListener;
 import org.hypergraphdb.app.owl.versioning.distributed.OntologyDatabasePeer;
 import org.protege.owlapi.model.ProtegeOWLOntologyManager;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyFormat;
 
 /**
@@ -81,12 +83,7 @@ public class PHGDBOntologyManagerImpl extends ProtegeOWLOntologyManager implemen
 		return versionManager;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.hypergraphdb.app.owl.HGDBOntologyManager#hasInMemoryOntology()
-	 */
-	@Override
+
 	public boolean hasInMemoryOntology()
 	{
 		for (OWLOntology onto : getOntologies())
@@ -99,12 +96,6 @@ public class PHGDBOntologyManagerImpl extends ProtegeOWLOntologyManager implemen
 		return false;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.hypergraphdb.app.owl.HGDBOntologyManager#getCurrentTaskSize()
-	 */
-	@Override
 	public int getCurrentTaskSize()
 	{
 		// TODO Auto-generated method stub
@@ -117,7 +108,6 @@ public class PHGDBOntologyManagerImpl extends ProtegeOWLOntologyManager implemen
 	 * @see
 	 * org.hypergraphdb.app.owl.HGDBOntologyManager#getCurrentTaskProgress()
 	 */
-	@Override
 	public int getCurrentTaskProgress()
 	{
 		// TODO Auto-generated method stub
@@ -178,4 +168,31 @@ public class PHGDBOntologyManagerImpl extends ProtegeOWLOntologyManager implemen
 		}
 		return null;
 	}
+
+	@Override
+	public OWLDataFactory getDataFactory()
+	{
+		return super.getOWLDataFactory();
+	}
+	
+	public HGDBOntology createOntologyInDatabase(IRI ontologyIRI) throws OWLOntologyCreationException
+	{
+		try
+		{
+			HGDBOntologyFormat format = new HGDBOntologyFormat();
+			IRI hgdbDocumentIRI = HGDBOntologyFormat.convertToHGDBDocumentIRI(ontologyIRI);
+			OWLOntology o = super.createOntology(ontologyIRI);
+			setOntologyFormat(o, format);
+			setOntologyDocumentIRI(o, hgdbDocumentIRI);
+			saveOntology(o, format, hgdbDocumentIRI);
+			HGDBOntology result = ontologyRepository.getOntologyByDocumentIRI(hgdbDocumentIRI);
+			result.setOWLOntologyManager(this);
+			this.ontologiesByID.put(o.getOntologyID(), result);
+			return result;
+		}
+		catch (Exception ex)
+		{
+			throw new RuntimeException(ex);
+		}
+	}	
 }
