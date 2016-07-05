@@ -4,6 +4,7 @@ import gov.miamidade.hgowl.plugin.Singles;
 
 import java.io.File;
 
+import org.hypergraphdb.app.owl.HGDBImportConfig;
 import org.hypergraphdb.app.owl.HGDBOntology;
 import org.hypergraphdb.app.owl.HGDBOntologyFormat;
 import org.hypergraphdb.app.owl.HGDBOntologyManager;
@@ -61,7 +62,7 @@ public class PHGDBOntologyManagerImpl extends ProtegeOWLOntologyManager implemen
 		throw new IllegalStateException("Not yet implemented.");
 	}
 
-	public HGDBOntology importOntology(IRI documentIRI)
+	public HGDBOntology importOntology(IRI documentIRI, HGDBImportConfig config)
 	{
 		try
 		{

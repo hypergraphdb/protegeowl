@@ -1,12 +1,5 @@
 package gov.miamidade.hgowl.plugin.owl;
 
-import gov.miamidade.hgowl.plugin.owl.model.HGOntologyRepositoryEntry;
-import gov.miamidade.hgowl.plugin.owl.model.HGOwlModelManagerImpl;
-import gov.miamidade.hgowl.plugin.owlapi.apibinding.PHGDBOntologyManagerImpl;
-import gov.miamidade.hgowl.plugin.ui.CreateHGOntologyWizard;
-import gov.miamidade.hgowl.plugin.ui.HGOntologyFormatPanel;
-import gov.miamidade.hgowl.plugin.ui.repository.RepositoryViewPanel;
-
 import java.io.File;
 import java.net.ProtocolException;
 import java.net.URI;
@@ -18,18 +11,14 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 
-
-
-
-
-
+import org.hypergraphdb.app.owl.HGDBImportConfig;
 //import org.apache.log4j.Logger;
 import org.hypergraphdb.app.owl.HGDBOntology;
 import org.hypergraphdb.app.owl.HGDBOntologyFormat;
 import org.hypergraphdb.app.owl.HGDBOntologyImpl;
 import org.hypergraphdb.app.owl.HGDBOntologyManager;
 import org.hypergraphdb.app.owl.OntologyDatabase;
-import org.hypergraphdb.app.owl.exception.HGDBOntologyAlreadyExistsByDocumentIRIException;
+import org.hypergraphdb.app.owl.versioning.VersionManager;
 import org.osgi.framework.ServiceRegistration;
 import org.protege.editor.core.OntologyRepository;
 import org.protege.editor.core.OntologyRepositoryEntry;
@@ -40,11 +29,11 @@ import org.protege.editor.core.editorkit.EditorKit;
 import org.protege.editor.core.editorkit.EditorKitDescriptor;
 import org.protege.editor.core.editorkit.RecentEditorKitManager;
 import org.protege.editor.core.ui.error.ErrorLogPanel;
-import org.protege.editor.core.ui.wizard.Wizard;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.OWLEditorKitFactory;
 import org.protege.editor.owl.ProtegeOWL;
 import org.protege.editor.owl.model.SaveErrorHandler;
+import org.protege.editor.owl.model.event.EventType;
 import org.protege.editor.owl.model.io.IOListenerPlugin;
 import org.protege.editor.owl.model.io.IOListenerPluginInstance;
 import org.protege.editor.owl.model.io.IOListenerPluginLoader;
@@ -58,15 +47,20 @@ import org.protege.editor.owl.ui.ontology.imports.missing.MissingImportHandlerUI
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyAlreadyExistsException;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLOntologyChangeListener;
-import org.semanticweb.owlapi.model.OWLOntologyDocumentAlreadyExistsException;
 import org.semanticweb.owlapi.model.OWLOntologyFormat;
 import org.semanticweb.owlapi.model.OWLOntologyID;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.util.VersionInfo;
 import org.semanticweb.owlapi.vocab.PrefixOWLOntologyFormat;
+
+import gov.miamidade.hgowl.plugin.owl.model.HGOntologyRepositoryEntry;
+import gov.miamidade.hgowl.plugin.owl.model.HGOwlModelManagerImpl;
+import gov.miamidade.hgowl.plugin.owlapi.apibinding.PHGDBOntologyManagerImpl;
+import gov.miamidade.hgowl.plugin.ui.HGOntologyFormatPanel;
+import gov.miamidade.hgowl.plugin.ui.ImportDialog;
+import gov.miamidade.hgowl.plugin.ui.repository.RepositoryViewPanel;
 
 /**
  * HGOwlEditorKit contains UI functions for editing database-backed ontologies.
@@ -85,7 +79,7 @@ public class HGOwlEditorKit extends OWLEditorKit
 
 	public static final String ID = "HGOwlEditorKit";
 
-	private ServiceRegistration registration;
+	private ServiceRegistration<?> registration;
 
 	public HGOwlEditorKit(OWLEditorKitFactory editorKitFactory)
 	{
@@ -168,6 +162,18 @@ public class HGOwlEditorKit extends OWLEditorKit
 		return modelManager;
 	}
 
+	public VersionManager versionManager()
+	{
+		return this.getModelManager().getOWLOntologyManager().getVersionManager();		
+	}
+	
+	protected void causeViewUpdate()
+	{
+		HGOwlModelManagerImpl hmm = (HGOwlModelManagerImpl) getOWLModelManager();
+		hmm.fireEvent(EventType.ONTOLOGY_RELOADED);
+		this.getWorkspace().refreshComponents();
+	}
+	
 	protected void initialiseCompleted()
 	{
 		super.initialiseCompleted();
@@ -212,41 +218,6 @@ public class HGOwlEditorKit extends OWLEditorKit
 				return super.handleNewRequest();
 			return true;
 		}
-//		boolean handleNewSuccess = false;		
-//		CreateHGOntologyWizard w = new CreateHGOntologyWizard(null, this);
-//		int result = w.showModalDialog();
-//		if (result == Wizard.FINISH_RETURN_CODE)
-//		{
-//			OWLOntologyID oid = w.getOntologyID();
-//			if (oid != null)
-//			{
-//				HGOwlModelManagerImpl mm = (HGOwlModelManagerImpl) getOWLModelManager();
-//				// check if already exists
-//				// we are catching specific exceptions here instead of checking
-//				// the cases before the
-//				// call to mm.createNewOntology.
-//				try
-//				{
-//					mm.createNewOntology(oid, w.getLocationURI());
-//					// addToRecent(URI.create(prop.getProperty("hibernate.connection.url")));
-//					addRecent(w.getLocationURI());
-//					handleNewSuccess = true;
-//				}
-//				catch (OWLOntologyAlreadyExistsException e)
-//				{
-//					showNewExistsOntologyIDMessage(oid, e.getDocumentIRI());
-//				}
-//				catch (OWLOntologyDocumentAlreadyExistsException e)
-//				{
-//					showNewExistsDocumentLoadedMessage(oid, e.getOntologyDocumentIRI());
-//				}
-//				catch (HGDBOntologyAlreadyExistsByDocumentIRIException e)
-//				{
-//					showNewExistsDocumentRepoMessage(oid, e.getOntologyDocumentIRI());
-//				}
-//			}
-//		}
-//		return handleNewSuccess;
 	}
 
 	/**
@@ -620,7 +591,81 @@ public class HGOwlEditorKit extends OWLEditorKit
 		}
 		return hghandleSaveAs(ont, format);
 	}
-
+ 
+	protected IRI saveInDB(PHGDBOntologyManagerImpl man, OWLOntology ont, boolean versioning) throws Exception
+	{
+		IRI documentIri;
+		if (ont.getOntologyID().isAnonymous())
+		{
+			int i = 0;
+			do
+			{
+				documentIri = IRI.create("hgdb://" + "anonymous-" + i);
+				i++;
+			}
+			while (man.getOntologyRepository().existsOntologyByDocumentIRI(documentIri));
+		}
+		else
+			documentIri = HGDBOntologyFormat.convertToHGDBDocumentIRI(ont.getOntologyID().getDefaultDocumentIRI());
+		man.saveOntology(ont, new HGDBOntologyFormat(), documentIri);
+		HGDBOntology hgdbOntology = man.getOntologyRepository().getOntologyByDocumentIRI(documentIri);
+		versionManager().versioned(hgdbOntology.getAtomHandle());		
+		return documentIri;
+	}
+	
+	protected boolean importIntoDatabase(OWLOntology ont) throws Exception
+	{
+		PHGDBOntologyManagerImpl man = (PHGDBOntologyManagerImpl) getModelManager().getOWLOntologyManager();
+		OntologyDatabase repo = man.getOntologyRepository();
+				
+		if (repo.existsOntology(ont.getOntologyID()))
+		{
+			JOptionPane.showMessageDialog(
+					getWorkspace(),
+					"An ontology with the same ID already exists in the hypergraph repository." + "\r\n "
+							+ ont.getOntologyID()
+							+ "\r\n If you wish to replace, delete the old one now using: HypergraphDB/Delete",
+					"Hypergraph Database Import - Failed", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+		
+		ImportDialog dlg = new ImportDialog(getWorkspace(), ont);
+		if (!dlg.build().showDialog().proceed())
+			return false;
+		HGDBImportConfig importConfig = new HGDBImportConfig();
+		if (dlg.importImports())
+		{
+			importConfig.storeAllImported(true);
+		}
+		
+		long startTime = System.currentTimeMillis();		
+		if (importConfig.storeAllImported())
+			for (OWLOntology imported : ont.getImportsClosure())
+				if (!importConfig.ignored().contains(imported.getOntologyID().getOntologyIRI()) &&
+					!repo.existsOntology(imported.getOntologyID()) &&
+					!imported.getOntologyID().equals(ont.getOntologyID()))
+					saveInDB(man, imported, dlg.startVersioning());
+		IRI documentIri = saveInDB(man, ont, dlg.startVersioning());		
+		int durationSecs = (int) (System.currentTimeMillis() - startTime) / 1000;
+		causeViewUpdate();				
+		addRecent(documentIri.toURI());			
+		String message = "Hypergraph Database Import Success.\n" + "Saving took " + durationSecs + " seconds for "
+				+ ont.getAxiomCount() + " Axioms. \n";
+		if (dlg.loadFromDatabase())
+		{
+			man.setOntologyFormat(ont, new HGDBOntologyFormat());
+			man.setOntologyDocumentIRI(ont, documentIri);
+			getModelManager().reload(ont);			
+			message += "You are now working with the freshly stored in the database ontology.";
+		}
+		else
+		{
+			message += "You are still working with the in-memory ontology.";
+		}			
+		JOptionPane.showMessageDialog(getWorkspace(), message, "Hypergraph Database Import Success", JOptionPane.PLAIN_MESSAGE);
+		return true;		
+	}
+	
 	protected boolean hghandleSaveAs(OWLOntology ont, OWLOntologyFormat format) throws Exception
 	{
 		PHGDBOntologyManagerImpl man = (PHGDBOntologyManagerImpl) getModelManager().getOWLOntologyManager();
@@ -656,90 +701,7 @@ public class HGOwlEditorKit extends OWLEditorKit
 			else
 			{
 				// IN MEMORY ONTOLOGY
-				// Case B) OntololgyImpl -> Repository: Import
-				String message = "This in-memory ontology will be imported into the Hypergraph Ontology Repository.\n"
-						+ "This process is estimated to take one minute per 35000 Axioms. \n" + ont.getOntologyID().toString()
-						+ " has " + ont.getAxiomCount() + " Axioms. \n"
-						+ "Please be patient. A Success Dialog will pop up when the process is finished.";
-				System.err.println(message);
-				// logger.info(message);
-				JOptionPane.showMessageDialog(getWorkspace(), message, "Hypergraph Database Import",
-						JOptionPane.INFORMATION_MESSAGE);
-				System.out.println("IMPORTING INTO HYPERGRAPH " + ont.getOntologyID());
-				// logger.info("IMPORTING INTO HYPERGRAPH " +
-				// ont.getOntologyID());
-				long startTime = System.currentTimeMillis();
-				man.setOntologyFormat(ont, format);
-				// TODO OPEN A DIALOG FOR SELECTING A documentIRI
-				IRI documentIri;
-				if (ont.getOntologyID().isAnonymous())
-				{
-					int i = 0;
-					do
-					{
-						documentIri = IRI.create("hgdb://" + "anonymous-" + i);
-						i++;
-					}
-					while (repo.existsOntologyByDocumentIRI(documentIri));
-
-				}
-				else
-				{
-					// HGDBOntologyFormat.convertToHGDBDocumentIRI(ontologyIRI)
-					// IRI defaultIri =
-					// ont.getOntologyID().getDefaultDocumentIRI();
-					// String defaultIriStr = defaultIri.toString();
-					// int schemaLength = defaultIri.getScheme().length();
-					// String hgdbIRIStr = "hgdb" +
-					// defaultIriStr.toString().substring(schemaLength);
-					documentIri = HGDBOntologyFormat.convertToHGDBDocumentIRI(ont.getOntologyID().getDefaultDocumentIRI());
-					//
-					// Check if exists by ID or Document IRI
-					//
-					if (repo.existsOntology(ont.getOntologyID()))
-					{
-						JOptionPane.showMessageDialog(
-								getWorkspace(),
-								"An ontology with the same ID already exists in the hypergraph repository." + "\r\n "
-										+ ont.getOntologyID()
-										+ "\r\n If you wish to replace, delete the old one now using: HypergraphDB/Delete",
-								"Hypergraph Database Import - Failed", JOptionPane.ERROR_MESSAGE);
-						return false;
-					}
-					else if (repo.existsOntologyByDocumentIRI(documentIri))
-					{
-						JOptionPane.showMessageDialog(getWorkspace(),
-								"An ontology with the same documentIRI already exists in the hypergraph repository." + "\r\n "
-										+ documentIri
-										+ "\r\n If you wish to replace, delete the old one now using: HypergraphDB/Delete",
-								"Hypergraph Database Import - Failed", JOptionPane.ERROR_MESSAGE);
-						return false;
-					} // else continue import
-				}
-				System.out.println("Saving with documentIRI: " + documentIri);
-				// logger.info("Saving with documentIRI: " + documentIri);
-				// + ont.getOntologyID().getOntologyIRI().getFragment());
-
-				man.setOntologyDocumentIRI(ont, documentIri);
-				getModelManager().save(ont);
-				int durationSecs = (int) (System.currentTimeMillis() - startTime) / 1000;
-				message = "Hypergraph Database Import Success.\n" + "Saving took " + durationSecs + " seconds for "
-						+ ont.getAxiomCount() + " Axioms. \n" + "You are still working with the in-memory ontology. \n "
-						+ "Do you wish to use the database backed ontology now?";
-				int useHGOnto = JOptionPane.showConfirmDialog(getWorkspace(), message, "Hypergraph Database Import Success",
-						JOptionPane.YES_NO_OPTION);
-				addRecent(documentIri.toURI());
-				if (useHGOnto == JOptionPane.YES_OPTION)
-				{
-					// load the ontology from hypergraph and close
-					getModelManager().reload(ont);
-				}
-				else
-				{
-					man.setOntologyFormat(ont, oldFormat);
-					man.setOntologyDocumentIRI(ont, oldDocumentIRI);
-				}
-				return true;
+				return importIntoDatabase(ont);
 			}
 		}
 		else

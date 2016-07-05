@@ -1,10 +1,18 @@
 package gov.miamidade.hgowl.plugin;
 
+import gov.miamidade.hgowl.plugin.ui.ImportDialog;
 import gov.miamidade.hgowl.plugin.ui.versioning.RevisionDialog;
+
+import java.io.File;
+
 import javax.swing.JFrame;
 import org.hypergraphdb.app.owl.HGDBOntology;
+import org.hypergraphdb.app.owl.HGDBOntologyManager;
+import org.hypergraphdb.app.owl.HGOntologyManagerFactory;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 public class Standalone
 {
@@ -36,8 +44,6 @@ public class Standalone
 				
 //		VersionedOntology versioned = RevisionGraphPanel.createTestData(Singles.versionManager().graph());
 
-		frame.setSize(500,  900);
-		frame.setVisible(true);
 //		VHGCommitDialog.showDialog(frame, versioned);
 		RevisionDialog dlg = new RevisionDialog("Hypergraph Versioning - History of " + versioned, 
 								 frame, 
@@ -59,11 +65,30 @@ public class Standalone
 //		frame.dispose();		
 	}
 	
+	static void testImportDialog(String dblocation) throws Exception
+	{
+		HGDBOntologyManager manager = new HGOntologyManagerFactory().getOntologyManager(dblocation);
+		OWLOntology ont = manager.loadOntologyFromOntologyDocument(new File("/Users/borislav/granthika/ontology/grantha-discourse.owl"));
+		JFrame frame = new JFrame("Test Me");
+		frame.setSize(500,  900);
+		frame.setVisible(true);
+		ImportDialog dlg = new ImportDialog(frame, ont);
+		dlg.build().showDialog();
+	}
+	
 	public static void main(String [] args)
 	{
-		String dblocation = HGOwlProperties.getInstance().getHgLocationFolderPath();
-		trace("HG Location:" + dblocation);
-		//testGraphShow(dblocation);
-		testRevisionDialog(dblocation);
+		try
+		{
+			String dblocation = HGOwlProperties.getInstance().getHgLocationFolderPath();
+			trace("HG Location:" + dblocation);
+			//testGraphShow(dblocation);
+			//testRevisionDialog(dblocation);
+			testImportDialog(dblocation);
+		}
+		catch (Throwable t)
+		{
+			t.printStackTrace(System.err);
+		}
 	}
 }

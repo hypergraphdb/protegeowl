@@ -50,11 +50,6 @@ public class VHGOwlEditorKit extends HGOwlEditorKit
 		return ((HGDBOntology)activeOntology).getAtomHandle();		
 	}
 	
-	public VersionManager versionManager()
-	{
-		return this.getModelManager().getOWLOntologyManager().getVersionManager();		
-	}
-	
 	public VHGOwlEditorKit(OWLEditorKitFactory editorKitFactory)
 	{
 		super(editorKitFactory);
@@ -387,13 +382,6 @@ public class VHGOwlEditorKit extends HGOwlEditorKit
 		OWLOntology activeOnto = getActiveOntology();
 		return activeOnto instanceof HGDBOntology && 
 				versionManager().isVersioned(((HGDBOntology)activeOnto).getAtomHandle());
-	}
-
-	protected void causeViewUpdate()
-	{
-		HGOwlModelManagerImpl hmm = (HGOwlModelManagerImpl) getOWLModelManager();
-		hmm.fireEvent(EventType.ONTOLOGY_RELOADED);
-		this.getWorkspace().refreshComponents();
 	}
 
 	String getSystemUserName()

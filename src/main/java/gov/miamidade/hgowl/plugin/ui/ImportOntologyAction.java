@@ -16,25 +16,16 @@ public class ImportOntologyAction extends ProtegeOWLAction {
 
 	private static final long serialVersionUID = 12313124211234L;
 
-	/* (non-Javadoc)
-	 * @see org.protege.editor.core.plugin.ProtegePluginInstance#initialise()
-	 */
 	@Override
 	public void initialise() throws Exception {
 	
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.protege.editor.core.Disposable#dispose()
-	 */
 	@Override
 	public void dispose() throws Exception {
 	
 	}
 	
-	/* (non-Javadoc)
-	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-	 */
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		HGOwlEditorKit hgowlKit = (HGOwlEditorKit) getEditorKit();
