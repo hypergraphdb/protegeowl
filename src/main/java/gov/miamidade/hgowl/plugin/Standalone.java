@@ -2,10 +2,25 @@ package gov.miamidade.hgowl.plugin;
 
 import gov.miamidade.hgowl.plugin.ui.ImportDialog;
 import gov.miamidade.hgowl.plugin.ui.versioning.RevisionDialog;
+import gov.miamidade.hgowl.plugin.ui.versioning.VHGCommitDialog;
 
+import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Window;
 import java.io.File;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SpringLayout;
+import javax.swing.SwingConstants;
+
+import org.hypergraphdb.HGHandle;
 import org.hypergraphdb.app.owl.HGDBOntology;
 import org.hypergraphdb.app.owl.HGDBOntologyManager;
 import org.hypergraphdb.app.owl.HGOntologyManagerFactory;
@@ -65,15 +80,57 @@ public class Standalone
 //		frame.dispose();		
 	}
 	
+	static void testCommitDialog(String dblocation) throws Exception
+	{
+		JFrame frame = new JFrame("Test Me");
+		HGDBOntologyManager manager = new HGOntologyManagerFactory().getOntologyManager(dblocation);
+		HGHandle ontology = ((HGDBOntology)manager.getOntologies().iterator().next()).getAtomHandle();
+		VersionedOntology vo = manager.getVersionManager().versioned(ontology);
+		VHGCommitDialog dlg = new VHGCommitDialog(frame, vo, false);
+		dlg.setVisible(true);
+	}
+	
 	static void testImportDialog(String dblocation) throws Exception
 	{
-		HGDBOntologyManager manager = new HGOntologyManagerFactory().getOntologyManager(dblocation);
-		OWLOntology ont = manager.loadOntologyFromOntologyDocument(new File("/Users/borislav/granthika/ontology/grantha-discourse.owl"));
+//		HGDBOntologyManager manager = new HGOntologyManagerFactory().getOntologyManager(dblocation);
+//		OWLOntology ont = manager.loadOntologyFromOntologyDocument(new File("/Users/borislav/granthika/ontology/grantha-discourse.owl"));
 		JFrame frame = new JFrame("Test Me");
-		frame.setSize(500,  900);
+		
+//		SpringLayout slayout = new SpringLayout();
+		Box commentBox = new Box(BoxLayout.X_AXIS);
+		JLabel commentLabel = new JLabel("Enter Commit Comment:");
+		commentLabel.setAlignmentY(Component.TOP_ALIGNMENT);
+		commentBox.add(commentLabel);
+		commentBox.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		JTextArea tfUserComment = new JTextArea(10, 30);
+		tfUserComment.setAlignmentY(Component.TOP_ALIGNMENT);		
+		commentBox.add(tfUserComment);
+		Box branchBox = new Box(BoxLayout.X_AXIS);
+		JLabel branchLabel = new JLabel("     Enter Branch Name:");
+		branchLabel.setAlignmentY(Component.TOP_ALIGNMENT);
+		branchBox.add(branchLabel);
+		JTextField tfBranchName = new JTextField(30);
+		tfBranchName.setAlignmentY(Component.TOP_ALIGNMENT);
+		branchBox.add(tfBranchName);		
+		branchBox.setAlignmentX(Component.RIGHT_ALIGNMENT);
+//		slayout.putConstraint(SpringLayout.NORTH, commentLabel, 0, SpringLayout.NORTH, tfUserComment);		
+//		slayout.putConstraint(SpringLayout.WEST, tfUserComment, 5, SpringLayout.EAST, commentLabel);
+//		slayout.putConstraint(SpringLayout.NORTH, branchLabel, 0, SpringLayout.NORTH, tfBranchName);		
+//		slayout.putConstraint(SpringLayout.WEST, tfUserComment, 5, SpringLayout.EAST, commentLabel);		
+//		slayout.putConstraint(SpringLayout.NORTH, branchLabel, 5, SpringLayout.SOUTH, commentLabel);
+		//slayout.putConstraint(SpringLayout.NORTH, tfBranchName, 5, SpringLayout.SOUTH, tfUserComment);
+		
+		JPanel inputPanel = new JPanel();
+		inputPanel.add(commentBox);
+		inputPanel.add(branchBox);
+		frame.add(inputPanel);
+		frame.setSize(800,  500);
 		frame.setVisible(true);
-		ImportDialog dlg = new ImportDialog(frame, ont);
-		dlg.build().showDialog();
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		
+		
+//		ImportDialog dlg = new ImportDialog(frame, ont);
+//		dlg.build().showDialog();
 	}
 	
 	public static void main(String [] args)
@@ -84,7 +141,8 @@ public class Standalone
 			trace("HG Location:" + dblocation);
 			//testGraphShow(dblocation);
 			//testRevisionDialog(dblocation);
-			testImportDialog(dblocation);
+			//testImportDialog(dblocation);
+			testCommitDialog(dblocation);
 		}
 		catch (Throwable t)
 		{
