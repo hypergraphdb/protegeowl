@@ -190,8 +190,11 @@ public class VHGOwlEditorKit extends HGOwlEditorKit
 		if (dlg.isCommitOK())
 		{
 			// DO IT
-			versioned.commit(getSystemUserName(), 
-							 dlg.getCommitComment());
+			String branch = dlg.getBranchName().trim();
+			if (branch.isEmpty())
+				versioned.commit(getSystemUserName(), dlg.getCommitComment());
+			else
+				versioned.commit(getSystemUserName(), dlg.getCommitComment(), branch);
 		}
 		return true;
 	}

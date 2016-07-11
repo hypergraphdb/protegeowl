@@ -420,16 +420,6 @@ public class VDHGOwlEditorKit extends VHGOwlEditorKit
 		}
 	}
 
-
-	public VHGCommitDialog showUserCommitDialog(VersionedOntology vo,
-			OWLOntology onto)
-	{
-		// TODO
-		return null;//VHGCommitDialog.showDialog(getWorkspace(), vo, onto);
-	}
-
-
-
 	public boolean isNetworking()
 	{
 		String hostname = HGOwlProperties.getInstance().getP2pServer();

@@ -7,7 +7,7 @@ Require-Bundle: org.protege.editor.owl,org.protege.editor.core.applica
  .hypergraphdb-hgdbp2p,org.hypergraphdb.app.owl
 Built-By: borislav
 Bundle-ManifestVersion: 2
-Bnd-LastModified: 1468024873123
+Bnd-LastModified: 1468209677778
 Import-Package: de.uulm.ecs.ai.owlapi.krssparser;version="1.0.0",de.uu
  lm.ecs.ai.owlapi.krssrenderer;version="1.0.0",javax.swing;resolution:
  =optional,javax.swing.border;resolution:=optional,javax.swing.event;r
@@ -139,27 +139,27 @@ Export-Package: gov.miamidade.hgowl.plugin.ui.versioning;uses:="org.se
  app.owl.versioning,org.osgi.framework,org.hypergraphdb.app.owl,org.hy
  pergraphdb,org.protege.editor.owl.ui.renderer,org.protege.editor.owl,
  javax.swing.tree,org.hypergraphdb.app.owl.core,javax.swing",gov.miami
- dade.hgowl.plugin.ui.repository;uses:="org.protege.editor.core.ui.uti
- l,gov.miamidade.hgowl.plugin.ui,javax.swing.table,javax.swing.event,g
- ov.miamidade.hgowl.plugin.owl.model,org.hypergraphdb.app.owl.versioni
- ng,gov.miamidade.hgowl.plugin.ui.versioning,org.hypergraphdb.app.owl.
- util,org.protege.editor.core,org.hypergraphdb,javax.swing",gov.miamid
- ade.hgowl.plugin.owl.model;uses:="org.protege.editor.owl.model,org.pr
- otege.editor.owl.model.io,org.semanticweb.owlapi.model,org.protege.ed
- itor.core.ui.error,org.protege.editor.owl.model.classexpression.anony
- mouscls,org.semanticweb.owlapi.util,org.protege.xmlcatalog,org.hyperg
- raphdb.app.owl,org.protege.editor.owl.model.entity,org.protege.editor
- .owl.model.util,org.semanticweb.owlapi.reasoner,org.protege.editor.ow
- l.ui.clsdescriptioneditor,org.protege.editor.owl.model.inference,org.
- protege.editor.owl.ui.error,org.protege.editor.owl.ui.explanation,gov
- .miamidade.hgowl.plugin.owlapi.apibinding,org.protege.editor.owl.ui.r
- enderer.plugin,uk.ac.manchester.cs.owl.owlapi,org.protege.editor.owl.
- model.hierarchy,org.protege.editor.owl.model.selection.ontologies,org
- .protege.editor.owl.model.history,org.protege.editor.owl.model.find,o
- rg.protege.editor.core,org.protege.owlapi.model,org.protege.editor.ow
- l.ui.renderer,org.protege.editor.owl.ui,org.coode.xml,org.protege.edi
- tor.owl.model.cache,org.protege.editor.owl.model.event,org.protege.ed
- itor.owl.model.library"
+ dade.hgowl.plugin.ui.repository;uses:="org.protege.editor.owl.model,o
+ rg.protege.editor.core.ui.util,gov.miamidade.hgowl.plugin.ui,javax.sw
+ ing.table,javax.swing.event,gov.miamidade.hgowl.plugin.owl.model,org.
+ hypergraphdb.app.owl.versioning,gov.miamidade.hgowl.plugin.ui.version
+ ing,org.hypergraphdb.app.owl.util,org.protege.editor.core,org.hypergr
+ aphdb,javax.swing",gov.miamidade.hgowl.plugin.owl.model;uses:="org.pr
+ otege.editor.owl.model,org.protege.editor.owl.model.io,org.semanticwe
+ b.owlapi.model,org.protege.editor.core.ui.error,org.protege.editor.ow
+ l.model.classexpression.anonymouscls,org.semanticweb.owlapi.util,org.
+ protege.xmlcatalog,org.hypergraphdb.app.owl,org.protege.editor.owl.mo
+ del.entity,org.protege.editor.owl.model.util,org.semanticweb.owlapi.r
+ easoner,org.protege.editor.owl.ui.clsdescriptioneditor,org.protege.ed
+ itor.owl.model.inference,org.protege.editor.owl.ui.error,org.protege.
+ editor.owl.ui.explanation,gov.miamidade.hgowl.plugin.owlapi.apibindin
+ g,org.protege.editor.owl.ui.renderer.plugin,uk.ac.manchester.cs.owl.o
+ wlapi,org.protege.editor.owl.model.hierarchy,org.protege.editor.owl.m
+ odel.selection.ontologies,org.protege.editor.owl.model.history,org.pr
+ otege.editor.owl.model.find,org.protege.editor.core,org.protege.owlap
+ i.model,org.protege.editor.owl.ui.renderer,org.protege.editor.owl.ui,
+ org.coode.xml,org.protege.editor.owl.model.cache,org.protege.editor.o
+ wl.model.event,org.protege.editor.owl.model.library"
 Bundle-Name: HyperGraphDB OWL Protege Plugin
 Bundle-Version: 1.4.0.SNAPSHOT
 Ignore-Package: gov.miamidade.hgowl.plugin.ui.versioning.distributed,g

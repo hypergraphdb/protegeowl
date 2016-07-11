@@ -1,9 +1,5 @@
 package gov.miamidade.hgowl.plugin.ui.repository;
 
-import gov.miamidade.hgowl.plugin.owl.model.HGOntologyRepositoryEntry;
-import gov.miamidade.hgowl.plugin.ui.uihelp;
-import gov.miamidade.hgowl.plugin.ui.versioning.RevisionGraphPanel;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -19,13 +15,13 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.BoxLayout;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.SpringLayout;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -37,6 +33,10 @@ import org.hypergraphdb.HyperGraph;
 import org.hypergraphdb.app.owl.util.CoffmanGraham;
 import org.hypergraphdb.app.owl.versioning.Revision;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
+import org.protege.editor.owl.model.OWLWorkspace;
+
+import gov.miamidade.hgowl.plugin.ui.uihelp;
+import gov.miamidade.hgowl.plugin.ui.versioning.RevisionGraphPanel;
 
 /**
  * VOntologyViewPanel.
@@ -50,9 +50,10 @@ public class VOntologyViewPanel extends JPanel
 
 	private VersionedOntology versionedOntology;
 	private VOntologyTableModel tableModel;
-
+	private Component parent;
 	List<Revision> revisions;
 	private JTable table;
+	RevisionGraphPanel graphpanel; 
 	private boolean[][] adjacencyMatrix; // [i][j] == true iff revisions.get(i)
 											// is the direct parent of
 											// revisions.get(j)
@@ -88,8 +89,9 @@ public class VOntologyViewPanel extends JPanel
 		return adjacencyMatrix;
 	}
 
-	public VOntologyViewPanel(VersionedOntology versionedOntology)
+	public VOntologyViewPanel(Component parent, VersionedOntology versionedOntology)
 	{
+		this.parent = parent;
 		this.versionedOntology = versionedOntology;
 		CoffmanGraham algo = new CoffmanGraham(versionedOntology.graph(), versionedOntology.getRootRevision());
 		Map<Integer, HGHandle[]> layers = algo.coffmanGrahamLayers(1);
@@ -110,8 +112,17 @@ public class VOntologyViewPanel extends JPanel
 		item.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev)
 			{
-				versionedOntology.goTo(revision);
+				try 
+				{
+					versionedOntology.goTo(revision);
+				}
+				catch (Exception ex)
+				{
+					JOptionPane.showMessageDialog(parent, ex.getMessage(), "GoTo Revision Failed", JOptionPane.ERROR_MESSAGE);
+				}
 				table.repaint();
+				if (parent instanceof OWLWorkspace)
+					((OWLWorkspace)parent).refreshComponents();
 			}
 		});
 		menu.add(item);
@@ -122,9 +133,8 @@ public class VOntologyViewPanel extends JPanel
 	{
 		tableModel = new VOntologyTableModel(versionedOntology, revisions);
 		table = new JTable(tableModel);
-	    table.getTableHeader().setResizingAllowed(true);
+	    //table.getTableHeader().setResizingAllowed(true);
 	    table.getTableHeader().setVisible(true);
-
 		TableCellRenderer cellRenderer = new TableCellRenderer()
 		{
 			public final DefaultTableCellRenderer DEFAULT_RENDERER = new DefaultTableCellRenderer();
@@ -160,19 +170,31 @@ public class VOntologyViewPanel extends JPanel
 		table.getColumnModel().getColumn(5).setPreferredWidth(60);
 		table.getColumnModel().getColumn(5).setMaxWidth(60);
 
-		final RevisionGraphPanel graphpanel = new RevisionGraphPanel(this.versionedOntology, revisions, adjacencyMatrix);
-
+		graphpanel = new RevisionGraphPanel(this.versionedOntology, revisions, adjacencyMatrix);
+		table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		table.getSelectionModel().addListSelectionListener(new ListSelectionListener()
 		{
 			public void valueChanged(ListSelectionEvent event)
 			{
 				// System.out.println(table.getValueAt(table.getSelectedRow(),
 				// 0).toString());
-				while (table.getSelectedRowCount() > 2)
-					table.getSelectionModel().removeSelectionInterval(
-							table.getSelectionModel().getLeadSelectionIndex(),
-							table.getSelectionModel().getLeadSelectionIndex());
-				graphpanel.selectedRows(table.getSelectedRows());
+				if (table.getSelectedRowCount() > 2)
+				{
+					int min = Integer.MAX_VALUE, max = 0; 
+					for (int i = 0; i < table.getSelectedRows().length; i++)
+					{
+						if (min > table.getSelectedRows()[i])
+							min = table.getSelectedRows()[i];
+						if (max < table.getSelectedRows()[i])
+							max = table.getSelectedRows()[i];
+					}	
+//					table.getSelectionModel().removeSelectionInterval(
+//							table.getSelectionModel().getLeadSelectionIndex(),
+//							table.getSelectionModel().getLeadSelectionIndex());
+					graphpanel.selectedRows(new int[] { min, max });
+				}
+				else
+					graphpanel.selectedRows(table.getSelectedRows());
 				graphpanel.selectionBackground(table.getSelectionBackground());
 				graphpanel.repaint();
 			}
@@ -216,6 +238,7 @@ public class VOntologyViewPanel extends JPanel
 				return new Dimension(850, 400);
 			}
 		};
+		internalPanel.setBackground(Color.white);
 		// BoxLayout layout = new BoxLayout(internalPanel, BoxLayout.X_AXIS);
 		SpringLayout layout = new SpringLayout();
 		internalPanel.setLayout(layout);
@@ -233,17 +256,22 @@ public class VOntologyViewPanel extends JPanel
 		add(new JScrollPane(internalPanel));
 	}
 
-	public Dimension getPreferredSize()
+	public RevisionGraphPanel graphPanel()
 	{
-		return new Dimension(850, 400);
+		return graphpanel;
 	}
+	
+//	public Dimension getPreferredSize()
+//	{
+//		return new Dimension(850, 400);
+//	}
 
-	public static HGOntologyRepositoryEntry showRevisionDialog(String title, Component parent, VersionedOntology vo)
-	{
-		VOntologyViewPanel panel = new VOntologyViewPanel(vo);
-		JOptionPane.showMessageDialog(parent, panel, title, JOptionPane.PLAIN_MESSAGE);
-		return null;
-	}
+//	public static HGOntologyRepositoryEntry showRevisionDialog(String title, Component parent, VersionedOntology vo)
+//	{
+//		VOntologyViewPanel panel = new VOntologyViewPanel(vo);
+//		JOptionPane.showMessageDialog(parent, panel, title, JOptionPane.PLAIN_MESSAGE);
+//		return null;
+//	}
 
 	public JTable getTable()
 	{

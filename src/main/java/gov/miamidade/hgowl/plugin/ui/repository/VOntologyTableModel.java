@@ -151,7 +151,7 @@ public class VOntologyTableModel extends AbstractTableModel
 		Revision rev = revisions.get(0);
 		switch (columnIndex)
 		{
-			case 0:return "INIT";
+			case 0:return (rev.children().isEmpty() ? "HEAD":"") + " " + branchName(rev);
 			case 1:return rev.getAtomHandle();
 			case 2:return new java.util.Date(rev.timestamp());
 			case 3:return rev.user();

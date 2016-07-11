@@ -91,14 +91,14 @@ public class VHGCommitDialog extends DialogBase implements ActionListener
 		commentLabel.setAlignmentY(Component.TOP_ALIGNMENT);
 		commentBox.add(commentLabel);
 		commentBox.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		JTextArea tfUserComment = new JTextArea(10, 30);
+		tfUserComment = new JTextArea(10, 30);
 		tfUserComment.setAlignmentY(Component.TOP_ALIGNMENT);		
 		commentBox.add(tfUserComment);
 		Box branchBox = new Box(BoxLayout.X_AXIS);
 		JLabel branchLabel = new JLabel("       Enter Branch Name:");
 		branchLabel.setAlignmentY(Component.TOP_ALIGNMENT);
 		branchBox.add(branchLabel);
-		JTextField tfBranchName = new JTextField(30);
+		tfBranchName = new JTextField(30);
 		tfBranchName.setAlignmentY(Component.TOP_ALIGNMENT);
 		branchBox.add(tfBranchName);		
 		branchBox.setAlignmentX(Component.RIGHT_ALIGNMENT);

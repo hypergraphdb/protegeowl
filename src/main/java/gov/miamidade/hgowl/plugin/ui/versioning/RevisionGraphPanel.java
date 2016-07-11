@@ -101,18 +101,17 @@ public class RevisionGraphPanel extends JPanel
 		{
 			g.setColor(selectionBackground);
 			for (int selectRow : selectedRows)
-				g.fillRect(0, selectRow*cellHeight, this.getWidth(), cellHeight);			
+				g.fillRect(0, (selectRow + 1)*cellHeight, this.getWidth(), cellHeight);			
 		}
  
-		HashMap<HGHandle, Pair<Integer, Integer>> coordinates = 
-				new HashMap<HGHandle, Pair<Integer, Integer>>();
+		HashMap<HGHandle, Pair<Integer, Integer>> coordinates = new HashMap<HGHandle, Pair<Integer, Integer>>();
 		for (int row = revisions.size() - 1; row >= 0; row--)
 		{
 			Revision rev = revisions.get(row);
 			int col = 0;
 			while (!columns.get(col).contains(rev))
 				col++;
-			int ycoord = revisions.size() - row - 1;
+			int ycoord = revisions.size() - row;
 			int xcoord = col;
 			drawCircleByCenter(g, xcoord, ycoord, Color.blue);
 			coordinates.put(rev.getAtomHandle(), new Pair<Integer, Integer>(xcoord, ycoord));
@@ -131,7 +130,12 @@ public class RevisionGraphPanel extends JPanel
 					  	   currentCoord.getSecond());				
 			}
 		}
-    }	
+    }
+	
+	public int [] selectedRows()
+	{
+		return this.selectedRows;
+	}
 	
 	public RevisionGraphPanel selectedRows(int [] selectedRows)
 	{
