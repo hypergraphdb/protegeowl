@@ -27,7 +27,6 @@ import org.protege.editor.core.ProtegeApplication;
 import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.core.editorkit.EditorKit;
 import org.protege.editor.core.editorkit.EditorKitDescriptor;
-import org.protege.editor.core.editorkit.RecentEditorKitManager;
 import org.protege.editor.core.ui.error.ErrorLogPanel;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.OWLEditorKitFactory;
@@ -52,9 +51,11 @@ import org.semanticweb.owlapi.model.OWLOntologyChangeListener;
 import org.semanticweb.owlapi.model.OWLOntologyFormat;
 import org.semanticweb.owlapi.model.OWLOntologyID;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
+import org.semanticweb.owlapi.model.OWLOntologyStorerNotFoundException;
 import org.semanticweb.owlapi.util.VersionInfo;
 import org.semanticweb.owlapi.vocab.PrefixOWLOntologyFormat;
 
+import gov.miamidade.hgowl.plugin.HGOwlProperties;
 import gov.miamidade.hgowl.plugin.owl.model.HGOntologyRepositoryEntry;
 import gov.miamidade.hgowl.plugin.owl.model.HGOwlModelManagerImpl;
 import gov.miamidade.hgowl.plugin.owlapi.apibinding.PHGDBOntologyManagerImpl;
@@ -198,20 +199,23 @@ public class HGOwlEditorKit extends OWLEditorKit
 	 */
 	public boolean handleNewRequest() throws Exception
 	{
-		List<EditorKitDescriptor> L = RecentEditorKitManager.getInstance().getDescriptors();
-		if (L.isEmpty() || ProtegeManager.getInstance().getEditorKitManager().getEditorKitCount() > 0)
+		List<String> currentlyActive = HGOwlProperties.getInstance().getActiveOntologies();	
+		if (currentlyActive.isEmpty() || ProtegeManager.getInstance().getEditorKitManager().getEditorKitCount() > 0)
 			return super.handleNewRequest();
 		else // if user opted to load most recent
 		{
 			boolean loaded = false;
-			for (EditorKitDescriptor descriptor : L)
+			for (String uriAsString : currentlyActive)
 			{
-				URI uri = descriptor.getURI(URI_KEY);				
-				if (getModelManager().getOWLOntologyManager()
-						.getOntologyRepository().getOntologyByDocumentIRI(IRI.create(uri)) != null)
+				URI uri = new URI(uriAsString); // descriptor.getURI(URI_KEY);				
+				try
 				{
-					this.handleLoadRecentRequest(descriptor);
+					this.handleLoadFrom(uri);
 					loaded = true;
+				}
+				catch (Exception ex)
+				{
+					ex.printStackTrace(System.err);
 				}
 			}
 			if (!loaded)
@@ -537,7 +541,25 @@ public class HGOwlEditorKit extends OWLEditorKit
 		}
 		else
 		{
-			super.handleSave();
+	        Set<OWLOntology> dirtyOntologies = getModelManager().getDirtyOntologies();
+	        getWorkspace().save();
+	        if (dirtyOntologies.isEmpty()) {
+	            return;
+	        }
+	        try {
+	            getModelManager().save();
+//	            for (URI uri : newPhysicalURIs) {
+//	                addRecent(uri);
+//	            }
+//	            newPhysicalURIs.clear();
+	        }
+	        catch (OWLOntologyStorerNotFoundException e) {
+	            OWLOntologyFormat format = getModelManager().getOWLOntologyManager().getOntologyFormat(ont);
+	            String message = "Could not save ontology in the specified format (" + format + ").\n" + "Please select 'Save As' and choose another format.";
+//	            logger.warn(message);
+	            ErrorLogPanel.showErrorDialog(new OWLOntologyStorageException(message, e));
+	        }
+			
 		}
 	}
 
@@ -769,6 +791,13 @@ public class HGOwlEditorKit extends OWLEditorKit
 	@Override
 	public void dispose()
 	{
+		HGOwlProperties.getInstance().getActiveOntologies().clear();
+		for (OWLOntology O : this.getModelManager().getActiveOntologies())
+		{
+			IRI documentIRI = getModelManager().getOWLOntologyManager().getOntologyDocumentIRI(O);
+			HGOwlProperties.getInstance().getActiveOntologies().add(documentIRI.toURI().toString());
+		}
+		HGOwlProperties.getInstance().savePrefs();
 		//
 		// start copy & paste of super.dispose()
 		getModelManager().removeOntologyChangeListener(ontologyChangeListener);

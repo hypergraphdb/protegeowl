@@ -50,7 +50,7 @@ public class HGDBActivator implements BundleActivator
 	}
 
 	@Override
-	public void stop(BundleContext arg0) throws Exception
+	public void stop(BundleContext context) throws Exception
 	{
 		System.out.println("HGOWL DB Stopped");
 	}

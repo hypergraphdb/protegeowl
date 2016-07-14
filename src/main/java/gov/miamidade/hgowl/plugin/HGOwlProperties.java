@@ -1,5 +1,8 @@
 package gov.miamidade.hgowl.plugin;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.protege.editor.core.prefs.Preferences;
 import org.protege.editor.core.prefs.PreferencesManager;
 
@@ -19,7 +22,9 @@ public class HGOwlProperties
 	public static final String HYPERGRAPH_LOCATION_KEY = "HypergraphLocationFolderJE-17";
 
 	public static final String SHOW_LEGACY_KEY = "ShowLegacyEditorKit";
-
+	
+	public static final String ACTIVE_ONTOLOGIES = "ActiveOntologies";
+	
 	private static HGOwlProperties instance;
 
 	public static final String DEFAULT_HYPERGRAPH_LOCATION_FOLDER_PATH = 
@@ -50,6 +55,7 @@ public class HGOwlProperties
 	private boolean p2pAskForRemote; // ask for the remote target before each
 										// operation.
 	private boolean p2pAutoSignIn;
+	private List<String> activeOntologies;
 	
 	// DISTRIBUTED END
 
@@ -73,7 +79,7 @@ public class HGOwlProperties
 		return PreferencesManager.getInstance().getPreferencesForSet(PREFERENCES_SET_KEY, PREFERENCES_KEY);
 	}
 
-	private void loadFromPrefs()
+	public void loadFromPrefs()
 	{
 		hgLocationFolderPath = getPreferences().getString(HYPERGRAPH_LOCATION_KEY, DEFAULT_HYPERGRAPH_LOCATION_FOLDER_PATH);
 		showLegacyEditorKit = getPreferences().getBoolean(SHOW_LEGACY_KEY, DEFAULT_SHOW_LEGACY_EDITOR_KIT);
@@ -84,9 +90,10 @@ public class HGOwlProperties
 		p2pServer = getPreferences().getString(P2P_SERVER, "");
 		p2pAskForRemote = getPreferences().getBoolean(P2P_ASK_FOR_REMOTE, DEFAULT_P2P_ASK_FOR_REMOTE);
 		p2pAutoSignIn = getPreferences().getBoolean(P2P_AUTO_SIGN_IN, DEFAULT_P2P_AUTO_SIGN_IN);
+		activeOntologies = getPreferences().getStringList(ACTIVE_ONTOLOGIES, new ArrayList<String>());
 	}
 
-	private void savePrefs()
+	public void savePrefs()
 	{
 		getPreferences().putString(HYPERGRAPH_LOCATION_KEY, hgLocationFolderPath);
 		getPreferences().putBoolean(SHOW_LEGACY_KEY, showLegacyEditorKit);
@@ -97,6 +104,7 @@ public class HGOwlProperties
 		getPreferences().putString(P2P_SERVER, p2pServer);
 		getPreferences().putBoolean(P2P_ASK_FOR_REMOTE, p2pAskForRemote);
 		getPreferences().putBoolean(P2P_AUTO_SIGN_IN, p2pAutoSignIn);
+		getPreferences().putStringList(ACTIVE_ONTOLOGIES, activeOntologies);
 	}
 
 	/**
@@ -235,4 +243,9 @@ public class HGOwlProperties
 	{
 		this.p2pAutoSignIn = p2pAutoSignIn;
 	}	
+	
+	public List<String> getActiveOntologies()
+	{
+		return activeOntologies;
+	}
 }
