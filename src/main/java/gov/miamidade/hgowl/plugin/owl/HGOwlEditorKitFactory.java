@@ -32,6 +32,7 @@ public class HGOwlEditorKitFactory extends OWLEditorKitFactory
 
 	public EditorKit createEditorKit()
 	{
+		System.out.println("Using VDHGOwlEditorKit");
 		return new VDHGOwlEditorKit(this);
 	}
 

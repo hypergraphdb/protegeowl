@@ -46,6 +46,7 @@ public class DynamicVersioningMenu extends ProtegeDynamicAction
 		if (!(ekit instanceof VHGOwlEditorKit))
 		{
 			System.err.println("Not running with a versioned VHGOwlEditorKit or subclass. Versioning menu will be empty.");
+			System.err.println("Editor kit class is: " + ekit.getClass().getName());
 			return;
 		}
 		VDHGOwlEditorKit vKit = (VDHGOwlEditorKit) ekit;

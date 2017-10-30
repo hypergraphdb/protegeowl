@@ -80,7 +80,7 @@ public class HGOwlEditorKit extends OWLEditorKit
 
 	public static final String ID = "HGOwlEditorKit";
 
-	private ServiceRegistration<?> registration;
+	private ServiceRegistration registration;
 
 	public HGOwlEditorKit(OWLEditorKitFactory editorKitFactory)
 	{
@@ -794,6 +794,8 @@ public class HGOwlEditorKit extends OWLEditorKit
 		HGOwlProperties.getInstance().getActiveOntologies().clear();
 		for (OWLOntology O : this.getModelManager().getActiveOntologies())
 		{
+			if (! (O instanceof HGDBOntology) )
+				continue;
 			IRI documentIRI = getModelManager().getOWLOntologyManager().getOntologyDocumentIRI(O);
 			HGOwlProperties.getInstance().getActiveOntologies().add(documentIRI.toURI().toString());
 		}

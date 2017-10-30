@@ -16,7 +16,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/hgdb"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/hgdbowl"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/hgdbp2p"/>
-	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
+	<classpathentry exported="true" kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>

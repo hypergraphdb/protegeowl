@@ -4,6 +4,7 @@ import gov.miamidade.hgowl.plugin.Singles;
 
 import java.io.File;
 
+import org.hypergraphdb.HGHandle;
 import org.hypergraphdb.app.owl.HGDBImportConfig;
 import org.hypergraphdb.app.owl.HGDBOntology;
 import org.hypergraphdb.app.owl.HGDBOntologyFormat;
@@ -176,11 +177,11 @@ public class PHGDBOntologyManagerImpl extends ProtegeOWLOntologyManager implemen
 		return super.getOWLDataFactory();
 	}
 	
-	public HGDBOntology createOntologyInDatabase(IRI ontologyIRI) throws OWLOntologyCreationException
+	public HGDBOntology createOntologyInDatabase(IRI ontologyIRI, HGHandle handle) throws OWLOntologyCreationException
 	{
 		try
 		{
-			HGDBOntologyFormat format = new HGDBOntologyFormat();
+			HGDBOntologyFormat format = new HGDBOntologyFormat().atomHandle(handle);
 			IRI hgdbDocumentIRI = HGDBOntologyFormat.convertToHGDBDocumentIRI(ontologyIRI);
 			OWLOntology o = super.createOntology(ontologyIRI);
 			setOntologyFormat(o, format);

@@ -2,10 +2,10 @@
 <?eclipse version="3.0"?>
 
 <plugin id="hgdbprotege" name="HyperGraphDB Versioned Storage" version="1.7.0">
+   <extension-point id="HGDBEditorLit" name="org.protege.editor.core.application.EditorKitFactory" schema="schema/HGDBEditorLit.exsd"/>
 
 	<extension id="HGOwlEditorKitFactory"
 	           point="org.protege.editor.core.application.EditorKitFactory">
-	  <label value="Hypergraph Ontology"/>
 	  <class value="gov.miamidade.hgowl.plugin.owl.HGOwlEditorKitFactory"/>
 	</extension>
     
@@ -17,7 +17,6 @@
 
     <extension id="HGOwlPreferences"
                point="org.protege.editor.core.application.preferencespanel">
-        <label value="Hypergraph"/>
         <class value="gov.miamidade.hgowl.plugin.ui.VDHGOwlPreferencesPanel"/>
     </extension>
     
